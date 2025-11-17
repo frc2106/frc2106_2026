@@ -28,11 +28,11 @@ import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.climb.IO_ClimbReal;
 import frc.robot.subsystems.climb.SUB_Climb;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.IO_GyroBase;
-import frc.robot.subsystems.drive.IO_GyroReal;
-import frc.robot.subsystems.drive.IO_ModuleBase;
-import frc.robot.subsystems.drive.IO_ModuleReal;
-import frc.robot.subsystems.drive.IO_ModuleSim;
+import frc.robot.subsystems.drive.gyro.IO_GyroBase;
+import frc.robot.subsystems.drive.gyro.IO_GyroReal;
+import frc.robot.subsystems.drive.module.IO_ModuleBase;
+import frc.robot.subsystems.drive.module.IO_ModuleReal;
+import frc.robot.subsystems.drive.module.IO_ModuleSim;
 import frc.robot.subsystems.elevator.IO_ElevatorReal;
 import frc.robot.subsystems.elevator.SUB_Elevator;
 import frc.robot.subsystems.intake.IO_IntakeReal;
@@ -45,310 +45,334 @@ import frc.robot.subsystems.vision.SUB_Vision;
 
 /**
  * RobotContainer is the composition root for the entire robot.
- * 
- * <p>It performs three major duties:
- * 1) **Subsystem instantiation** with IO layer selection based on RobotConstants.ROBOT_MODE (REAL, SIM, or REPLAY)
- * 2) **Command binding** using NamedCommands for PathPlanner autos and XboxController button mappings for teleop
- * 3) **Configuration** of controller rumble, alliance selection chooser, and default commands
- * 
- * <p>The architecture follows dependency injection: all subsystems are constructed here and passed into commands
- * that require them, ensuring proper ownership and lifecycle management via WPILib's CommandScheduler.
+ *
+ * <p>It performs three major duties: 1) **Subsystem instantiation** with IO layer selection based
+ * on RobotConstants.ROBOT_MODE (REAL, SIM, or REPLAY) 2) **Command binding** using NamedCommands
+ * for PathPlanner autos and XboxController button mappings for teleop 3) **Configuration** of
+ * controller rumble, alliance selection chooser, and default commands
+ *
+ * <p>The architecture follows dependency injection: all subsystems are constructed here and passed
+ * into commands that require them, ensuring proper ownership and lifecycle management via WPILib's
+ * CommandScheduler.
  */
 @SuppressWarnings("unused")
 public class RobotContainer {
 
-    // ============================
-    // Autonomous Configuration
-    // ============================
+	// ============================
+	// Autonomous Configuration
+	// ============================
 
-    /** Name of the currently hard-coded PathPlanner auto to run in auto mode. */
-    public static final String AUTO_NAME = "Right_3P";
+	/** Name of the currently hard-coded PathPlanner auto to run in auto mode. */
+	public static final String AUTO_NAME = "Right_3P";
 
-    // ============================
-    // Controller Configuration
-    // ============================
+	// ============================
+	// Controller Configuration
+	// ============================
 
-    /** Driver joystick for translation/rotation inputs and auto-align triggers. */
-    private CommandXboxController driverController;
-    /** Operator joystick for scoring presets, eject, and climb sequencing. */
-    private CommandXboxController operatorController;
+	/** Driver joystick for translation/rotation inputs and auto-align triggers. */
+	private CommandXboxController driverController;
 
-    // ============================
-    // Dashboard Choosers
-    // ============================
+	/** Operator joystick for scoring presets, eject, and climb sequencing. */
+	private CommandXboxController operatorController;
 
-    /** Alliance-side selector for red vs blue field transformations (unused in current logic but available). */
-    private SendableChooser<Boolean> isRedChooser;
+	// ============================
+	// Dashboard Choosers
+	// ============================
 
-    // ============================
-    // Subsystems
-    // ============================
+	/**
+	 * Alliance-side selector for red vs blue field transformations (unused in current logic but
+	 * available).
+	 */
+	private SendableChooser<Boolean> isRedChooser;
 
-    /** Swerve drive subsystem with gyro and module IO variants per robot mode. */
-    private Drive drive;
-    /** Intake subsystem managing arm angle and wheel speed. */
-    private SUB_Intake intake;
-    /** Vision subsystem feeding pose estimates to the drive. */
-    private SUB_Vision vision;
-    /** Elevator subsystem controlling vertical carriage position. */
-    private SUB_Elevator elevator;
-    /** Superstructure orchestrating all mechanism states based on game context. */
-    private SUB_Superstructure superstructure;
-    /** LED subsystem for operator feedback. */
-    private SUB_Led led = new SUB_Led(1, 62, AUTO_NAME);
-    /** Climb subsystem for endgame bar latch and pull-up. */
-    private SUB_Climb climb;
+	// ============================
+	// Subsystems
+	// ============================
 
-    /** Reference to the built PathPlanner auto command for autonomousInit(). */
-    public static Command AUTO_COMMAND;
+	/** Swerve drive subsystem with gyro and module IO variants per robot mode. */
+	private Drive drive;
 
-    // ============================
-    // Construction and Initialization
-    // ============================
+	/** Intake subsystem managing arm angle and wheel speed. */
+	private SUB_Intake intake;
 
-    public RobotContainer() {
-        // Initialize Robot Components
-        initializeControllers();
-        initializeSubsystems();
-        configurePathplannerCommands();
-        configureButtonBindings();
+	/** Vision subsystem feeding pose estimates to the drive. */
+	private SUB_Vision vision;
 
-        // Add alliance selector to SmartDashboard
-        isRedChooser = new SendableChooser<Boolean>();
-        isRedChooser.addOption("Red", true);
-        isRedChooser.addOption("Blue", false);
-        isRedChooser.setDefaultOption("Red", true);
-        SmartDashboard.putData("Alliance", isRedChooser);
+	/** Elevator subsystem controlling vertical carriage position. */
+	private SUB_Elevator elevator;
 
-        // Create and cache the PathPlanner auto command
-        AUTO_COMMAND = AutoBuilder.buildAuto(AUTO_NAME);
+	/** Superstructure orchestrating all mechanism states based on game context. */
+	private SUB_Superstructure superstructure;
 
-        // Start USB camera feed for driver visibility
-        CameraServer.startAutomaticCapture();
+	/** LED subsystem for operator feedback. */
+	private SUB_Led led = new SUB_Led(1, 62, AUTO_NAME);
 
-        // Optional: could start a second camera here for alignment
-        // CameraServer.startAutomaticCapture();
-        // alignmentCamera = new AlignmentCamera(0, "Driver CAM");
-    }
+	/** Climb subsystem for endgame bar latch and pull-up. */
+	private SUB_Climb climb;
 
-    /**
-     * Initialize controller objects with USB port numbers.
-     * Port 0 = driver, Port 1 = operator per FRC convention.
-     */
-    private void initializeControllers() {
-        driverController = new CommandXboxController(0);
-        operatorController = new CommandXboxController(1);
-    }
+	/** Reference to the built PathPlanner auto command for autonomousInit(). */
+	public static Command AUTO_COMMAND;
 
-    /**
-     * Initialize all subsystems with appropriate IO implementations based on RobotConstants.ROBOT_MODE.
-     * 
-     * <p>Three modes are supported:
-     * - REAL: Hardware IO implementations that talk to actual motor controllers, sensors, and gyro
-     * - SIM: Physics simulation IO implementations that model mechanism behavior for testing without hardware
-     * - REPLAY: "stub" IO implementations that read from logs; used with AdvantageKit replay to debug using real data
-     * 
-     * <p>The Switch construct is the standard pattern for selecting IO variants while keeping subsystem logic identical.
-     */
-    private void initializeSubsystems() {
-        // Intake and elevator always use real IO (they could be extended with sim variants later)
-        intake = new SUB_Intake(new IO_IntakeReal());
-        elevator = new SUB_Elevator(new IO_ElevatorReal());
-        climb = new SUB_Climb(new IO_ClimbReal());
+	// ============================
+	// Construction and Initialization
+	// ============================
 
-        // Initialize CANand event loop (used by some sensor implementations)
-        CanandEventLoop.getInstance();
+	public RobotContainer() {
+		// Initialize Robot Components
+		initializeControllers();
+		initializeSubsystems();
+		configurePathplannerCommands();
+		configureButtonBindings();
 
-        // Drive subsystem: IO varies dramatically by mode
-        switch (RobotConstants.ROBOT_MODE) {
-            case REAL:
-                // Real robot, instantiate hardware IO implementations
-                drive = new Drive(
-                        new IO_GyroReal(),
-                        new IO_ModuleReal(TunerConstants.FrontLeft),
-                        new IO_ModuleReal(TunerConstants.FrontRight),
-                        new IO_ModuleReal(TunerConstants.BackLeft),
-                        new IO_ModuleReal(TunerConstants.BackRight));
-                break;
+		// Add alliance selector to SmartDashboard
+		isRedChooser = new SendableChooser<Boolean>();
+		isRedChooser.addOption("Red", true);
+		isRedChooser.addOption("Blue", false);
+		isRedChooser.setDefaultOption("Red", true);
+		SmartDashboard.putData("Alliance", isRedChooser);
 
-            case SIM:
-                // Sim robot, instantiate physics sim IO implementations
-                drive = new Drive(
-                        new IO_GyroBase() {},
-                        new IO_ModuleSim(TunerConstants.FrontLeft),
-                        new IO_ModuleSim(TunerConstants.FrontRight),
-                        new IO_ModuleSim(TunerConstants.BackLeft),
-                        new IO_ModuleSim(TunerConstants.BackRight));
-                break;
+		// Create and cache the PathPlanner auto command
+		AUTO_COMMAND = AutoBuilder.buildAuto(AUTO_NAME);
 
-            default:
-                // Replayed robot, disable IO implementations
-                drive = new Drive(
-                        new IO_GyroBase() {},
-                        new IO_ModuleBase() {},
-                        new IO_ModuleBase() {},
-                        new IO_ModuleBase() {},
-                        new IO_ModuleBase() {});
-                break;
-        }
+		// Start USB camera feed for driver visibility
+		CameraServer.startAutomaticCapture();
 
-        // Vision subsystem: cameras feed pose measurements to drive
-        vision = new SUB_Vision(
-                drive::addVisionMeasurement,
-                new IO_VisionCamera(VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-                new IO_VisionCamera(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+		// Optional: could start a second camera here for alignment
+		// CameraServer.startAutomaticCapture();
+		// alignmentCamera = new AlignmentCamera(0, "Driver CAM");
+	}
 
-        // Superstructure binds all mechanisms together
-        superstructure = new SUB_Superstructure(drive, intake, elevator, led, operatorController);
+	/**
+	 * Initialize controller objects with USB port numbers. Port 0 = driver, Port 1 = operator per FRC
+	 * convention.
+	 */
+	private void initializeControllers() {
+		driverController = new CommandXboxController(0);
+		operatorController = new CommandXboxController(1);
+	}
 
-        // Setup Sendable Choosers
-        isRedChooser = new SendableChooser<Boolean>();
+	/**
+	 * Initialize all subsystems with appropriate IO implementations based on
+	 * RobotConstants.ROBOT_MODE.
+	 *
+	 * <p>Three modes are supported: - REAL: Hardware IO implementations that talk to actual motor
+	 * controllers, sensors, and gyro - SIM: Physics simulation IO implementations that model
+	 * mechanism behavior for testing without hardware - REPLAY: "stub" IO implementations that read
+	 * from logs; used with AdvantageKit replay to debug using real data
+	 *
+	 * <p>The Switch construct is the standard pattern for selecting IO variants while keeping
+	 * subsystem logic identical.
+	 */
+	private void initializeSubsystems() {
+		// Intake and elevator always use real IO (they could be extended with sim variants later)
+		intake = new SUB_Intake(new IO_IntakeReal());
+		elevator = new SUB_Elevator(new IO_ElevatorReal());
+		climb = new SUB_Climb(new IO_ClimbReal());
 
-        // Set up SysId routines (commented out but kept as examples)
-        /*
-        autoChooser.addOption(
-                "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-        autoChooser.addOption(
-                "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-        autoChooser.addOption(
-                "Drive SysId (Quasistatic Forward)",
-                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        autoChooser.addOption(
-                "Drive SysId (Quasistatic Reverse)",
-                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        autoChooser.addOption(
-                "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        autoChooser.addOption(
-                "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-                */
-    }
+		// Initialize CANand event loop (used by some sensor implementations)
+		CanandEventLoop.getInstance();
 
-    /**
-     * Register all NamedCommands that PathPlanner autonomous routines can reference.
-     * 
-     * <p>Each command typically wraps a CMD_Superstructure state change, allowing the PP path to coordinate
-     * scoring actions at specific waypoints. The names here must match exactly what is used in the PP GUI.
-     */
-    private void configurePathplannerCommands() {
-        NamedCommands.registerCommand(
-                "Intake_Coral", new CMD_Superstructure(superstructure, SuperstructureState.CORAL_STATION));
+		// Drive subsystem: IO varies dramatically by mode
+		switch (RobotConstants.ROBOT_MODE) {
+			case REAL:
+				// Real robot, instantiate hardware IO implementations
+				drive =
+						new Drive(
+								new IO_GyroReal(),
+								new IO_ModuleReal(TunerConstants.FrontLeft),
+								new IO_ModuleReal(TunerConstants.FrontRight),
+								new IO_ModuleReal(TunerConstants.BackLeft),
+								new IO_ModuleReal(TunerConstants.BackRight));
+				break;
 
-        NamedCommands.registerCommand(
-                "Intake_Race",
-                new CMD_IntakeRace(intake)
-                        .andThen(new CMD_Superstructure(superstructure, SuperstructureState.IDLE)));
+			case SIM:
+				// Sim robot, instantiate physics sim IO implementations
+				drive =
+						new Drive(
+								new IO_GyroBase() {},
+								new IO_ModuleSim(TunerConstants.FrontLeft),
+								new IO_ModuleSim(TunerConstants.FrontRight),
+								new IO_ModuleSim(TunerConstants.BackLeft),
+								new IO_ModuleSim(TunerConstants.BackRight));
+				break;
 
-        NamedCommands.registerCommand(
-                "L1", new CMD_Superstructure(superstructure, SuperstructureState.L1_SCORING));
-        NamedCommands.registerCommand(
-                "L2", new CMD_Superstructure(superstructure, SuperstructureState.L2_SCORING));
-        NamedCommands.registerCommand(
-                "L2C", new CMD_Superstructure(superstructure, SuperstructureState.L2_CLEAR));
-        NamedCommands.registerCommand(
-                "L3", new CMD_Superstructure(superstructure, SuperstructureState.L3_SCORING));
-        NamedCommands.registerCommand(
-                "L3C", new CMD_Superstructure(superstructure, SuperstructureState.L3_CLEAR));
-        NamedCommands.registerCommand(
-                "L4", new CMD_Superstructure(superstructure, SuperstructureState.L4_SCORING_AUTO));
-        NamedCommands.registerCommand(
-                "L4C", new CMD_Superstructure(superstructure, SuperstructureState.L4_CLEAR));
+			default:
+				// Replayed robot, disable IO implementations
+				drive =
+						new Drive(
+								new IO_GyroBase() {},
+								new IO_ModuleBase() {},
+								new IO_ModuleBase() {},
+								new IO_ModuleBase() {},
+								new IO_ModuleBase() {});
+				break;
+		}
 
-        NamedCommands.registerCommand("Eject", new CMD_Eject(superstructure));
+		// Vision subsystem: cameras feed pose measurements to drive
+		vision =
+				new SUB_Vision(
+						drive::addVisionMeasurement,
+						new IO_VisionCamera(VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+						new IO_VisionCamera(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
 
-        NamedCommands.registerCommand(
-                "Idle", new CMD_Superstructure(superstructure, SuperstructureState.IDLE));
+		// Superstructure binds all mechanisms together
+		superstructure = new SUB_Superstructure(drive, intake, elevator, led, operatorController);
 
-        NamedCommands.registerCommand(
-                "ALGAE_L2", new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_L2));
-        NamedCommands.registerCommand(
-                "ALGAE_L3", new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_L3));
-        NamedCommands.registerCommand(
-                "ALGAE_BARGE", new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_BARGE));
-        NamedCommands.registerCommand(
-                "ALGAE_PROCESSOR",
-                new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_PROCESSOR));
-    }
+		// Setup Sendable Choosers
+		isRedChooser = new SendableChooser<Boolean>();
 
-    /**
-     * Bind input axes and buttons to commands using CommandXboxController's fluent API.
-     * 
-     * <p>Includes:
-     * - Default drive command with rotation assist
-     * - Coral scoring preset buttons (L4, L3, etc.)
-     * - Dynamic algae handling
-     * - Intake/eject controls
-     * - Auto-align triggers with debouncing
-     * - Climb sequence activation
-     */
-    private void configureButtonBindings() {
-        // Drive w/ Assist Rotation: default command runs continuously unless interrupted
-        drive.setDefaultCommand(
-                DriveCommands.driveWithAssist(
-                        drive,
-                        () -> -driverController.getRawAxis(1),
-                        () -> driverController.getRawAxis(0),
-                        () -> -driverController.getRawAxis(3),
-                        () -> driverController.button(3).getAsBoolean()));
+		// Set up SysId routines (commented out but kept as examples)
+		/*
+		autoChooser.addOption(
+						"Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+		autoChooser.addOption(
+						"Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+		autoChooser.addOption(
+						"Drive SysId (Quasistatic Forward)",
+						drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+		autoChooser.addOption(
+						"Drive SysId (Quasistatic Reverse)",
+						drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+		autoChooser.addOption(
+						"Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+		autoChooser.addOption(
+						"Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+						*/
+	}
 
-        // Coral scoring presets
-        operatorController.rightBumper().onTrue(new CMD_ElevatorCoral(superstructure, true));
-        operatorController.leftBumper().onTrue(new CMD_ElevatorCoral(superstructure, false));
-        operatorController.rightTrigger().onTrue(new CMD_Superstructure(superstructure, SuperstructureState.L4_SCORING_TELE));
-        operatorController.leftTrigger().onTrue(new CMD_Superstructure(superstructure, SuperstructureState.L3_SCORING));
+	/**
+	 * Register all NamedCommands that PathPlanner autonomous routines can reference.
+	 *
+	 * <p>Each command typically wraps a CMD_Superstructure state change, allowing the PP path to
+	 * coordinate scoring actions at specific waypoints. The names here must match exactly what is
+	 * used in the PP GUI.
+	 */
+	private void configurePathplannerCommands() {
+		NamedCommands.registerCommand(
+				"Intake_Coral", new CMD_Superstructure(superstructure, SuperstructureState.CORAL_STATION));
 
-        // Algae handling
-        operatorController.y().onTrue(superstructure.dynamicAlage());
-        operatorController.povUp().onTrue(new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_BARGE));
-        operatorController.povDown().onTrue(new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_GROUND));
+		NamedCommands.registerCommand(
+				"Intake_Race",
+				new CMD_IntakeRace(intake)
+						.andThen(new CMD_Superstructure(superstructure, SuperstructureState.IDLE)));
 
-        // Eject and intake
-        operatorController.x().onTrue(new CMD_Eject(superstructure));
-        operatorController.a().onTrue(new CMD_Superstructure(superstructure, SuperstructureState.CORAL_STATION));
-        operatorController.b().onTrue(new CMD_Superstructure(superstructure, SuperstructureState.IDLE));
+		NamedCommands.registerCommand(
+				"L1", new CMD_Superstructure(superstructure, SuperstructureState.L1_SCORING));
+		NamedCommands.registerCommand(
+				"L2", new CMD_Superstructure(superstructure, SuperstructureState.L2_SCORING));
+		NamedCommands.registerCommand(
+				"L2C", new CMD_Superstructure(superstructure, SuperstructureState.L2_CLEAR));
+		NamedCommands.registerCommand(
+				"L3", new CMD_Superstructure(superstructure, SuperstructureState.L3_SCORING));
+		NamedCommands.registerCommand(
+				"L3C", new CMD_Superstructure(superstructure, SuperstructureState.L3_CLEAR));
+		NamedCommands.registerCommand(
+				"L4", new CMD_Superstructure(superstructure, SuperstructureState.L4_SCORING_AUTO));
+		NamedCommands.registerCommand(
+				"L4C", new CMD_Superstructure(superstructure, SuperstructureState.L4_CLEAR));
 
-        // First Auto Align: triggers on button press; debounced to prevent chatter
-        driverController
-                .button(1)
-                .onChange(
-                        DriveCommands.driveAlign(
-                                drive,
-                                () -> SUB_Superstructure.globalFirstPose,
-                                driverController,
-                                elevator.getHeight()))
-                .debounce(.1, DebounceType.kBoth);
+		NamedCommands.registerCommand("Eject", new CMD_Eject(superstructure));
 
-        // Second Auto Align
-        driverController
-                .button(4)
-                .onChange(
-                        DriveCommands.driveAlign(
-                                drive,
-                                () -> SUB_Superstructure.globalSecondPose,
-                                driverController,
-                                elevator.getHeight()))
-                .debounce(.1, DebounceType.kBoth);
+		NamedCommands.registerCommand(
+				"Idle", new CMD_Superstructure(superstructure, SuperstructureState.IDLE));
 
-        // Climb Automatic: operator confirmation looped into the sequence itself
-        operatorController
-                .povRight()
-                .onTrue(
-                        climb.climbSequence(
-                                () -> operatorController.povRight().getAsBoolean(), 1.0, led, superstructure));
-        // Climb zero/reset
-        operatorController.povLeft().onTrue(climb.goToPosition(0, 1));
-    }
+		NamedCommands.registerCommand(
+				"ALGAE_L2", new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_L2));
+		NamedCommands.registerCommand(
+				"ALGAE_L3", new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_L3));
+		NamedCommands.registerCommand(
+				"ALGAE_BARGE", new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_BARGE));
+		NamedCommands.registerCommand(
+				"ALGAE_PROCESSOR",
+				new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_PROCESSOR));
+	}
 
-    /**
-     * Return the command to run in autonomous mode.
-     * 
-     * <p>Uses the cached PathPlanner auto command built at construction time.
-     * If no auto is available, prints a warning to the console for debugging.
-     */
-    public Command getAutonomousCommand() {
-        if (AUTO_COMMAND != null) {
-            return AUTO_COMMAND;
-        } else {
-            return new PrintCommand("Auto Command is NULL!");
-        }
-    }
+	/**
+	 * Bind input axes and buttons to commands using CommandXboxController's fluent API.
+	 *
+	 * <p>Includes: - Default drive command with rotation assist - Coral scoring preset buttons (L4,
+	 * L3, etc.) - Dynamic algae handling - Intake/eject controls - Auto-align triggers with
+	 * debouncing - Climb sequence activation
+	 */
+	private void configureButtonBindings() {
+		// Drive w/ Assist Rotation: default command runs continuously unless interrupted
+		drive.setDefaultCommand(
+				DriveCommands.driveWithAssist(
+						drive,
+						() -> -driverController.getRawAxis(1),
+						() -> driverController.getRawAxis(0),
+						() -> -driverController.getRawAxis(3),
+						() -> driverController.button(3).getAsBoolean()));
+
+		// Coral scoring presets
+		operatorController.rightBumper().onTrue(new CMD_ElevatorCoral(superstructure, true));
+		operatorController.leftBumper().onTrue(new CMD_ElevatorCoral(superstructure, false));
+		operatorController
+				.rightTrigger()
+				.onTrue(new CMD_Superstructure(superstructure, SuperstructureState.L4_SCORING_TELE));
+		operatorController
+				.leftTrigger()
+				.onTrue(new CMD_Superstructure(superstructure, SuperstructureState.L3_SCORING));
+
+		// Algae handling
+		operatorController.y().onTrue(superstructure.dynamicAlage());
+		operatorController
+				.povUp()
+				.onTrue(new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_BARGE));
+		operatorController
+				.povDown()
+				.onTrue(new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_GROUND));
+
+		// Eject and intake
+		operatorController.x().onTrue(new CMD_Eject(superstructure));
+		operatorController
+				.a()
+				.onTrue(new CMD_Superstructure(superstructure, SuperstructureState.CORAL_STATION));
+		operatorController.b().onTrue(new CMD_Superstructure(superstructure, SuperstructureState.IDLE));
+
+		// First Auto Align: triggers on button press; debounced to prevent chatter
+		driverController
+				.button(1)
+				.onChange(
+						DriveCommands.driveAlign(
+								drive,
+								() -> SUB_Superstructure.globalFirstPose,
+								driverController,
+								elevator.getHeight()))
+				.debounce(.1, DebounceType.kBoth);
+
+		// Second Auto Align
+		driverController
+				.button(4)
+				.onChange(
+						DriveCommands.driveAlign(
+								drive,
+								() -> SUB_Superstructure.globalSecondPose,
+								driverController,
+								elevator.getHeight()))
+				.debounce(.1, DebounceType.kBoth);
+
+		// Climb Automatic: operator confirmation looped into the sequence itself
+		operatorController
+				.povRight()
+				.onTrue(
+						climb.climbSequence(
+								() -> operatorController.povRight().getAsBoolean(), 1.0, led, superstructure));
+		// Climb zero/reset
+		operatorController.povLeft().onTrue(climb.goToPosition(0, 1));
+	}
+
+	/**
+	 * Return the command to run in autonomous mode.
+	 *
+	 * <p>Uses the cached PathPlanner auto command built at construction time. If no auto is
+	 * available, prints a warning to the console for debugging.
+	 */
+	public Command getAutonomousCommand() {
+		if (AUTO_COMMAND != null) {
+			return AUTO_COMMAND;
+		} else {
+			return new PrintCommand("Auto Command is NULL!");
+		}
+	}
 }

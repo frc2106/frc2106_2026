@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.robot.util;
+package frc.robot.util.sensors;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
