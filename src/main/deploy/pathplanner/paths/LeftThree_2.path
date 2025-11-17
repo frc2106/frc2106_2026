@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.24396404109589,
+        "y": 5.024208047945206
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.682120780396614,
+        "y": 5.4838299695548205
+      },
+      "isLocked": false,
+      "linkedName": "LeftThree_1E"
+    },
+    {
+      "anchor": {
+        "x": 1.4676472224399795,
+        "y": 7.269365588394821
+      },
+      "prevControl": {
+        "x": 2.5435299564178813,
+        "y": 6.457091800748728
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "LeftThree_2E"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "INTAKE",
+      "minWaypointRelativePos": 0.8470588235294119,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1500.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Idle",
+      "waypointRelativePos": 0.39783372314014803,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Idle"
+        }
+      }
+    },
+    {
+      "name": "Intake_Coral",
+      "waypointRelativePos": 0.8698458714373877,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake_Coral"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.85,
+    "maxAcceleration": 5.6,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1500.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 126.28384615961545
+  },
+  "reversed": false,
+  "folder": "Left",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -118.57460499009916
+  },
+  "useDefaultConstraints": true
+}
