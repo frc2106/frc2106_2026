@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib.windingmotor.drive.Drive;
-import frc.robot.lib.windingmotor.util.auto.PoseConstants;
+import frc.robot.constants.LIB_PoseConstants;
 import frc.robot.lib.windingmotor.util.math.AllianceFlipUtil;
 import frc.robot.lib.windingmotor.util.math.ExpDecayFF;
 import java.text.DecimalFormat;
@@ -41,6 +41,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.constants.LIB_ZoneConstants;
 
 public class DriveCommands {
 	private static final double DEADBAND = 0.01;
@@ -177,158 +178,6 @@ public class DriveCommands {
 						});
 	}
 
-	/**
-	 * Creates a command that will drive to a specified pose using a vector-based approach with motion
-	 * profiling for smoother, more direct paths.
-	 *
-	 * @param drive The drive subsystem
-	 * @param targetPoseSupplier Supplier for the target pose
-	 * @return A command that will drive to the target pose
-	 */
-	public static Command driveToPoseVector(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
-		// Constants for profiled motion control
-		final double MAX_TRANSLATION_SPEED = 3.0; // meters per second
-		final double MAX_TRANSLATION_ACCEL = 2.5; // meters per second squared
-		final double MAX_ROTATION_SPEED = Math.PI; // radians per second
-		final double MAX_ROTATION_ACCEL = 4 * Math.PI; // radians per second squared
-
-		// Constants for feedforward scaling
-		final double FF_MIN_RADIUS = 0.2; // meters
-		final double FF_MAX_RADIUS = 0.6; // meters
-
-		// Position and velocity tolerances
-		final double TRANSLATION_TOLERANCE = 0.041; // meters
-		final double HEADING_TOLERANCE = Units.degreesToRadians(1.5); // radians
-		final double VELOCITY_TOLERANCE = 0.075; // m/s
-		final double ROTATION_VELOCITY_TOLERANCE = Math.PI / 16; // rad/s
-
-		// Create controllers with constraints
-		ProfiledPIDController translationController =
-				new ProfiledPIDController(
-						6.25,
-						0.0,
-						0.0,
-						new TrapezoidProfile.Constraints(MAX_TRANSLATION_SPEED, MAX_TRANSLATION_ACCEL));
-
-		ProfiledPIDController headingController =
-				new ProfiledPIDController(
-						6.5,
-						0.0,
-						0.0,
-						new TrapezoidProfile.Constraints(MAX_ROTATION_SPEED, MAX_ROTATION_ACCEL));
-
-		// Set tolerances
-		translationController.setTolerance(TRANSLATION_TOLERANCE, VELOCITY_TOLERANCE);
-		headingController.setTolerance(HEADING_TOLERANCE, ROTATION_VELOCITY_TOLERANCE);
-		headingController.enableContinuousInput(-Math.PI, Math.PI);
-
-		return Commands.run(
-						() -> {
-							// Get current pose and target pose
-							Pose2d currentPose = drive.getPose();
-							Pose2d targetPose = targetPoseSupplier.get();
-
-							// Calculate distance to target
-							double currentDistance =
-									currentPose.getTranslation().getDistance(targetPose.getTranslation());
-
-							// Scale feedforward based on distance
-							double ffScaler =
-									MathUtil.clamp(
-											(currentDistance - FF_MIN_RADIUS) / (FF_MAX_RADIUS - FF_MIN_RADIUS),
-											0.0,
-											1.0);
-
-							// Calculate translation control output
-							double driveVelocityScalar =
-									translationController.getSetpoint().velocity * ffScaler
-											+ translationController.calculate(currentDistance, 0.0);
-
-							// If close enough to target, stop translation
-							if (currentDistance < translationController.getPositionTolerance()) {
-								driveVelocityScalar = 0.0;
-							}
-
-							// Calculate heading control output
-							double headingError =
-									getShortestAngleDifference(
-											currentPose.getRotation().getRadians(),
-											targetPose.getRotation().getRadians());
-
-							double headingVelocity =
-									headingController.getSetpoint().velocity * ffScaler
-											+ headingController.calculate(
-													currentPose.getRotation().getRadians(),
-													targetPose.getRotation().getRadians());
-
-							// If close enough to target heading, stop rotation
-							if (Math.abs(headingError) < headingController.getPositionTolerance()) {
-								headingVelocity = 0.0;
-							}
-
-							// Calculate direction vector to target
-							Rotation2d directionToTarget =
-									targetPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
-
-							// Convert velocity scalar to vector in direction of target
-							Translation2d driveVelocity =
-									new Translation2d(
-											driveVelocityScalar * directionToTarget.getCos(),
-											driveVelocityScalar * directionToTarget.getSin());
-
-							// Create field-relative speeds
-							ChassisSpeeds speeds =
-									ChassisSpeeds.fromFieldRelativeSpeeds(
-											driveVelocity.getX(),
-											driveVelocity.getY(),
-											headingVelocity,
-											drive.getRotation());
-
-							// Command the drive
-							drive.runVelocity(speeds);
-
-							// Logging similar to original code
-							Logger.recordOutput("VectorDrive/TargetPose", targetPose);
-							Logger.recordOutput("VectorDrive/CurrentDistance", currentDistance);
-							Logger.recordOutput("VectorDrive/TranslationOutput", driveVelocityScalar);
-							Logger.recordOutput("VectorDrive/RotationOutput", headingVelocity);
-							Logger.recordOutput("VectorDrive/FFScaler", ffScaler);
-							Logger.recordOutput("VectorDrive/HeadingError", headingError);
-							Logger.recordOutput(
-									"VectorDrive/AtTranslationTarget",
-									currentDistance < translationController.getPositionTolerance());
-							Logger.recordOutput(
-									"VectorDrive/AtHeadingTarget",
-									Math.abs(headingError) < headingController.getPositionTolerance());
-							Logger.recordOutput("VectorDrive/DirectionToTarget", directionToTarget.getDegrees());
-						},
-						drive)
-				.until(
-						() -> {
-							Pose2d currentPose = drive.getPose();
-							Pose2d targetPose = targetPoseSupplier.get();
-
-							double currentDistance =
-									currentPose.getTranslation().getDistance(targetPose.getTranslation());
-							double headingError =
-									getShortestAngleDifference(
-											currentPose.getRotation().getRadians(),
-											targetPose.getRotation().getRadians());
-
-							boolean atTranslationTarget =
-									currentDistance < translationController.getPositionTolerance()
-											&& Math.abs(translationController.getSetpoint().velocity)
-													< VELOCITY_TOLERANCE;
-
-							boolean atHeadingTarget =
-									Math.abs(headingError) < headingController.getPositionTolerance()
-											&& Math.abs(headingController.getSetpoint().velocity)
-													< ROTATION_VELOCITY_TOLERANCE;
-
-							return atTranslationTarget && atHeadingTarget;
-						});
-	}
-
 	/** Calculates the shortest angular distance between two angles in radians. */
 	private static double getShortestAngleDifference(double from, double to) {
 		double error = to - from;
@@ -342,7 +191,7 @@ public class DriveCommands {
 
 	public static Command driveAlign(
 			Drive drive,
-			Supplier<ZonePose> zonePose,
+			Supplier<LIB_ZoneConstants.ZonePose> zonePose,
 			// Supplier<Boolean> isRed,
 			CommandXboxController driverController,
 			DoubleSupplier elevatorHeightMeters) {
@@ -487,46 +336,9 @@ public class DriveCommands {
 						});
 	}
 
-	// Drive to a predefined zone based on zonePose alliance adjustment
-	/*
-	public static Command driveToZone(Drive drive, Supplier<ZonePose> zonePose) {
-
-		var pose = zonePose.get().getPoseForAlliance();
-		if (pose.isPresent()) {
-			return driveToPose(drive, pose.get());
-		} else {
-			return new PrintCommand("Drive to Zone: Empty Optional");
-		}
-	}
-		*/
-
 	/** Overloaded version that accepts a fixed target pose rather than a supplier. */
 	public static Command driveToPose(Drive drive, Pose2d targetPose) {
 		return driveToPose(drive, () -> targetPose);
-	}
-
-	public static Optional<Pose2d> getCloserSourcePose(Drive drive) {
-
-		int id = drive.getRecentClosestTagData().getFirst();
-
-		if (id == 1) {
-			return Optional.ofNullable(
-					new Pose2d(new Translation2d(16.94, 1.2), Rotation2d.fromDegrees(-55)));
-		} else if (id == 2) {
-			return Optional.ofNullable(
-					new Pose2d(new Translation2d(16.31, 7.35), Rotation2d.fromDegrees(44)));
-		} else {
-			return Optional.empty();
-		}
-	}
-
-	public static Command driveToSource(Drive drive) {
-		Optional<Pose2d> poseOptional = getCloserSourcePose(drive);
-		if (poseOptional.isPresent()) {
-			return DriveCommands.driveToPose(drive, poseOptional.get());
-		} else {
-			return new PrintCommand("Drive to Source: Empty Optional");
-		}
 	}
 
 	/*
@@ -551,7 +363,7 @@ public class DriveCommands {
 					// Get target rotation based on closest AprilTag
 					int closestTagId = drive.getRecentClosestTagData().getFirst();
 					double distanceM = drive.getRecentClosestTagData().getSecond();
-					ZoneAngle targetZone = getZoneAngleForTagID(closestTagId);
+					LIB_ZoneConstants.ZoneAngle targetZone = LIB_ZoneConstants.getZoneAngleForTagID(closestTagId);
 
 					// Convert zone angle to radians
 					Rotation2d initalTargetRotation = Rotation2d.fromDegrees(targetZone.getAngle());
@@ -578,7 +390,7 @@ public class DriveCommands {
 					double omega = 0.0;
 					if (assistOnSupplier.getAsBoolean()
 							&& distanceM < MAX_ASSIST_DISTANCE
-							&& targetZone != ZoneAngle.NONE) {
+							&& targetZone != LIB_ZoneConstants.ZoneAngle.NONE) {
 						omega =
 								rotationController.calculate(
 												drive.getRotation().getDegrees(), targetRotation.getDegrees())
@@ -627,7 +439,7 @@ public class DriveCommands {
 	 * Creates a command that will drive to a specified transform and zone angle using PID control.
 	 * The transform is relative to the robot's current pose.
 	 */
-	public static Command driveToTransform(Drive drive, Transform2d transform, ZoneAngle zoneAngle) {
+	public static Command driveToTransform(Drive drive, Transform2d transform, LIB_ZoneConstants.ZoneAngle zoneAngle) {
 		// Create PID controllers for x, y and rotation
 		ProfiledPIDController xController =
 				new ProfiledPIDController(
@@ -690,20 +502,6 @@ public class DriveCommands {
 							yController.reset(currentPose.getY());
 							rotationController.reset(currentPose.getRotation().getRadians());
 						});
-	}
-
-	/** Overloaded version that accepts a transform supplier for dynamic transforms. */
-	public static Command driveToTransform(
-			Drive drive, Supplier<Transform2d> transformSupplier, ZoneAngle zoneAngle) {
-		return driveToTransform(drive, transformSupplier.get(), zoneAngle);
-	}
-
-	/**
-	 * Overloaded version that accepts both transform and zone angle suppliers for dynamic updates.
-	 */
-	public static Command driveToTransform(
-			Drive drive, Supplier<Transform2d> transformSupplier, Supplier<ZoneAngle> zoneAngleSupplier) {
-		return driveToTransform(drive, transformSupplier.get(), zoneAngleSupplier.get());
 	}
 
 	/**
@@ -845,166 +643,7 @@ public class DriveCommands {
 		double gyroDelta = 0.0;
 	}
 
-	public enum ZoneAngle {
-		NONE(0),
-		FORWARD(180),
-		BACKWARD(0),
-		RIGHT(-90),
-		LEFT(90),
-		SOURCE_RIGHT(53),
-		SOURCE_LEFT(-55),
-		REEF_BOTTOM_RIGHT(-120),
-		REEF_BOTTOM_LEFT(120),
-		REEF_BOTTOM(180),
-		REEF_TOP_RIGHT(-60),
-		REEF_TOP_LEFT(60),
-		PROCESSOR(90),
-		REEF_TOP(0);
-
-		private final double angle;
-
-		ZoneAngle(double angle) {
-			this.angle = angle;
-		}
-
-		public double getAngle() {
-			return angle;
-		}
-
-		public Rotation2d getRotation() {
-			return Rotation2d.fromDegrees(angle);
-		}
-	}
-
-	/**
-	 * Gets the appropriate zone angle based on AprilTag ID and alliance color.
-	 *
-	 * @param id The AprilTag ID
-	 * @return The ZoneAngle for the given tag ID
-	 */
-	public static ZoneAngle getZoneAngleForTagID(int id) {
-		switch (id) {
-			case 2:
-			case 12:
-				return ZoneAngle.SOURCE_RIGHT;
-
-			case 1:
-			case 13:
-				return ZoneAngle.SOURCE_LEFT;
-
-			case 7:
-			case 18:
-				return ZoneAngle.REEF_BOTTOM;
-
-			case 6:
-			case 19:
-				return ZoneAngle.REEF_BOTTOM_LEFT;
-
-			case 8:
-			case 17:
-				return ZoneAngle.REEF_BOTTOM_RIGHT;
-
-			case 11:
-			case 20:
-				return ZoneAngle.REEF_TOP_LEFT;
-
-			case 10:
-			case 21:
-				return ZoneAngle.REEF_TOP;
-
-			case 9:
-			case 22:
-				return ZoneAngle.REEF_TOP_RIGHT;
-
-			case 3:
-			case 16:
-				return ZoneAngle.PROCESSOR;
-
-			default:
-				return ZoneAngle.NONE;
-		}
-	}
-
-	public enum ZonePose {
-		NONE(new Translation2d(), ZoneAngle.NONE),
-		FORWARD(new Translation2d(), ZoneAngle.FORWARD),
-		BACKWARD(new Translation2d(), ZoneAngle.BACKWARD),
-		RIGHT(new Translation2d(), ZoneAngle.RIGHT),
-		LEFT(new Translation2d(), ZoneAngle.LEFT),
-		PROCESSOR(new Translation2d(), ZoneAngle.PROCESSOR),
-
-		// SOURCE
-		SOURCE_RIGHT(new Translation2d(16.25, 7.25), ZoneAngle.SOURCE_RIGHT),
-		SOURCE_LEFT(new Translation2d(16.8, 0.95), ZoneAngle.SOURCE_LEFT),
-
-		// BOTTOM RIGHT
-		REEF_BOTTOM_RIGHT_TOP(new Translation2d(13.559, 5.224), ZoneAngle.REEF_BOTTOM_RIGHT),
-		REEF_BOTTOM_RIGHT_BOTTOM(new Translation2d(13.835, 5.055), ZoneAngle.REEF_BOTTOM_RIGHT),
-
-		// BOTTOM LEFT
-		REEF_BOTTOM_LEFT_TOP(new Translation2d(13.550, 2.856), ZoneAngle.REEF_BOTTOM_LEFT),
-		REEF_BOTTOM_LEFT_BOTTOM(new Translation2d(13.856, 3), ZoneAngle.REEF_BOTTOM_LEFT),
-
-		// BOTTOM
-		REEF_BOTTOM_LEFT(new Translation2d(14.384, 3.852), ZoneAngle.REEF_BOTTOM),
-		REEF_BOTTOM_RIGHT(new Translation2d(14.384, 4.181), ZoneAngle.REEF_BOTTOM),
-
-		// TOP RIGHT
-		REEF_TOP_RIGHT_BOTTOM(new Translation2d(12.558, 5.201), ZoneAngle.REEF_TOP_RIGHT),
-		REEF_TOP_RIGHT_TOP(new Translation2d(12.279, 5.050), ZoneAngle.REEF_TOP_RIGHT),
-
-		// TOP LEFT
-		REEF_TOP_LEFT_TOP(new Translation2d(12.312, 3.052), ZoneAngle.REEF_TOP_LEFT),
-		REEF_TOP_LEFT_BOTTOM(new Translation2d(12.559, 2.849), ZoneAngle.REEF_TOP_LEFT),
-
-		// TOP
-		REEF_TOP_LEFT(new Translation2d(11.78, 3.871), ZoneAngle.REEF_TOP),
-		REEF_TOP_RIGHT(new Translation2d(11.78, 4.195), ZoneAngle.REEF_TOP);
-
-		private final Translation2d translation;
-		private final ZoneAngle zoneAngle;
-
-		ZonePose(Translation2d translation, ZoneAngle zoneAngle) {
-			this.translation = translation;
-			this.zoneAngle = zoneAngle;
-		}
-
-		public Translation2d getTranslation() {
-			return translation;
-		}
-
-		public ZoneAngle getZoneAngle() {
-			return zoneAngle;
-		}
-
-		public Pose2d getPose() {
-			return new Pose2d(translation, zoneAngle.getRotation());
-		}
-
-		public Optional<Pose2d> getPoseForAlliance(boolean isRed) {
-
-			// If red
-			if (isRed) {
-				// Red
-				return Optional.of(new Pose2d(translation, zoneAngle.getRotation()));
-			}
-
-			// If not red aka blue
-			if (!isRed) {
-				// Blue
-				Pose2d flippedPose = AllianceFlipUtil.apply(getPose());
-
-				Rotation2d targetRotation =
-						Rotation2d.fromDegrees(flippedPose.getRotation().getDegrees() - 0);
-
-				Pose2d rotatedPose = new Pose2d(flippedPose.getTranslation(), targetRotation);
-
-				return Optional.of(new Pose2d(rotatedPose.getTranslation(), rotatedPose.getRotation()));
-			}
-
-			return Optional.empty();
-		}
-	}
+	
 
 	public static Command driveToClosestPose(
 			Drive drive, BooleanSupplier isRed, CommandXboxController driverController) {
@@ -1031,7 +670,7 @@ public class DriveCommands {
 		// Set tolerances
 		translationController.setTolerance(TRANSLATION_TOLERANCE, VELOCITY_TOLERANCE);
 
-		PoseConstants poseAlignment = new PoseConstants();
+		LIB_PoseConstants poseAlignment = new LIB_PoseConstants();
 
 		return Commands.run(
 						() -> {
@@ -1136,12 +775,12 @@ public class DriveCommands {
 	}
 
 	public static Command driveToClosestPosePathPlanner(Drive drive, BooleanSupplier isRed) {
-		Pose2d targetPose = findClosestPose(drive.getPose(), isRed.getAsBoolean(), new PoseConstants());
+		Pose2d targetPose = findClosestPose(drive.getPose(), isRed.getAsBoolean(), new LIB_PoseConstants());
 		return AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12.0));
 	}
 
 	private static Pose2d findClosestPose(
-			Pose2d currentPose, boolean isRedAlliance, PoseConstants poseAlignment) {
+			Pose2d currentPose, boolean isRedAlliance, LIB_PoseConstants poseAlignment) {
 		List<Pose2d> allPoses = new ArrayList<>();
 
 		if (isRedAlliance) {

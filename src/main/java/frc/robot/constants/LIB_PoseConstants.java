@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.robot.lib.windingmotor.util.auto;
+package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Add your docs here. */
-public class PoseConstants {
+public class LIB_PoseConstants {
 
 	public final List<Pose2d> blueLeft = new ArrayList<>();
 	public final List<Pose2d> blueRight = new ArrayList<>();
@@ -22,7 +22,7 @@ public class PoseConstants {
 	public final List<Pose2d> HPRed = new ArrayList<>();
 	public final List<Pose2d> HPBlue = new ArrayList<>();
 
-	public PoseConstants() {
+	public LIB_PoseConstants() {
 		blueLeft.add(new Pose2d(3.190, 4.142, new Rotation2d()));
 		blueLeft.add(new Pose2d(3.652, 2.929, new Rotation2d(1.000)));
 		blueLeft.add(new Pose2d(4.981, 2.764, new Rotation2d(2.127)));

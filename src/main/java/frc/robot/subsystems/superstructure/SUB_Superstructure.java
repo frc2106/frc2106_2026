@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.drive.DriveCommands.ZonePose;
+import frc.robot.constants.LIB_ZoneConstants.ZonePose;
 import frc.robot.commands.generic.CMD_Superstructure;
 import frc.robot.lib.windingmotor.drive.Drive;
 import frc.robot.subsystems.elevator.SUB_Elevator;

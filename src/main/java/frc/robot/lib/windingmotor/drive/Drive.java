@@ -53,7 +53,7 @@ import frc.robot.lib.windingmotor.drive.gyro.IO_GyroBase;
 import frc.robot.lib.windingmotor.drive.module.IO_ModuleBase;
 import frc.robot.lib.windingmotor.drive.module.Module;
 import frc.robot.lib.windingmotor.util.auto.LocalADStarAK;
-import frc.robot.lib.windingmotor.util.auto.PoseConstants;
+import frc.robot.constants.LIB_PoseConstants;
 import frc.robot.lib.windingmotor.util.phoenix.PhoenixOdometryThread;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
@@ -189,7 +189,7 @@ public class Drive extends SubsystemBase {
 	private Pair<Integer, Double> closestTagData = Pair.of(-1, Double.MAX_VALUE);
 
 	/** Helper for pose alignment calculations. */
-	public PoseConstants poseAllignment = new PoseConstants();
+	public LIB_PoseConstants poseAllignment = new LIB_PoseConstants();
 
 	// ====================================================================
 	// SECTION 6: Constructor and Initialization
