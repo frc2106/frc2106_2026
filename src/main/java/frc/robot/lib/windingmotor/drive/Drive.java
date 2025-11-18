@@ -119,20 +119,16 @@ public class Drive extends SubsystemBase {
 	// ====================================================================
 
 	/** Robot physical properties for PathPlanner trajectory generation. */
-	private static final double ROBOT_MASS_KG = 59.0;
-
-	private static final double ROBOT_MOI = 6.883;
-	private static final double WHEEL_COF = 1.2;
 
 	/** PathPlanner robot configuration combining all physical properties. */
 	private static final RobotConfig PP_CONFIG =
 			new RobotConfig(
-					ROBOT_MASS_KG,
-					ROBOT_MOI,
+					LIB_DriveConstants.ROBOT_MASS_KG,
+					LIB_DriveConstants.ROBOT_MOI,
 					new ModuleConfig(
 							LIB_DriveConstants.FrontLeft.WheelRadius,
 							LIB_DriveConstants.kSpeedAt12Volts.in(MetersPerSecond),
-							WHEEL_COF,
+							LIB_DriveConstants.WHEEL_COF,
 							DCMotor.getKrakenX60Foc(1)
 									.withReduction(LIB_DriveConstants.FrontLeft.DriveMotorGearRatio),
 							LIB_DriveConstants.FrontLeft.SlipCurrent,
