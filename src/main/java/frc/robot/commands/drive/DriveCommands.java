@@ -26,10 +26,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.util.auto.PoseAllignment;
-import frc.robot.util.math.AllianceFlipUtil;
-import frc.robot.util.math.ExpDecayFF;
+import frc.robot.lib.windingmotor.drive.Drive;
+import frc.robot.lib.windingmotor.util.auto.PoseConstants;
+import frc.robot.lib.windingmotor.util.math.AllianceFlipUtil;
+import frc.robot.lib.windingmotor.util.math.ExpDecayFF;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -1031,7 +1031,7 @@ public class DriveCommands {
 		// Set tolerances
 		translationController.setTolerance(TRANSLATION_TOLERANCE, VELOCITY_TOLERANCE);
 
-		PoseAllignment poseAlignment = new PoseAllignment();
+		PoseConstants poseAlignment = new PoseConstants();
 
 		return Commands.run(
 						() -> {
@@ -1136,13 +1136,12 @@ public class DriveCommands {
 	}
 
 	public static Command driveToClosestPosePathPlanner(Drive drive, BooleanSupplier isRed) {
-		Pose2d targetPose =
-				findClosestPose(drive.getPose(), isRed.getAsBoolean(), new PoseAllignment());
+		Pose2d targetPose = findClosestPose(drive.getPose(), isRed.getAsBoolean(), new PoseConstants());
 		return AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12.0));
 	}
 
 	private static Pose2d findClosestPose(
-			Pose2d currentPose, boolean isRedAlliance, PoseAllignment poseAlignment) {
+			Pose2d currentPose, boolean isRedAlliance, PoseConstants poseAlignment) {
 		List<Pose2d> allPoses = new ArrayList<>();
 
 		if (isRedAlliance) {

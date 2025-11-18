@@ -22,17 +22,17 @@ import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.generic.CMD_Eject;
 import frc.robot.commands.generic.CMD_IntakeRace;
 import frc.robot.commands.generic.CMD_Superstructure;
+import frc.robot.constants.LIB_DriveConstants;
+import frc.robot.constants.LIB_VisionConstants;
 import frc.robot.constants.RobotConstants;
-import frc.robot.constants.TunerConstants;
-import frc.robot.constants.VisionConstants;
+import frc.robot.lib.windingmotor.drive.Drive;
+import frc.robot.lib.windingmotor.drive.gyro.*;
+import frc.robot.lib.windingmotor.drive.gyro.IO_GyroBase;
+import frc.robot.lib.windingmotor.drive.module.*;
+import frc.robot.lib.windingmotor.vision.IO_VisionCamera;
+import frc.robot.lib.windingmotor.vision.SUB_Vision;
 import frc.robot.subsystems.climb.IO_ClimbReal;
 import frc.robot.subsystems.climb.SUB_Climb;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.gyro.IO_GyroBase;
-import frc.robot.subsystems.drive.gyro.IO_GyroReal;
-import frc.robot.subsystems.drive.module.IO_ModuleBase;
-import frc.robot.subsystems.drive.module.IO_ModuleReal;
-import frc.robot.subsystems.drive.module.IO_ModuleSim;
 import frc.robot.subsystems.elevator.IO_ElevatorReal;
 import frc.robot.subsystems.elevator.SUB_Elevator;
 import frc.robot.subsystems.intake.IO_IntakeReal;
@@ -40,8 +40,6 @@ import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.superstructure.SUB_Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
-import frc.robot.subsystems.vision.IO_VisionCamera;
-import frc.robot.subsystems.vision.SUB_Vision;
 
 /**
  * RobotContainer is the composition root for the entire robot.
@@ -179,10 +177,10 @@ public class RobotContainer {
 				drive =
 						new Drive(
 								new IO_GyroReal(),
-								new IO_ModuleReal(TunerConstants.FrontLeft),
-								new IO_ModuleReal(TunerConstants.FrontRight),
-								new IO_ModuleReal(TunerConstants.BackLeft),
-								new IO_ModuleReal(TunerConstants.BackRight));
+								new IO_ModuleReal(LIB_DriveConstants.FrontLeft),
+								new IO_ModuleReal(LIB_DriveConstants.FrontRight),
+								new IO_ModuleReal(LIB_DriveConstants.BackLeft),
+								new IO_ModuleReal(LIB_DriveConstants.BackRight));
 				break;
 
 			case SIM:
@@ -190,10 +188,10 @@ public class RobotContainer {
 				drive =
 						new Drive(
 								new IO_GyroBase() {},
-								new IO_ModuleSim(TunerConstants.FrontLeft),
-								new IO_ModuleSim(TunerConstants.FrontRight),
-								new IO_ModuleSim(TunerConstants.BackLeft),
-								new IO_ModuleSim(TunerConstants.BackRight));
+								new IO_ModuleSim(LIB_DriveConstants.FrontLeft),
+								new IO_ModuleSim(LIB_DriveConstants.FrontRight),
+								new IO_ModuleSim(LIB_DriveConstants.BackLeft),
+								new IO_ModuleSim(LIB_DriveConstants.BackRight));
 				break;
 
 			default:
@@ -212,8 +210,10 @@ public class RobotContainer {
 		vision =
 				new SUB_Vision(
 						drive::addVisionMeasurement,
-						new IO_VisionCamera(VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-						new IO_VisionCamera(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+						new IO_VisionCamera(
+								LIB_VisionConstants.camera0Name, LIB_VisionConstants.robotToCamera0),
+						new IO_VisionCamera(
+								LIB_VisionConstants.camera1Name, LIB_VisionConstants.robotToCamera1));
 
 		// Superstructure binds all mechanisms together
 		superstructure = new SUB_Superstructure(drive, intake, elevator, led, operatorController);

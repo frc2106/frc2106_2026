@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.generic.CMD_Superstructure;
+import frc.robot.lib.windingmotor.util.math.ExpDecayFF;
 import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.superstructure.SUB_Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
-import frc.robot.util.math.ExpDecayFF;
 import org.littletonrobotics.junction.Logger;
 
 /**

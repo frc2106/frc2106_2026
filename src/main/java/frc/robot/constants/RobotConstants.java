@@ -15,20 +15,15 @@ public final class RobotConstants {
 		REPLAY // Replay mode for log analysis
 	}
 
-	public static final RobotMode ROBOT_MODE = RobotMode.REAL;
-
-	public static final double BATTERY_VOLTAGE_CRITICAL = 10.5; // Volts
-	public static final double BATTERY_VOLTAGE_WARNING = 11.5; // Volts
+	public static final RobotMode ROBOT_MODE = RobotMode.SIM;
 
 	public final class Intake {
 
 		public static final int ARM_MOTOR_ID = 21;
 		public static final int ARM_MOTOR_CURRENT_LIMIT = 35;
 
-		public static final double ARM_ENCODER_LOOP_OFFSET = -8.6; // (-35 + 15) + 11;
+		public static final double ARM_ENCODER_LOOP_OFFSET = -8.6;
 		public static final double ARM_ENCODER_PID_OFFSET = 7.0;
-
-		// (((-35.0 + 15.0) + 22.51) + 15 + .8) - 2.0; // -14
 
 		public static final int ARM_ENCODER_FACTOR = 165;
 

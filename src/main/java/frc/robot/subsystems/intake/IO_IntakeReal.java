@@ -20,7 +20,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import frc.robot.constants.RobotConstants;
-import frc.robot.util.sensors.IRBeamBreak;
+import frc.robot.lib.windingmotor.devices.IRBeamBreak;
 
 /**
  * Real hardware implementation of the intake IO interface. Controls the REV Robotics SparkMax and
