@@ -1,15 +1,21 @@
-package frc.robot.constants;
+// Copyright (c) 2024 - 2025 : FRC 2106 : The Junkyard Dogs
+// https://www.team2106.org
 
-import java.util.Optional;
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
+package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.lib.windingmotor.util.math.AllianceFlipUtil;
+import java.util.Optional;
 
 public class LIB_ZoneConstants {
-    
-    public enum ZoneAngle {
+
+	public enum ZoneAngle {
 		NONE(0),
 		FORWARD(180),
 		BACKWARD(0),
@@ -169,5 +175,4 @@ public class LIB_ZoneConstants {
 			return Optional.empty();
 		}
 	}
-
 }

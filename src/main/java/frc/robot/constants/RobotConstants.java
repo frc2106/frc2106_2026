@@ -7,6 +7,8 @@
 
 package frc.robot.constants;
 
+import com.ctre.phoenix6.CANBus;
+
 /**
  * Robot-wide constants for subsystems and configurations.
  *
@@ -24,6 +26,10 @@ public final class RobotConstants {
 		SIM, // Simulation mode for testing
 		REPLAY // Replay mode for log analysis
 	}
+
+	/* CANbus Configs */
+
+	public static final CANBus CANBUS_CANIVORE = new CANBus("canivore", "./logs/canivore.hoot");
 
 	/** Current robot operating mode. */
 	public static final RobotMode ROBOT_MODE = RobotMode.SIM;

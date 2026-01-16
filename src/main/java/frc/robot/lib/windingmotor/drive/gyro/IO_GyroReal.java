@@ -17,6 +17,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.constants.LIB_DriveConstants;
+import frc.robot.constants.RobotConstants;
 import frc.robot.lib.windingmotor.drive.Drive;
 import frc.robot.lib.windingmotor.util.phoenix.PhoenixOdometryThread;
 import java.util.Queue;
@@ -35,9 +36,7 @@ import java.util.Queue;
 public class IO_GyroReal implements IO_GyroBase {
 	/** Pigeon 2 IMU hardware object. */
 	private final Pigeon2 pigeon =
-			new Pigeon2(
-					LIB_DriveConstants.DrivetrainConstants.Pigeon2Id,
-					LIB_DriveConstants.DrivetrainConstants.CANBusName);
+			new Pigeon2(LIB_DriveConstants.DrivetrainConstants.Pigeon2Id, RobotConstants.CANBUS_CANIVORE);
 
 	/** Status signal for yaw position (degrees). */
 	private final StatusSignal<Angle> yaw = pigeon.getYaw();

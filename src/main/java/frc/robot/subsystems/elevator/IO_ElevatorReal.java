@@ -39,8 +39,8 @@ public class IO_ElevatorReal implements IO_ElevatorBase {
 	 * position request objects for subsequent setpoint commands.
 	 */
 	public IO_ElevatorReal() {
-		leftMotor_10 = new TalonFX(10, "canivore");
-		rightMotor_9 = new TalonFX(9, "canivore");
+		leftMotor_10 = new TalonFX(10, RobotConstants.CANBUS_CANIVORE);
+		rightMotor_9 = new TalonFX(9, RobotConstants.CANBUS_CANIVORE);
 		var motorConfigs = new TalonFXConfiguration();
 
 		// Scale sensor to mechanism (1 rotation sensor = 1 rotation mechanism output).

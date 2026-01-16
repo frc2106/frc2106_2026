@@ -7,18 +7,11 @@
 
 package frc.robot.subsystems.intake;
 
+import com.ctre.phoenix6.StatusCode;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-/**
- * Base interface for intake subsystem IO operations. Defines the contract for controlling and
- * monitoring the intake mechanism, including arm positioning, wheel speed control, and sensor
- * feedback. This interface supports both real hardware and simulation implementations.
- *
- * @version 1.0
- * @since 2024-2025 Season
- */
 public interface IO_IntakeBase {
 
 	/**
@@ -29,22 +22,17 @@ public interface IO_IntakeBase {
 	@AutoLog
 	public static class IntakeInputs implements LoggableInputs {
 
-		/** Current angle of the intake arm in degrees. Defaults to 0.0. */
-		public double armAngleDegrees = 0.0;
+		/** Current velocity, in RPM, of intake wheel motor. Defaults to 0.0. */
+		public double wheelMotorRPM = 0.0;
 
-		/** Current draw of the arm motor in amps. Defaults to 0.0. */
-		public double armMotorCurrent = 0.0;
+		/** Expansion motor postion in meters. Defaults to 0.0. */
+		public double expansionMotorPositionMeters = 0.0;
 
 		/** Current draw of the intake wheels motor in amps. Defaults to 0.0. */
 		public double wheelMotorCurrent = 0.0;
 
-		/** Current RPM of the intake wheels. Defaults to 0.0. */
-		public double wheelRPM = 0.0;
-
-		/**
-		 * State of the intake sensor (true = object detected, false = no object). Defaults to false.
-		 */
-		public boolean sensor = false;
+		/** Current draw of the expansion motor. Defaults to 0.0. */
+		public double expansionMotorCurrent = 0.0;
 
 		/**
 		 * Writes all input values to the logging table for telemetry. Called automatically by
@@ -54,11 +42,10 @@ public interface IO_IntakeBase {
 		 */
 		@Override
 		public void toLog(LogTable table) {
-			table.put("ArmAngleDegrees", armAngleDegrees);
-			table.put("ArmMotorCurrent", armMotorCurrent);
+			table.put("wheelMotorRPM", wheelMotorRPM);
+			table.put("expansionMotorPositionMeters", expansionMotorPositionMeters);
 			table.put("wheelMotorCurrent", wheelMotorCurrent);
-			table.put("wheelRPM", wheelRPM);
-			table.put("Sensor", sensor);
+			table.put("expansionMotorCurrent", expansionMotorCurrent);
 		}
 
 		/**
@@ -69,11 +56,11 @@ public interface IO_IntakeBase {
 		 */
 		@Override
 		public void fromLog(LogTable table) {
-			armAngleDegrees = table.get("ArmAngleDegrees", armAngleDegrees);
-			armMotorCurrent = table.get("ArmMotorCurrent", armMotorCurrent);
+			wheelMotorRPM = table.get("wheelMotorRPM", wheelMotorRPM);
+			expansionMotorPositionMeters =
+					table.get("expansionMotorPositionMeters", expansionMotorPositionMeters);
 			wheelMotorCurrent = table.get("wheelMotorCurrent", wheelMotorCurrent);
-			wheelRPM = table.get("wheelRPM", wheelRPM);
-			sensor = table.get("Sensor", sensor);
+			expansionMotorCurrent = table.get("expansionMotorCurrent", expansionMotorCurrent);
 		}
 	}
 
@@ -86,24 +73,18 @@ public interface IO_IntakeBase {
 	public void updateInputs(IntakeInputs inputs);
 
 	/**
-	 * Sets the target angle for the intake arm using closed-loop position control.
+	 * Sets the target voltage for the intake wheel motor.
 	 *
-	 * @param angle The target angle in degrees
+	 * @param voltage The target voltage.
+	 * @return The TalonFX status code
 	 */
-	public void setArmAngle(double angle);
+	public StatusCode setWheelMotorVoltage(double volage);
 
 	/**
-	 * Sets the speed of the intake wheels.
+	 * Sets the target positon of the intake expansion motor in meters.
 	 *
-	 * @param speed The speed setpoint (-1.0 to 1.0, where positive is intake direction)
+	 * @param positionMeters The new position in meters.
+	 * @return The TalonFX status code
 	 */
-	public void setIntakeSpeed(double speed);
-
-	/**
-	 * Enables or disables the lower current limit for the wheel motor. Used to reduce power
-	 * consumption when holding game pieces.
-	 *
-	 * @param enabled true to enable lower current limit, false for normal operation
-	 */
-	public void setLowerCurrentLimit(boolean enabled);
+	public StatusCode setExpansionMotorPositionMeters(double positionMeters);
 }

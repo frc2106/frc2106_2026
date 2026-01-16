@@ -35,6 +35,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.constants.LIB_DriveConstants;
+import frc.robot.constants.RobotConstants;
 import frc.robot.lib.windingmotor.drive.Drive;
 import frc.robot.lib.windingmotor.util.phoenix.PhoenixOdometryThread;
 import java.util.Queue;
@@ -123,10 +124,8 @@ public class IO_ModuleReal implements IO_ModuleBase {
 			SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
 					constants) {
 		this.constants = constants;
-		driveTalon =
-				new TalonFX(constants.DriveMotorId, LIB_DriveConstants.DrivetrainConstants.CANBusName);
-		turnTalon =
-				new TalonFX(constants.SteerMotorId, LIB_DriveConstants.DrivetrainConstants.CANBusName);
+		driveTalon = new TalonFX(constants.DriveMotorId, RobotConstants.CANBUS_CANIVORE);
+		turnTalon = new TalonFX(constants.SteerMotorId, RobotConstants.CANBUS_CANIVORE);
 		canandmag = new Canandmag(constants.EncoderId);
 
 		// Configure drive motor

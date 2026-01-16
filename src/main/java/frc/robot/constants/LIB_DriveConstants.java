@@ -9,7 +9,6 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.hardware.*;
 import com.ctre.phoenix6.signals.*;
@@ -96,7 +95,6 @@ public class LIB_DriveConstants {
 	// SECTION 5: CAN CONFIGURATION
 	// ====================================================================
 
-	public static final CANBus kCANBus = new CANBus("canivore", "./logs/example.hoot");
 	private static final int kPigeonId = 13; // Pigeon 2 IMU CAN ID
 
 	// ====================================================================
@@ -192,7 +190,7 @@ public class LIB_DriveConstants {
 
 	public static final SwerveDrivetrainConstants DrivetrainConstants =
 			new SwerveDrivetrainConstants()
-					.withCANBusName(kCANBus.getName())
+					.withCANBusName(RobotConstants.CANBUS_CANIVORE.getName())
 					.withPigeon2Id(kPigeonId)
 					.withPigeon2Configs(pigeonConfigs);
 

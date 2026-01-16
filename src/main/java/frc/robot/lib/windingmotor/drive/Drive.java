@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.LIB_DriveConstants;
+import frc.robot.constants.LIB_PoseConstants;
 import frc.robot.constants.LIB_VisionConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.RobotConstants.RobotMode;
@@ -53,7 +54,6 @@ import frc.robot.lib.windingmotor.drive.gyro.IO_GyroBase;
 import frc.robot.lib.windingmotor.drive.module.IO_ModuleBase;
 import frc.robot.lib.windingmotor.drive.module.Module;
 import frc.robot.lib.windingmotor.util.auto.LocalADStarAK;
-import frc.robot.constants.LIB_PoseConstants;
 import frc.robot.lib.windingmotor.util.phoenix.PhoenixOdometryThread;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
@@ -85,7 +85,9 @@ public class Drive extends SubsystemBase {
 
 	/** AprilTag field layout for vision-based localization. */
 	private final AprilTagFieldLayout aprilTagFieldLayout =
-			AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+			AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+	// TODO: Change to 2026 field when tag layout comes out.
 
 	/**
 	 * Odometry update frequency (Hz) - depends on CAN FD capability. CAN FD networks can handle 250Hz

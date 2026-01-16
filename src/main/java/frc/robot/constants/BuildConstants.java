@@ -10,14 +10,14 @@ package frc.robot.constants;
 /** Automatically generated file containing build version information. */
 public final class BuildConstants {
 	public static final String MAVEN_GROUP = "";
-	public static final String MAVEN_NAME = "SwerveDrive_AdvantageKit_CTRE";
+	public static final String MAVEN_NAME = "2026SwerveDrive_AdvantageKit_CTRE";
 	public static final String VERSION = "unspecified";
-	public static final int GIT_REVISION = 6;
-	public static final String GIT_SHA = "b71c8746a4c68be99694ecf98c01801c075cc2b9";
-	public static final String GIT_DATE = "2025-11-17 19:51:19 EST";
+	public static final int GIT_REVISION = 8;
+	public static final String GIT_SHA = "d6d762b6c47eb3c620ff6dca91f5d1d49b3536f2";
+	public static final String GIT_DATE = "2025-11-18 15:14:33 EST";
 	public static final String GIT_BRANCH = "main";
-	public static final String BUILD_DATE = "2025-11-18 14:43:05 EST";
-	public static final long BUILD_UNIX_TIME = 1763494985025L;
+	public static final String BUILD_DATE = "2026-01-15 23:41:33 EST";
+	public static final long BUILD_UNIX_TIME = 1768538493692L;
 	public static final int DIRTY = 1;
 
 	private BuildConstants() {}

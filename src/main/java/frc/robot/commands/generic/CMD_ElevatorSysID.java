@@ -11,6 +11,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -61,28 +62,32 @@ public class CMD_ElevatorSysID extends Command {
 
 									switch (currentState.get()) {
 										case DYN_FORWARD:
-											elevator.sysIdDynamic(SysIdRoutine.Direction.kForward).schedule();
+											CommandScheduler.getInstance()
+													.schedule(elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
 											currentState.set(SysIdState.DYN_REVERSE);
 											DriverStation.reportError(
 													"Dynamic Forward Complete - Ready for Dynamic Reverse", false);
 											break;
 
 										case DYN_REVERSE:
-											elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse).schedule();
+											CommandScheduler.getInstance()
+													.schedule(elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 											currentState.set(SysIdState.QUASI_FORWARD);
 											DriverStation.reportError(
 													"Dynamic Reverse Complete - Ready for Quasistatic Forward", false);
 											break;
 
 										case QUASI_FORWARD:
-											elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward).schedule();
+											CommandScheduler.getInstance()
+													.schedule(elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
 											currentState.set(SysIdState.QUASI_REVERSE);
 											DriverStation.reportError(
 													"Quasistatic Forward Complete - Ready for Quasistatic Reverse", false);
 											break;
 
 										case QUASI_REVERSE:
-											elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse).schedule();
+											CommandScheduler.getInstance()
+													.schedule(elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 											currentState.set(SysIdState.COMPLETE);
 											DriverStation.reportError(
 													"Quasistatic Reverse Complete - All Tests Done!", false);
