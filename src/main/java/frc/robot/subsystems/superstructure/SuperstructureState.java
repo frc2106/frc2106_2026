@@ -10,30 +10,16 @@ package frc.robot.subsystems.superstructure;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * SuperstructureState encapsulates named states that unify the elevator height, intake arm angle,
- * and intake wheel speed into a single robot “mode” for commands and operators.
- *
- * <p>States are immutable value objects containing: - name: identifier for logging and operator
- * dashboards - heightM: desired elevator height in meters - deg: desired intake arm angle in
- * degrees - speed: desired intake wheel speed setpoint
- *
- * <p>A simple registry allows dynamic state creation (e.g., variable-speed eject) while preserving
- * predefined presets.
- */
 public class SuperstructureState {
 	private static final Map<String, State> dynamicStates = new HashMap<>();
 
-	/**
-	 * Immutable value object describing a single superstructure state (elevator + intake + wheel).
-	 */
 	public static class State {
 		private final String name;
-		private final double heightM;
+		private final int intake;
 		private final int deg;
 		private final double speed;
 
-		private State(String name, double heightM, int deg, double speed) {
+		private State(String name, int intakeMotorSpeed, int sliderMotorMeters, double speed) {
 			this.name = name;
 			this.heightM = heightM;
 			this.deg = deg;

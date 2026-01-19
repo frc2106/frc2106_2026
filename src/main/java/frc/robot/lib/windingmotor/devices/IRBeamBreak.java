@@ -28,7 +28,7 @@ public class IRBeamBreak {
 	 *
 	 * @return The state obtained from the sensor
 	 */
-	public boolean getState() {
+	public boolean getValueAsBoolean() {
 		return !sensor.get();
 	}
 }

@@ -7,96 +7,65 @@
 
 package frc.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import frc.robot.constants.RobotConstants;
+import frc.robot.lib.windingmotor.devices.IRBeamBreak;
 
 public class IO_IntakeReal implements IO_IntakeBase {
 
-	// Motors
-	private final TalonFX wheelMotor;
-	private final TalonFX expansionMotor;
+	private final TalonFX intakeMotor;
+	private final VoltageOut intakeMotorRequest;
 
-	// Motor requests
-	private final VoltageOut wheelMotorVoltageOut;
-	private final PositionVoltage expansionMotorPositionVoltage;
+	private final TalonFX sliderMotor;
+	private final PositionVoltage sliderMotorRequest;
 
-	public IO_IntakeReal() {
+	private final IRBeamBreak sensor;
 
-		// WHEEL MOTOR
-		wheelMotor = new TalonFX(/*CAN ID */ 0, RobotConstants.CANBUS_CANIVORE);
-		var wheelMotorConfig = new TalonFXConfiguration();
+	public IO_IntakeReal(
+			TalonFXConfiguration intakeMotorConfiguration,
+			TalonFXConfiguration sliderMotorConfiguration) {
 
-		wheelMotorConfig.CurrentLimits.StatorCurrentLimit = 20;
-		wheelMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		intakeMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		intakeMotor.getConfigurator().apply(intakeMotorConfiguration);
+		intakeMotorRequest = new VoltageOut(0.0);
 
-		wheelMotor.getConfigurator().apply(wheelMotorConfig);
+		sliderMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		sliderMotor.getConfigurator().apply(sliderMotorConfiguration);
+		sliderMotorRequest = new PositionVoltage(0.0);
 
-		wheelMotorVoltageOut = new VoltageOut(0.0);
-
-		// EXPANSION MOTOR
-		expansionMotor = new TalonFX(/*CAN ID */ 1, RobotConstants.CANBUS_CANIVORE);
-		var expansionMotorConfig = new TalonFXConfiguration();
-
-		// METERS PER ROTATION, gearing.
-		expansionMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
-		expansionMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-		// Configure Slot0 gains, for the PID
-		var expansionMotorSlotConfigs = expansionMotorConfig.Slot0;
-
-		expansionMotorSlotConfigs.kP = 1.0;
-		expansionMotorSlotConfigs.kI = 0.0;
-		expansionMotorSlotConfigs.kD = 0.0;
-
-		expansionMotor.getConfigurator().apply(expansionMotorConfig);
-
-		expansionMotorPositionVoltage = new PositionVoltage(0.0);
+		sensor = new IRBeamBreak(0);
 	}
 
 	@Override
 	public void updateInputs(IntakeInputs inputs) {
+		inputs.intakeVoltage = intakeMotor.getMotorVoltage().getValueAsDouble();
+		inputs.intakeTargetVoltage = intakeMotorRequest.getOutputMeasure().in(Volts);
+		inputs.intakeCurrent = intakeMotor.getStatorCurrent().getValueAsDouble();
 
-		inputs.wheelMotorRPM = wheelMotor.getVelocity().getValueAsDouble();
-		inputs.wheelMotorCurrent = wheelMotor.getStatorCurrent().getValueAsDouble();
+		inputs.sliderPosition = sliderMotor.getPosition().getValueAsDouble();
+		inputs.sliderTargetPosition =
+				sliderMotorRequest
+						.Position; // TODO: Might need to multiply by motor conversion factor in future.
+		inputs.sliderCurrent = sliderMotor.getStatorCurrent().getValueAsDouble();
 
-		inputs.expansionMotorPositionMeters = expansionMotor.getPosition().getValueAsDouble();
-		inputs.expansionMotorCurrent = expansionMotor.getStatorCurrent().getValueAsDouble();
+		inputs.sensor = sensor.getValueAsBoolean();
 	}
 
-	/**
-	 * Sets the target voltage for the intake wheel motor.
-	 *
-	 * @param voltage The target voltage.
-	 * @return The TalonFX status code
-	 */
 	@Override
-	public StatusCode setWheelMotorVoltage(double voltage) {
-
-		// Update the voltage request with new voltage.
-		wheelMotorVoltageOut.withOutput(voltage);
-
-		// Set the new motor voltage request, and return status.
-		return wheelMotor.setControl(wheelMotorVoltageOut);
+	public StatusCode setIntakeVoltage(double voltage) {
+		intakeMotorRequest.withOutput(voltage);
+		return intakeMotor.setControl(intakeMotorRequest);
 	}
 
-	/**
-	 * Sets the target positon of the intake expansion motor in meters.
-	 *
-	 * @param positionMeters The new position in meters.
-	 * @return The TalonFX status code
-	 */
 	@Override
-	public StatusCode setExpansionMotorPositionMeters(double positionMeters) {
-
-		// Update the position voltage request with new position.
-		expansionMotorPositionVoltage.withPosition(positionMeters);
-
-		// Set the new motor position voltage request, and return status.
-		return expansionMotor.setControl(expansionMotorPositionVoltage);
+	public StatusCode setSliderPosition(double meters) {
+		sliderMotorRequest.withPosition(meters);
+		return sliderMotor.setControl(sliderMotorRequest);
 	}
 }

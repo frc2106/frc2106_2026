@@ -7,91 +7,61 @@
 
 package frc.robot.subsystems.indexer;
 
-import com.ctre.phoenix6.BaseStatusSignal;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.constants.RobotConstants;
+import frc.robot.lib.windingmotor.devices.IRBeamBreak;
 
-/**
- * Real hardware implementation of indexer IO.
- *
- * <p>Uses: - 1x Kraken X60 motor for feeding - 1x digital beam break sensor for piece detection -
- * Simple percent output control (no PID)
- */
 public class IO_IndexerReal implements IO_IndexerBase {
-	// Hardware
-	private final TalonFX motor;
-	private final DigitalInput beamBreak;
 
-	// Control request
-	private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
+	private final TalonFX spinnerMotor;
+	private final VoltageOut spinnerMotorRequest;
 
-	// Status signals
-	private final StatusSignal<Voltage> appliedVolts;
-	private final StatusSignal<Current> current;
-	private final StatusSignal<Temperature> temp;
+	private final TalonFX kickerMotor;
+	private final VoltageOut kickerVoltageRequest;
 
-	/**
-	 * Constructs and configures the indexer.
-	 *
-	 * <p>Configuration: - Brake mode for immediate stops - Current limit for motor protection -
-	 * Inversion for correct direction
-	 */
-	public IO_IndexerReal() {
-		// Initialize hardware
-		motor = new TalonFX(RobotConstants.Indexer.MOTOR_ID);
-		beamBreak = new DigitalInput(RobotConstants.Indexer.BEAM_BREAK_DIO);
+	private final IRBeamBreak sensor;
 
-		// Configure motor
-		TalonFXConfiguration config = new TalonFXConfiguration();
-		config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-		config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-		config.CurrentLimits.StatorCurrentLimit = RobotConstants.Indexer.CURRENT_LIMIT;
-		config.CurrentLimits.StatorCurrentLimitEnable = true;
-		motor.getConfigurator().apply(config);
+	public IO_IndexerReal(
+			TalonFXConfiguration spinnerMotorConfiguration,
+			TalonFXConfiguration kickerMotorConfiguration) {
 
-		// Initialize status signals
-		appliedVolts = motor.getMotorVoltage();
-		current = motor.getStatorCurrent();
-		temp = motor.getDeviceTemp();
+		spinnerMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		spinnerMotor.getConfigurator().apply(spinnerMotorConfiguration);
+		spinnerMotorRequest = new VoltageOut(0.0);
 
-		// Set update frequency
-		BaseStatusSignal.setUpdateFrequencyForAll(50.0, appliedVolts, current, temp);
+		kickerMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		kickerMotor.getConfigurator().apply(kickerMotorConfiguration);
+		kickerVoltageRequest = new VoltageOut(0.0);
+
+		sensor = new IRBeamBreak(0);
 	}
 
 	@Override
 	public void updateInputs(IndexerInputs inputs) {
-		// Refresh motor signals
-		var status = BaseStatusSignal.refreshAll(appliedVolts, current, temp);
+		inputs.spinnerVoltage = spinnerMotor.getMotorVoltage().getValueAsDouble();
+		inputs.spinnerTargetVoltage = spinnerMotorRequest.getOutputMeasure().in(Volts);
+		inputs.spinnerCurrent = spinnerMotor.getStatorCurrent().getValueAsDouble();
 
-		// Update motor inputs
-		inputs.motorConnected = status.equals(StatusCode.OK);
-		inputs.motorAppliedVolts = appliedVolts.getValueAsDouble();
-		inputs.motorCurrentAmps = current.getValueAsDouble();
-		inputs.motorTempCelsius = temp.getValueAsDouble();
+		inputs.kickerVoltage = kickerMotor.getMotorVoltage().getValueAsDouble();
+		inputs.kickerTargetVoltage = kickerVoltageRequest.getOutputMeasure().in(Volts);
+		inputs.kickerCurrent = kickerMotor.getStatorCurrent().getValueAsDouble();
 
-		// Update sensor inputs
-		// Beam break returns false when beam is broken (piece present)
-		inputs.beamBreakConnected = true; // DIO doesn't report connection status
-		inputs.hasGamePiece = !beamBreak.get();
+		inputs.sensor = sensor.getValueAsBoolean();
 	}
 
 	@Override
-	public void setPercentOutput(double percentOutput) {
-		motor.setControl(dutyCycleRequest.withOutput(percentOutput));
+	public StatusCode setSpinnerVoltage(double voltage) {
+		return StatusCode.DeviceIsNull;
 	}
 
 	@Override
-	public void stop() {
-		setPercentOutput(0.0);
+	public StatusCode setKickerVoltage(double voltage) {
+
+		return StatusCode.DeviceIsNull;
 	}
 }

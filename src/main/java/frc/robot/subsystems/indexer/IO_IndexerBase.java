@@ -7,40 +7,28 @@
 
 package frc.robot.subsystems.indexer;
 
+import com.ctre.phoenix6.StatusCode;
 import org.littletonrobotics.junction.AutoLog;
 
-/**
- * Base interface for indexer/feeder IO operations.
- *
- * <p>The indexer controls game piece flow from intake to shooter using a single motor and beam
- * break sensor for piece detection.
- *
- * <p>Simple design: - One motor for feeding pieces - One beam break sensor for detection - Percent
- * output control (no closed-loop)
- */
 public interface IO_IndexerBase {
-	/** Container for indexer inputs that will be logged and replayed. */
+
 	@AutoLog
 	public static class IndexerInputs {
-		public boolean motorConnected = false;
-		public double motorAppliedVolts = 0.0;
-		public double motorCurrentAmps = 0.0;
-		public double motorTempCelsius = 0.0;
 
-		public boolean beamBreakConnected = false;
-		public boolean hasGamePiece = false;
+		public double spinnerVoltage = 0.0;
+		public double spinnerTargetVoltage = 0.0;
+		public double spinnerCurrent = 0.0;
+
+		public double kickerVoltage = 0.0;
+		public double kickerTargetVoltage = 0.0;
+		public double kickerCurrent = 0.0;
+
+		public boolean sensor = false;
 	}
 
-	/** Updates the inputs object with latest data. */
-	public default void updateInputs(IndexerInputs inputs) {}
+	public void updateInputs(IndexerInputs inputs);
 
-	/**
-	 * Runs the indexer motor at the specified percent output.
-	 *
-	 * @param percentOutput Motor speed from -1.0 to 1.0
-	 */
-	public default void setPercentOutput(double percentOutput) {}
+	public StatusCode setSpinnerVoltage(double voltage);
 
-	/** Stops the indexer motor. */
-	public default void stop() {}
+	public StatusCode setKickerVoltage(double voltage);
 }

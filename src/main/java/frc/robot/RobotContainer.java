@@ -31,8 +31,6 @@ import frc.robot.lib.windingmotor.drive.gyro.IO_GyroBase;
 import frc.robot.lib.windingmotor.drive.module.*;
 import frc.robot.lib.windingmotor.vision.IO_VisionCamera;
 import frc.robot.lib.windingmotor.vision.SUB_Vision;
-import frc.robot.subsystems.climb.IO_ClimbReal;
-import frc.robot.subsystems.climb.SUB_Climb;
 import frc.robot.subsystems.elevator.IO_ElevatorReal;
 import frc.robot.subsystems.elevator.SUB_Elevator;
 import frc.robot.subsystems.intake.IO_IntakeReal;
@@ -40,6 +38,9 @@ import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.superstructure.SUB_Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+
+// import frc.robot.subsystems.climb.IO_ClimbReal;
+// import frc.robot.subsystems.climb.SUB_Climb;
 
 /**
  * RobotContainer is the composition root for the entire robot.
@@ -106,7 +107,7 @@ public class RobotContainer {
 	private SUB_Led led = new SUB_Led(1, 62, AUTO_NAME);
 
 	/** Climb subsystem for endgame bar latch and pull-up. */
-	private SUB_Climb climb;
+	// private SUB_Climb climb;
 
 	/** Reference to the built PathPlanner auto command for autonomousInit(). */
 	public static Command AUTO_COMMAND;
@@ -165,7 +166,7 @@ public class RobotContainer {
 		// Intake and elevator always use real IO (they could be extended with sim variants later)
 		intake = new SUB_Intake(new IO_IntakeReal());
 		elevator = new SUB_Elevator(new IO_ElevatorReal());
-		climb = new SUB_Climb(new IO_ClimbReal());
+		// climb = new SUB_Climb(new IO_ClimbReal());
 
 		// Initialize CANand event loop (used by some sensor implementations)
 		CanandEventLoop.getInstance();
@@ -353,13 +354,13 @@ public class RobotContainer {
 				.debounce(.1, DebounceType.kBoth);
 
 		// Climb Automatic: operator confirmation looped into the sequence itself
-		operatorController
+		/* operatorController
 				.povRight()
 				.onTrue(
 						climb.climbSequence(
 								() -> operatorController.povRight().getAsBoolean(), 1.0, led, superstructure));
 		// Climb zero/reset
-		operatorController.povLeft().onTrue(climb.goToPosition(0, 1));
+		operatorController.povLeft().onTrue(climb.goToPosition(0, 1)); */
 	}
 
 	/**

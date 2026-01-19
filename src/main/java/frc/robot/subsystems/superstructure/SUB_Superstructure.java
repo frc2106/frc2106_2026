@@ -24,59 +24,23 @@ import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.superstructure.SuperstructureState.State;
 import org.littletonrobotics.junction.Logger;
 
-/**
- * Superstructure subsystem that coordinates all mechanism states across intake, elevator, LEDs, and
- * drive.
- *
- * <p>Responsibilities: - Holds the authoritative {@link SuperstructureState.State} and forwards
- * targets to child subsystems. - Computes context-aware dynamic targets (algae handling, eject
- * variations) based on field sensing. - Exposes command helpers that schedule state transitions
- * with WPILib’s CommandScheduler.
- *
- * <p>Design notes: - Subsystems read their targets each periodic and apply motor setpoints
- * internally; the Superstructure does not write hardware directly. - AdvantageKit logging records
- * the chosen state and key derived values for replay and post-match analysis.
- */
 public class SUB_Superstructure extends SubsystemBase {
 
-	/** Global auto-align waypoints selected from the AprilTag context; used by drive alignment. */
 	public static ZonePose globalFirstPose = ZonePose.NONE;
-
 	public static ZonePose globalSecondPose = ZonePose.NONE;
 
-	/**
-	 * The currently commanded superstructure state; this is the single source of truth for mechanism
-	 * targets.
-	 */
 	private SuperstructureState.State currentSuperstructureState = SuperstructureState.IDLE;
 
-	/**
-	 * Dynamic eject state derived from the current geometry but with a variable wheel speed "eject"
-	 * component.
-	 */
-	public State currentDynamicEjectState =
-			SuperstructureState.createState("EJECT_DYNAMIC", 0.5, 135, .5);
-
-	/** Dynamic algae handling state chosen from nearest tag and distance thresholds at runtime. */
-	public State currentDynamicAlage = SuperstructureState.IDLE;
-
-	/** Locally stored auto-align zone pair that percolates out to globals each loop. */
 	private Pair<ZonePose, ZonePose> localAutoAlignZone = Pair.of(ZonePose.NONE, ZonePose.NONE);
 
-	/** Child subsystems that consume superstructure state. */
 	public SUB_Intake intake;
 
 	public SUB_Elevator elevator;
 	public SUB_Led led;
 	public Drive drive;
 
-	/**
-	 * Last latched intake sensor state to detect transitions for behavior like “stop spinning once we
-	 * have a piece.”
-	 */
 	private boolean previousIntakeSensorState = false;
 
-	/** Operator controller reference for haptic endgame feedback. */
 	private CommandXboxController operatorController;
 
 	/**
