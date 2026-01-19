@@ -34,4 +34,8 @@ public class SUB_Shooter extends SubsystemBase {
 	public StatusCode setTurretPosition(Rotation2d position) {
 		return io.setTurretPosition(position);
 	}
+
+	public void setShooterVoltages(double voltages) {
+		io.setShooterVoltages(voltages);
+	}
 }

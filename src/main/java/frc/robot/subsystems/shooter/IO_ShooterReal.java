@@ -78,4 +78,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		turretMotorRequest.withPosition(position.getRadians());
 		return turretMotor.setControl(turretMotorRequest);
 	}
+
+	@Override
+	public void setShooterVoltages(double voltages) {}
 }

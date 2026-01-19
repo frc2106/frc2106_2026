@@ -7,24 +7,27 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.drive.DriveCommands;
+import frc.robot.commands.generic.CMD_Superstructure;
 import frc.robot.constants.LIB_DriveConstants;
 import frc.robot.constants.LIB_VisionConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.lib.windingmotor.drive.Drive;
 import frc.robot.lib.windingmotor.drive.gyro.*;
-import frc.robot.lib.windingmotor.drive.gyro.IO_GyroBase;
 import frc.robot.lib.windingmotor.drive.module.*;
 import frc.robot.lib.windingmotor.vision.IO_VisionCamera;
 import frc.robot.lib.windingmotor.vision.SUB_Vision;
 import frc.robot.subsystems.indexer.IO_IndexerReal;
 import frc.robot.subsystems.indexer.SUB_Indexer;
-import frc.robot.subsystems.intake.IO_IntakeReal;
+import frc.robot.subsystems.intake.IO_IntakeRealBoxBot;
 import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.shooter.IO_ShooterRealBoxBot;
@@ -35,7 +38,7 @@ import frc.robot.subsystems.superstructure.SUB_Superstructure;
 public class RobotContainer {
 
 	// The auto to run
-	public static final String AUTO_NAME = "Right_3P";
+	public static final String AUTO_NAME = "LINE";
 	public static Command AUTO_COMMAND;
 
 	// Controllers
@@ -74,18 +77,40 @@ public class RobotContainer {
 
 		// Create and cache the PathPlanner auto command
 		AUTO_COMMAND = AutoBuilder.buildAuto(AUTO_NAME);
+
+		drive.setDefaultCommand(
+				DriveCommands.driveNormal(
+						drive,
+						() -> driverController.getRawAxis(1),
+						() -> -driverController.getRawAxis(0),
+						() -> -driverController.getRawAxis(3)));
+
+		operatorController
+				.a()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKING));
+
+		operatorController
+				.x()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.SHOOTING));
+
+		operatorController
+				.b()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
+
+		// drive.setDefaultCommand(DriveCommands.driveTest(drive));
 	}
 
 	private void initializeControllers() {
 		driverController = new CommandXboxController(0);
-		operatorController = new CommandXboxController(1);
+		operatorController = new CommandXboxController(3);
 	}
 
 	private void initializeSubsystems() {
 
-		indexer = new SUB_Indexer(new IO_IndexerReal(null, null));
-		intake = new SUB_Intake(new IO_IntakeReal(null, null));
-		shooter = new SUB_Shooter(new IO_ShooterRealBoxBot(null));
+		indexer =
+				new SUB_Indexer(new IO_IndexerReal(new TalonFXConfiguration(), new TalonFXConfiguration()));
+		intake = new SUB_Intake(new IO_IntakeRealBoxBot(new TalonFXConfiguration()));
+		shooter = new SUB_Shooter(new IO_ShooterRealBoxBot(new SparkFlexConfig()));
 
 		// Drive subsystem: IO varies dramatically by mode
 		switch (RobotConstants.ROBOT_MODE) {
@@ -203,13 +228,7 @@ public class RobotContainer {
 	/*
 	private void configureButtonBindings() {
 		// Drive w/ Assist Rotation: default command runs continuously unless interrupted
-		drive.setDefaultCommand(
-				DriveCommands.driveWithAssist(
-						drive,
-						() -> -driverController.getRawAxis(1),
-						() -> driverController.getRawAxis(0),
-						() -> -driverController.getRawAxis(3),
-						() -> driverController.button(3).getAsBoolean()));
+
 
 		// Coral scoring presets
 		operatorController.rightBumper().onTrue(new CMD_ElevatorCoral(superstructure, true));

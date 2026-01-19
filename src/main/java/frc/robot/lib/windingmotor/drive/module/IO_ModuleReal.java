@@ -19,14 +19,14 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
-import com.reduxrobotics.sensors.canandmag.Canandmag;
-import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -34,7 +34,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.constants.LIB_DriveConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.lib.windingmotor.drive.Drive;
 import frc.robot.lib.windingmotor.util.phoenix.PhoenixOdometryThread;
@@ -63,7 +62,7 @@ public class IO_ModuleReal implements IO_ModuleBase {
 	// Hardware objects
 	private final TalonFX driveTalon;
 	private final TalonFX turnTalon;
-	private final Canandmag canandmag;
+	private final CANcoder cancoder;
 
 	// Control requests (created once, reused to avoid garbage collection)
 	/** Voltage control request for open-loop commands. */
@@ -126,7 +125,7 @@ public class IO_ModuleReal implements IO_ModuleBase {
 		this.constants = constants;
 		driveTalon = new TalonFX(constants.DriveMotorId, RobotConstants.CANBUS_CANIVORE);
 		turnTalon = new TalonFX(constants.SteerMotorId, RobotConstants.CANBUS_CANIVORE);
-		canandmag = new Canandmag(constants.EncoderId);
+		cancoder = new CANcoder(constants.EncoderId);
 
 		// Configure drive motor
 		var driveConfig = constants.DriveMotorInitialConfigs;
@@ -150,9 +149,14 @@ public class IO_ModuleReal implements IO_ModuleBase {
 		var turnConfig = new TalonFXConfiguration();
 		turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 		turnConfig.Slot0 = constants.SteerMotorGains;
-		turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-		turnConfig.Feedback.SensorToMechanismRatio = 1;
-		turnConfig.Feedback.SensorToMechanismRatio = LIB_DriveConstants.kSteerGearRatio;
+
+		turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+		turnConfig.Feedback.FeedbackRemoteSensorID = constants.EncoderId;
+		turnConfig.Feedback.RotorToSensorRatio = 1.0;
+		turnConfig.Feedback.SensorToMechanismRatio = 1.0;
+
+		// turnConfig.Feedback.SensorToMechanismRatio = LIB_DriveConstants.kSteerGearRatio;
+
 		// Motion Magic settings for smooth turning
 		turnConfig.MotionMagic.MotionMagicCruiseVelocity = 100.0 / constants.SteerMotorGearRatio;
 		turnConfig.MotionMagic.MotionMagicAcceleration =
@@ -167,18 +171,29 @@ public class IO_ModuleReal implements IO_ModuleBase {
 		tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
 
 		// Configure Canandmag absolute encoder
+		/*
 		CanandmagSettings canandmagSettings = new CanandmagSettings();
 		canandmagSettings.setZeroOffset(constants.EncoderOffset); // Zero offset from Tuner
 		canandmagSettings.setInvertDirection(true); // Invert direction to match motor orientation
 		canandmag.setSettings(canandmagSettings);
+		*/
+
+		CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+		encoderConfig.MagnetSensor.MagnetOffset = constants.EncoderOffset;
+		if (constants.EncoderInverted) {
+			encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+		} else {
+			encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+		}
+		cancoder.getConfigurator().apply(encoderConfig);
 
 		// Verify Canandmag connection
-		if (!canandmag.isConnected()) {
-			throw new RuntimeException("Canandmag not connected during initialization");
-		}
+		// if (!canandmag.isConnected()) {
+		//	throw new RuntimeException("Canandmag not connected during initialization");
+		// }
 
 		// Get absolute position (0 to 1 rotation)
-		double absolutePosition = canandmag.getAbsPosition();
+		double absolutePosition = cancoder.getAbsolutePosition().getValueAsDouble();
 
 		// Zero turn motor to absolute encoder
 		// Canandmag returns 0-1, TalonFX expects rotations (no conversion needed in Phoenix v6)
@@ -247,8 +262,9 @@ public class IO_ModuleReal implements IO_ModuleBase {
 
 		// Update turn inputs with debounced connection status
 		inputs.turnConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
-		inputs.turnEncoderConnected = turnEncoderConnectedDebounce.calculate(canandmag.isConnected());
-		inputs.turnAbsolutePosition = Rotation2d.fromRotations(canandmag.getAbsPosition());
+		inputs.turnEncoderConnected = cancoder.isConnected();
+		inputs.turnAbsolutePosition =
+				Rotation2d.fromRotations(cancoder.getAbsolutePosition().getValueAsDouble());
 		inputs.turnPosition = Rotation2d.fromRotations(turnPosition.getValueAsDouble());
 		inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble());
 		inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();

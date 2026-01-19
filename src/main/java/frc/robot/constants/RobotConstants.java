@@ -29,10 +29,10 @@ public final class RobotConstants {
 
 	/* CANbus Configs */
 
-	public static final CANBus CANBUS_CANIVORE = new CANBus("canivore", "./logs/canivore.hoot");
+	public static final CANBus CANBUS_CANIVORE = new CANBus("rio", "./logs/canivore.hoot");
 
 	/** Current robot operating mode. */
-	public static final RobotMode ROBOT_MODE = RobotMode.SIM;
+	public static final RobotMode ROBOT_MODE = RobotMode.REAL;
 
 	// ====================================================================
 	// Intake Subsystem

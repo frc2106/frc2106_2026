@@ -23,7 +23,7 @@ public class IO_ShooterRealBoxBot implements IO_ShooterBase {
 
 	public IO_ShooterRealBoxBot(SparkFlexConfig shooterMotorOneConfiguration) {
 
-		shooterMotorOne = new SparkFlex(0, MotorType.kBrushless);
+		shooterMotorOne = new SparkFlex(9, MotorType.kBrushless);
 		shooterMotorOne.configure(
 				shooterMotorOneConfiguration,
 				ResetMode.kNoResetSafeParameters,
@@ -57,5 +57,10 @@ public class IO_ShooterRealBoxBot implements IO_ShooterBase {
 	@Override
 	public StatusCode setTurretPosition(Rotation2d position) {
 		return StatusCode.kInvalidClass;
+	}
+
+	@Override
+	public void setShooterVoltages(double voltages) {
+		shooterMotorOne.set(voltages);
 	}
 }

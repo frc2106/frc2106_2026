@@ -111,6 +111,30 @@ public class DriveCommands {
 				drive);
 	}
 
+	public static Command driveTest(Drive drive) {
+		return Commands.run(
+				() -> {
+					// Get linear velocity
+					// Translation2d linearVelocity = new tr
+
+					// Apply rotation deadband
+					// double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+					// Square rotation value for more precise control
+					// omega = Math.copySign(omega * omega, omega);
+
+					// Convert to field relative speeds & send command
+					ChassisSpeeds speeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+					/*
+					boolean isFlipped =
+							DriverStation.getAlliance().isPresent()
+									&& DriverStation.getAlliance().get() == Alliance.Red;
+					*/
+					drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getRotation()));
+				},
+				drive);
+	}
+
 	/**
 	 * Creates a command that will drive to a specified pose using PID control. Uses separate PID
 	 * controllers for x, y and rotation.

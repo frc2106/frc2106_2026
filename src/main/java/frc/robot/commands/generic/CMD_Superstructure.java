@@ -16,9 +16,7 @@ public class CMD_Superstructure extends Command {
 	private final SUB_Superstructure.RobotState newRobotState;
 
 	public CMD_Superstructure(
-			SUB_Superstructure superstructure, 
-			SUB_Superstructure.RobotState  newRobotState
-			) {
+			SUB_Superstructure superstructure, SUB_Superstructure.RobotState newRobotState) {
 
 		this.superstructure = superstructure;
 		this.newRobotState = newRobotState;

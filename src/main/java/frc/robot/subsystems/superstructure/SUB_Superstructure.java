@@ -69,6 +69,7 @@ public class SUB_Superstructure extends SubsystemBase {
 				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(0.0);
 				intakeRef.setSliderPosition(0.0);
+				shooterRef.setShooterVoltages(0.0);
 				break;
 
 			case EJECTING:
@@ -81,14 +82,15 @@ public class SUB_Superstructure extends SubsystemBase {
 			case SHOOTING:
 				indexerRef.setSpinnerVoltage(5.0);
 				indexerRef.setKickerVoltage(10.0);
-				intakeRef.setIntakeVoltage(0.0);
+				intakeRef.setIntakeVoltage(6.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
+				shooterRef.setShooterVoltages(-0.50);
 				break;
 
 			case INTAKING:
 				indexerRef.setSpinnerVoltage(5.0);
 				indexerRef.setKickerVoltage(0.0);
-				intakeRef.setIntakeVoltage(10.0);
+				intakeRef.setIntakeVoltage(8.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 		}

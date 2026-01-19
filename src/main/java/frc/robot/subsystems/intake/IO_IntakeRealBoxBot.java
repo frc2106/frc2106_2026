@@ -11,33 +11,23 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.constants.RobotConstants;
 import frc.robot.lib.windingmotor.devices.IRBeamBreak;
 
-public class IO_IntakeReal implements IO_IntakeBase {
+public class IO_IntakeRealBoxBot implements IO_IntakeBase {
 
 	private final TalonFX intakeMotor;
 	private final VoltageOut intakeMotorRequest;
 
-	private final TalonFX sliderMotor;
-	private final PositionVoltage sliderMotorRequest;
-
 	private final IRBeamBreak sensor;
 
-	public IO_IntakeReal(
-			TalonFXConfiguration intakeMotorConfiguration,
-			TalonFXConfiguration sliderMotorConfiguration) {
+	public IO_IntakeRealBoxBot(TalonFXConfiguration intakeMotorConfiguration) {
 
 		intakeMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
 		intakeMotor.getConfigurator().apply(intakeMotorConfiguration);
 		intakeMotorRequest = new VoltageOut(0.0);
-
-		sliderMotor = new TalonFX(10, RobotConstants.CANBUS_CANIVORE);
-		sliderMotor.getConfigurator().apply(sliderMotorConfiguration);
-		sliderMotorRequest = new PositionVoltage(0.0);
 
 		sensor = new IRBeamBreak(1);
 	}
@@ -48,11 +38,9 @@ public class IO_IntakeReal implements IO_IntakeBase {
 		inputs.intakeTargetVoltage = intakeMotorRequest.getOutputMeasure().in(Volts);
 		inputs.intakeCurrent = intakeMotor.getStatorCurrent().getValueAsDouble();
 
-		inputs.sliderPosition = sliderMotor.getPosition().getValueAsDouble();
-		inputs.sliderTargetPosition =
-				sliderMotorRequest
-						.Position; // TODO: Might need to multiply by motor conversion factor in future.
-		inputs.sliderCurrent = sliderMotor.getStatorCurrent().getValueAsDouble();
+		inputs.sliderPosition = 0.0;
+		inputs.sliderTargetPosition = 0.0;
+		inputs.sliderCurrent = 0.0;
 
 		inputs.sensor = sensor.getValueAsBoolean();
 	}
@@ -65,7 +53,6 @@ public class IO_IntakeReal implements IO_IntakeBase {
 
 	@Override
 	public StatusCode setSliderPosition(double meters) {
-		sliderMotorRequest.withPosition(meters);
-		return sliderMotor.setControl(sliderMotorRequest);
+		return StatusCode.kInvalidClass;
 	}
 }

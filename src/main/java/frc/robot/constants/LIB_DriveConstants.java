@@ -125,34 +125,34 @@ public class LIB_DriveConstants {
 	// ====================================================================
 
 	// Front Left Module
-	private static final int kFrontLeftDriveMotorId = 5; // Drive motor CAN ID
-	private static final int kFrontLeftSteerMotorId = 6; // Steer motor CAN ID
-	private static final int kFrontLeftEncoderId = 22; // CANcoder CAN ID
-	private static final Angle kFrontLeftEncoderOffset = Radians.of(0.0); // Encoder offset (rad)
+	private static final int kFrontLeftDriveMotorId = 7; // Drive motor CAN ID
+	private static final int kFrontLeftSteerMotorId = 8; // Steer motor CAN ID
+	private static final int kFrontLeftEncoderId = 23; // CANcoder CAN ID
+	private static final Angle kFrontLeftEncoderOffset = Radians.of(-1.526); // Encoder offset (rad)
 	private static final boolean kFrontLeftSteerMotorInverted = true; // Steer motor inversion
 	private static final boolean kFrontLeftEncoderInverted = false; // Encoder inversion
 
 	// Front Right Module
-	private static final int kFrontRightDriveMotorId = 7; // Drive motor CAN ID
-	private static final int kFrontRightSteerMotorId = 8; // Steer motor CAN ID
-	private static final int kFrontRightEncoderId = 23; // CANcoder CAN ID
-	private static final Angle kFrontRightEncoderOffset = Radians.of(0.0); // Encoder offset (rad)
+	private static final int kFrontRightDriveMotorId = 1; // Drive motor CAN ID
+	private static final int kFrontRightSteerMotorId = 2; // Steer motor CAN ID
+	private static final int kFrontRightEncoderId = 20; // CANcoder CAN ID
+	private static final Angle kFrontRightEncoderOffset = Radians.of(-1.397); // Encoder offset (rad)
 	private static final boolean kFrontRightSteerMotorInverted = true; // Steer motor inversion
 	private static final boolean kFrontRightEncoderInverted = false; // Encoder inversion
 
 	// Back Left Module
-	private static final int kBackLeftDriveMotorId = 3; // Drive motor CAN ID
-	private static final int kBackLeftSteerMotorId = 4; // Steer motor CAN ID
-	private static final int kBackLeftEncoderId = 21; // CANcoder CAN ID
-	private static final Angle kBackLeftEncoderOffset = Radians.of(0.0); // Encoder offset (rad)
+	private static final int kBackLeftDriveMotorId = 5; // Drive motor CAN ID
+	private static final int kBackLeftSteerMotorId = 6; // Steer motor CAN ID
+	private static final int kBackLeftEncoderId = 22; // CANcoder CAN ID
+	private static final Angle kBackLeftEncoderOffset = Radians.of(-0.729); // Encoder offset (rad)
 	private static final boolean kBackLeftSteerMotorInverted = true; // Steer motor inversion
 	private static final boolean kBackLeftEncoderInverted = false; // Encoder inversion
 
 	// Back Right Module
-	private static final int kBackRightDriveMotorId = 1; // Drive motor CAN ID
-	private static final int kBackRightSteerMotorId = 2; // Steer motor CAN ID
-	private static final int kBackRightEncoderId = 20; // CANcoder CAN ID
-	private static final Angle kBackRightEncoderOffset = Radians.of(0.0); // Encoder offset (rad)
+	private static final int kBackRightDriveMotorId = 3; // Drive motor CAN ID
+	private static final int kBackRightSteerMotorId = 4; // Steer motor CAN ID
+	private static final int kBackRightEncoderId = 21; // CANcoder CAN ID
+	private static final Angle kBackRightEncoderOffset = Radians.of(1.528); // Encoder offset (rad)
 	private static final boolean kBackRightSteerMotorInverted = true; // Steer motor inversion
 	private static final boolean kBackRightEncoderInverted = false; // Encoder inversion
 
@@ -161,20 +161,20 @@ public class LIB_DriveConstants {
 	// ====================================================================
 
 	// Front Left Position
-	private static final Distance kFrontLeftXPos = Inches.of(11.375); // X position from center (in)
-	private static final Distance kFrontLeftYPos = Inches.of(11.375); // Y position from center (in)
+	private static final Distance kFrontLeftXPos = Inches.of(10.375); // X position from center (in)
+	private static final Distance kFrontLeftYPos = Inches.of(10.375); // Y position from center (in)
 
 	// Front Right Position
-	private static final Distance kFrontRightXPos = Inches.of(11.375); // X position from center (in)
-	private static final Distance kFrontRightYPos = Inches.of(-11.375); // Y position from center (in)
+	private static final Distance kFrontRightXPos = Inches.of(10.375); // X position from center (in)
+	private static final Distance kFrontRightYPos = Inches.of(-10.375); // Y position from center (in)
 
 	// Back Left Position
-	private static final Distance kBackLeftXPos = Inches.of(-11.375); // X position from center (in)
-	private static final Distance kBackLeftYPos = Inches.of(11.375); // Y position from center (in)
+	private static final Distance kBackLeftXPos = Inches.of(-10.375); // X position from center (in)
+	private static final Distance kBackLeftYPos = Inches.of(10.375); // Y position from center (in)
 
 	// Back Right Position
-	private static final Distance kBackRightXPos = Inches.of(-11.375); // X position from center (in)
-	private static final Distance kBackRightYPos = Inches.of(-11.375); // Y position from center (in)
+	private static final Distance kBackRightXPos = Inches.of(-10.375); // X position from center (in)
+	private static final Distance kBackRightYPos = Inches.of(-10.375); // Y position from center (in)
 
 	// ====================================================================
 	// SECTION 10: PATHPLANNER CONFIG

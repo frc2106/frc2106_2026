@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -37,7 +36,7 @@ public class SUB_Led extends SubsystemBase {
 	private final AddressableLEDBuffer ledBuffer;
 
 	/** Current superstructure state used for pattern selection. */
-	//private SuperstructureState.State localState;
+	// private SuperstructureState.State localState;
 
 	/** Pair indicating whether climb mode is active and which pattern to display. */
 	private Pair<Boolean, LEDPattern> climbMode;
@@ -64,7 +63,7 @@ public class SUB_Led extends SubsystemBase {
 	 * @param autoName name of the current autonomous routine (for potential customization)
 	 */
 	public SUB_Led(int port, int length, String autoName) {
-		//this.localState = SuperstructureState.IDLE;
+		// this.localState = SuperstructureState.IDLE;
 
 		ledStrip = new AddressableLED(port);
 		ledBuffer = new AddressableLEDBuffer(length);
@@ -100,8 +99,8 @@ public class SUB_Led extends SubsystemBase {
 		climbMode = Pair.of(false, defaultPattern);
 
 		// Set default command to run rainbow pattern
-		//setDefaultCommand(runPattern(defaultPattern).withName("Default"));
-	//	ledStrip.start();
+		// setDefaultCommand(runPattern(defaultPattern).withName("Default"));
+		//	ledStrip.start();
 	}
 
 	/**
@@ -120,7 +119,7 @@ public class SUB_Led extends SubsystemBase {
 				LEDPattern pattern = climbMode.getSecond();
 				pattern.applyTo(ledBuffer);
 			} else {
-				//updateBasedOnState();
+				// updateBasedOnState();
 			}
 		}
 		ledStrip.setData(ledBuffer);
@@ -133,61 +132,61 @@ public class SUB_Led extends SubsystemBase {
 	 * CORAL_STATION: Intake pattern - L1-L4: Gradient patterns with unique colors - ALGAE: Teal flame
 	 * effect - IDLE: Rainbow pattern
 	 */
-	/* 
-	private void updateBasedOnState() {
-		String stateName = localState.getName();
-		LEDPattern pattern = defaultPattern;
+	/*
+		private void updateBasedOnState() {
+			String stateName = localState.getName();
+			LEDPattern pattern = defaultPattern;
 
-		// Climbing states - Green pulse indicating upward movement
-		if (stateName.startsWith("CLIMB")) {
-			pattern = LEDPattern.solid(Color.kGreen).blink(Seconds.of(0.25));
+			// Climbing states - Green pulse indicating upward movement
+			if (stateName.startsWith("CLIMB")) {
+				pattern = LEDPattern.solid(Color.kGreen).blink(Seconds.of(0.25));
+			}
+
+			// Coral station - Pattern to indicate ready for intake
+			if (stateName.equals("CORAL_STATION")) {
+				pattern = intakePattern;
+			}
+
+			// Different patterns for each scoring height with unique color gradients
+			if (stateName.equals("L1_SCORING")) {
+				pattern =
+						LEDPattern.gradient(LEDPattern.GradientType.kContinuous, Color.kBlueViolet, Color.kBlue)
+								.breathe(Seconds.of(0.75));
+			}
+
+			if (stateName.equals("L2_SCORING")) {
+				pattern =
+						LEDPattern.gradient(
+										LEDPattern.GradientType.kContinuous, Color.kYellowGreen, Color.kYellow)
+								.breathe(Seconds.of(0.75));
+			}
+
+			if (stateName.equals("L3_SCORING")) {
+				pattern =
+						LEDPattern.gradient(
+										LEDPattern.GradientType.kContinuous, Color.kLawnGreen, Color.kGreenYellow)
+								.breathe(Seconds.of(0.75));
+			}
+
+			if (stateName.equals("L4_SCORING")) {
+				pattern =
+						LEDPattern.gradient(
+										LEDPattern.GradientType.kContinuous, Color.kOrangeRed, Color.kDarkOrange)
+								.breathe(Seconds.of(0.75));
+			}
+
+			// Algae states - Teal flame effect
+			if (stateName.startsWith("ALGAE")) {
+				pattern = tealFlamePattern;
+			}
+
+			// IDLE - Rainbow pattern
+			if (stateName.equals("IDLE")) {
+				pattern = rainbowPattern;
+			}
+
+			pattern.applyTo(ledBuffer);
 		}
-
-		// Coral station - Pattern to indicate ready for intake
-		if (stateName.equals("CORAL_STATION")) {
-			pattern = intakePattern;
-		}
-
-		// Different patterns for each scoring height with unique color gradients
-		if (stateName.equals("L1_SCORING")) {
-			pattern =
-					LEDPattern.gradient(LEDPattern.GradientType.kContinuous, Color.kBlueViolet, Color.kBlue)
-							.breathe(Seconds.of(0.75));
-		}
-
-		if (stateName.equals("L2_SCORING")) {
-			pattern =
-					LEDPattern.gradient(
-									LEDPattern.GradientType.kContinuous, Color.kYellowGreen, Color.kYellow)
-							.breathe(Seconds.of(0.75));
-		}
-
-		if (stateName.equals("L3_SCORING")) {
-			pattern =
-					LEDPattern.gradient(
-									LEDPattern.GradientType.kContinuous, Color.kLawnGreen, Color.kGreenYellow)
-							.breathe(Seconds.of(0.75));
-		}
-
-		if (stateName.equals("L4_SCORING")) {
-			pattern =
-					LEDPattern.gradient(
-									LEDPattern.GradientType.kContinuous, Color.kOrangeRed, Color.kDarkOrange)
-							.breathe(Seconds.of(0.75));
-		}
-
-		// Algae states - Teal flame effect
-		if (stateName.startsWith("ALGAE")) {
-			pattern = tealFlamePattern;
-		}
-
-		// IDLE - Rainbow pattern
-		if (stateName.equals("IDLE")) {
-			pattern = rainbowPattern;
-		}
-
-		pattern.applyTo(ledBuffer);
-	}
-*/
+	*/
 
 }
