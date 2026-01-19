@@ -8,20 +8,11 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.reduxrobotics.canand.CanandEventLoop;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.coral.CMD_ElevatorCoral;
-import frc.robot.commands.drive.DriveCommands;
-import frc.robot.commands.generic.CMD_Eject;
-import frc.robot.commands.generic.CMD_IntakeRace;
-import frc.robot.commands.generic.CMD_Superstructure;
 import frc.robot.constants.LIB_DriveConstants;
 import frc.robot.constants.LIB_VisionConstants;
 import frc.robot.constants.RobotConstants;
@@ -33,13 +24,12 @@ import frc.robot.lib.windingmotor.vision.IO_VisionCamera;
 import frc.robot.lib.windingmotor.vision.SUB_Vision;
 import frc.robot.subsystems.indexer.IO_IndexerReal;
 import frc.robot.subsystems.indexer.SUB_Indexer;
-import frc.robot.subsystems.shooter.IO_ShooterReal;
-import frc.robot.subsystems.shooter.IO_ShooterRealBoxBot;
-import frc.robot.subsystems.shooter.SUB_Shooter;
-import frc.robot.subsystems.superstructure.SUB_Superstructure;
 import frc.robot.subsystems.intake.IO_IntakeReal;
 import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
+import frc.robot.subsystems.shooter.IO_ShooterRealBoxBot;
+import frc.robot.subsystems.shooter.SUB_Shooter;
+import frc.robot.subsystems.superstructure.SUB_Superstructure;
 
 @SuppressWarnings("unused")
 public class RobotContainer {
@@ -63,7 +53,7 @@ public class RobotContainer {
 
 	// Libary Subsystems
 	private Drive drive;
-	private SUB_Vision vision;	
+	private SUB_Vision vision;
 
 	// The superstructure
 	private SUB_Superstructure superstructure;
@@ -72,8 +62,8 @@ public class RobotContainer {
 		// Initialize Robot Components
 		initializeControllers();
 		initializeSubsystems();
-		//configurePathplannerCommands();
-		//configureButtonBindings();
+		// configurePathplannerCommands();
+		// configureButtonBindings();
 
 		// Add alliance selector to SmartDashboard
 		isRedChooser = new SendableChooser<Boolean>();
@@ -84,9 +74,7 @@ public class RobotContainer {
 
 		// Create and cache the PathPlanner auto command
 		AUTO_COMMAND = AutoBuilder.buildAuto(AUTO_NAME);
-
 	}
-
 
 	private void initializeControllers() {
 		driverController = new CommandXboxController(0);
@@ -94,7 +82,7 @@ public class RobotContainer {
 	}
 
 	private void initializeSubsystems() {
-		
+
 		indexer = new SUB_Indexer(new IO_IndexerReal(null, null));
 		intake = new SUB_Intake(new IO_IntakeReal(null, null));
 		shooter = new SUB_Shooter(new IO_ShooterRealBoxBot(null));
@@ -145,10 +133,8 @@ public class RobotContainer {
 								LIB_VisionConstants.camera1Name, LIB_VisionConstants.robotToCamera1));
 
 		// Superstructure binds all mechanisms together
-		superstructure = new SUB_Superstructure(
-			
-		
-		);
+		superstructure =
+				new SUB_Superstructure(indexer, intake, led, shooter, drive, vision, driverController);
 
 		// Setup Sendable Choosers
 		isRedChooser = new SendableChooser<Boolean>();
@@ -172,8 +158,7 @@ public class RobotContainer {
 						*/
 	}
 
-
-	/* 
+	/*
 	private void configurePathplannerCommands() {
 		NamedCommands.registerCommand(
 				"Intake_Coral", new CMD_Superstructure(superstructure, SuperstructureState.CORAL_STATION));
@@ -214,7 +199,6 @@ public class RobotContainer {
 				new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_PROCESSOR));
 	}
 				*/
-
 
 	/*
 	private void configureButtonBindings() {
@@ -276,13 +260,13 @@ public class RobotContainer {
 				.debounce(.1, DebounceType.kBoth);
 
 		// Climb Automatic: operator confirmation looped into the sequence itself
-		 operatorController
+		operatorController
 				.povRight()
 				.onTrue(
 						climb.climbSequence(
 								() -> operatorController.povRight().getAsBoolean(), 1.0, led, superstructure));
 		// Climb zero/reset
-		operatorController.povLeft().onTrue(climb.goToPosition(0, 1)); 
+		operatorController.povLeft().onTrue(climb.goToPosition(0, 1));
 	}
 	*/
 

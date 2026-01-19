@@ -18,7 +18,7 @@ import frc.robot.subsystems.shooter.SUB_Shooter;
 
 public class SUB_Superstructure extends SubsystemBase {
 
-	enum RobotState {
+	public enum RobotState {
 		IDLE,
 		EJECTING,
 		SHOOTING,

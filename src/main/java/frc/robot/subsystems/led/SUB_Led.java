@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.superstructure.SuperstructureState;
 
 /**
  * LED subsystem providing operator feedback through visual patterns.
@@ -38,7 +37,7 @@ public class SUB_Led extends SubsystemBase {
 	private final AddressableLEDBuffer ledBuffer;
 
 	/** Current superstructure state used for pattern selection. */
-	private SuperstructureState.State localState;
+	//private SuperstructureState.State localState;
 
 	/** Pair indicating whether climb mode is active and which pattern to display. */
 	private Pair<Boolean, LEDPattern> climbMode;
@@ -65,7 +64,7 @@ public class SUB_Led extends SubsystemBase {
 	 * @param autoName name of the current autonomous routine (for potential customization)
 	 */
 	public SUB_Led(int port, int length, String autoName) {
-		this.localState = SuperstructureState.IDLE;
+		//this.localState = SuperstructureState.IDLE;
 
 		ledStrip = new AddressableLED(port);
 		ledBuffer = new AddressableLEDBuffer(length);
@@ -101,8 +100,8 @@ public class SUB_Led extends SubsystemBase {
 		climbMode = Pair.of(false, defaultPattern);
 
 		// Set default command to run rainbow pattern
-		setDefaultCommand(runPattern(defaultPattern).withName("Default"));
-		ledStrip.start();
+		//setDefaultCommand(runPattern(defaultPattern).withName("Default"));
+	//	ledStrip.start();
 	}
 
 	/**
@@ -121,7 +120,7 @@ public class SUB_Led extends SubsystemBase {
 				LEDPattern pattern = climbMode.getSecond();
 				pattern.applyTo(ledBuffer);
 			} else {
-				updateBasedOnState();
+				//updateBasedOnState();
 			}
 		}
 		ledStrip.setData(ledBuffer);
@@ -134,6 +133,7 @@ public class SUB_Led extends SubsystemBase {
 	 * CORAL_STATION: Intake pattern - L1-L4: Gradient patterns with unique colors - ALGAE: Teal flame
 	 * effect - IDLE: Rainbow pattern
 	 */
+	/* 
 	private void updateBasedOnState() {
 		String stateName = localState.getName();
 		LEDPattern pattern = defaultPattern;
@@ -188,33 +188,6 @@ public class SUB_Led extends SubsystemBase {
 
 		pattern.applyTo(ledBuffer);
 	}
+*/
 
-	/**
-	 * Updates the local state reference for pattern selection.
-	 *
-	 * @param newState the new superstructure state to display
-	 */
-	public void updateLocalState(SuperstructureState.State newState) {
-		localState = newState;
-	}
-
-	/**
-	 * Creates a command that applies a pattern to the LED strip.
-	 *
-	 * @param pattern the LEDPattern to apply
-	 * @return a command that continuously applies the pattern
-	 */
-	public Command runPattern(LEDPattern pattern) {
-		return run(() -> pattern.applyTo(ledBuffer));
-	}
-
-	/**
-	 * Sets the climb mode state and associated LED pattern.
-	 *
-	 * @param climbMode a Pair containing (active flag, climb LED pattern)
-	 * @return a command that updates the climb mode state
-	 */
-	public Command setClimbState(Pair<Boolean, LEDPattern> climbMode) {
-		return run(() -> this.climbMode = climbMode);
-	}
 }
