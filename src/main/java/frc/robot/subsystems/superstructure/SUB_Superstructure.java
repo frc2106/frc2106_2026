@@ -7,22 +7,18 @@
 
 package frc.robot.subsystems.superstructure;
 
-import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.constants.LIB_ZoneConstants.ZonePose;
 import frc.robot.lib.windingmotor.drive.Drive;
 import frc.robot.lib.windingmotor.vision.SUB_Vision;
-import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.indexer.SUB_Indexer;
-import frc.robot.subsystems.shooter.SUB_Shooter;
+import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
+import frc.robot.subsystems.shooter.SUB_Shooter;
 
 public class SUB_Superstructure extends SubsystemBase {
 
-	enum RobotState{
+	enum RobotState {
 		IDLE,
 		EJECTING,
 		SHOOTING,
@@ -35,16 +31,14 @@ public class SUB_Superstructure extends SubsystemBase {
 	private SUB_Shooter shooterRef;
 
 	private Drive driveRef;
-	private SUB_Vision visionRef;	
+	private SUB_Vision visionRef;
 
 	private CommandXboxController operatorControllerRef;
 
 	private RobotState currentRobotState = RobotState.IDLE;
 
-
 	// Robot Constants
 	private final double INTAKE_MAX_EXTENSION_METERS = 0.15;
-
 
 	public SUB_Superstructure(
 			SUB_Indexer inexerRef,
@@ -53,8 +47,7 @@ public class SUB_Superstructure extends SubsystemBase {
 			SUB_Shooter shooterRef,
 			Drive driveRef,
 			SUB_Vision visionRef,
-			CommandXboxController operatorControllerRef
-			) {
+			CommandXboxController operatorControllerRef) {
 		this.indexerRef = inexerRef;
 		this.intakeRef = intakeRef;
 		this.ledRef = ledRef;
@@ -66,43 +59,42 @@ public class SUB_Superstructure extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		
+
 		// +12V is full forward
 		// 0V is nothing
 		// -12V is full reverse
-		switch(currentRobotState){
+		switch (currentRobotState) {
 			case IDLE:
 				indexerRef.setSpinnerVoltage(0.0);
-				indexerRef.setKickerVoltage (0.0);
+				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(0.0);
 				intakeRef.setSliderPosition(0.0);
 				break;
 
 			case EJECTING:
 				indexerRef.setSpinnerVoltage(-5.0);
-				indexerRef.setKickerVoltage (-10.0);
+				indexerRef.setKickerVoltage(-10.0);
 				intakeRef.setIntakeVoltage(-10.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
-				break; 
+				break;
 
 			case SHOOTING:
 				indexerRef.setSpinnerVoltage(5.0);
-				indexerRef.setKickerVoltage (10.0);
+				indexerRef.setKickerVoltage(10.0);
 				intakeRef.setIntakeVoltage(0.0);
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS/2);
-				break; 
-		
+				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
+				break;
+
 			case INTAKING:
 				indexerRef.setSpinnerVoltage(5.0);
-				indexerRef.setKickerVoltage (0.0);
+				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(10.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
-				break; 
+				break;
 		}
 	}
 
-	public void setRobotState(RobotState newRobotState){
-		currentRobotState = newRobotState; 
+	public void setRobotState(RobotState newRobotState) {
+		currentRobotState = newRobotState;
 	}
-
 }

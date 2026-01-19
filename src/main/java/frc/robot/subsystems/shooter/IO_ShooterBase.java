@@ -11,7 +11,6 @@ import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
-import com.ctre.phoenix6.StatusCode;
 
 public interface IO_ShooterBase {
 

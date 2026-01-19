@@ -34,6 +34,7 @@ import frc.robot.lib.windingmotor.vision.SUB_Vision;
 import frc.robot.subsystems.indexer.IO_IndexerReal;
 import frc.robot.subsystems.indexer.SUB_Indexer;
 import frc.robot.subsystems.shooter.IO_ShooterReal;
+import frc.robot.subsystems.shooter.IO_ShooterRealBoxBot;
 import frc.robot.subsystems.shooter.SUB_Shooter;
 import frc.robot.subsystems.superstructure.SUB_Superstructure;
 import frc.robot.subsystems.intake.IO_IntakeReal;
@@ -96,7 +97,7 @@ public class RobotContainer {
 		
 		indexer = new SUB_Indexer(new IO_IndexerReal(null, null));
 		intake = new SUB_Intake(new IO_IntakeReal(null, null));
-		shooter = new SUB_Shooter(new IO_ShooterReal(null, null, null));
+		shooter = new SUB_Shooter(new IO_ShooterRealBoxBot(null));
 
 		// Drive subsystem: IO varies dramatically by mode
 		switch (RobotConstants.ROBOT_MODE) {
@@ -145,13 +146,8 @@ public class RobotContainer {
 
 		// Superstructure binds all mechanisms together
 		superstructure = new SUB_Superstructure(
-			indexer,
-			intake,
-			led,
-			shooter,
-			drive,
-			vision,
-			operatorController
+			
+		
 		);
 
 		// Setup Sendable Choosers

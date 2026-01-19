@@ -7,20 +7,15 @@
 
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.StatusCode;
 
 public class SUB_Shooter extends SubsystemBase {
 	private final IO_ShooterBase io;
 	private final ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
-
 
 	public SUB_Shooter(IO_ShooterBase io) {
 		this.io = io;

@@ -16,7 +16,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Velocity;
 import frc.robot.constants.RobotConstants;
 
 public class IO_ShooterReal implements IO_ShooterBase {
@@ -70,7 +69,8 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		shooterMotorsRequest.withVelocity(velocity);
 
 		return Pair.of(
-				shooterMotorOne.setControl(shooterMotorsRequest), shooterMotorTwo.setControl(shooterMotorsRequest));
+				shooterMotorOne.setControl(shooterMotorsRequest),
+				shooterMotorTwo.setControl(shooterMotorsRequest));
 	}
 
 	@Override
