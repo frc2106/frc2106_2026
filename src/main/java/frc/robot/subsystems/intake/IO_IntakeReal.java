@@ -49,7 +49,9 @@ public class IO_IntakeReal implements IO_IntakeBase {
 		inputs.intakeCurrent = intakeMotor.getStatorCurrent().getValueAsDouble();
 
 		inputs.sliderPosition = sliderMotor.getPosition().getValueAsDouble();
-		inputs.sliderTargetPosition = sliderMotorRequest.Position; // TODO: Might need to multiply by motor conversion factor in future.
+		inputs.sliderTargetPosition =
+				sliderMotorRequest
+						.Position; // TODO: Might need to multiply by motor conversion factor in future.
 		inputs.sliderCurrent = sliderMotor.getStatorCurrent().getValueAsDouble();
 
 		inputs.sensor = sensor.getValueAsBoolean();

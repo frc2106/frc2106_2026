@@ -7,17 +7,15 @@
 
 package frc.robot.subsystems.intake;
 
+import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.StatusCode;
 
 public class SUB_Intake extends SubsystemBase {
 
 	private final IO_IntakeBase io;
 
 	private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
-
 
 	public SUB_Intake(IO_IntakeBase io) {
 		this.io = io;

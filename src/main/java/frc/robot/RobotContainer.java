@@ -36,24 +36,9 @@ import frc.robot.subsystems.elevator.SUB_Elevator;
 import frc.robot.subsystems.intake.IO_IntakeReal;
 import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
-import frc.robot.subsystems.superstructure.oldSUB_Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.subsystems.superstructure.oldSUB_Superstructure;
 
-// import frc.robot.subsystems.climb.IO_ClimbReal;
-// import frc.robot.subsystems.climb.SUB_Climb;
-
-/**
- * RobotContainer is the composition root for the entire robot.
- *
- * <p>It performs three major duties: 1) **Subsystem instantiation** with IO layer selection based
- * on RobotConstants.ROBOT_MODE (REAL, SIM, or REPLAY) 2) **Command binding** using NamedCommands
- * for PathPlanner autos and XboxController button mappings for teleop 3) **Configuration** of
- * controller rumble, alliance selection chooser, and default commands
- *
- * <p>The architecture follows dependency injection: all subsystems are constructed here and passed
- * into commands that require them, ensuring proper ownership and lifecycle management via WPILib's
- * CommandScheduler.
- */
 @SuppressWarnings("unused")
 public class RobotContainer {
 
@@ -88,26 +73,15 @@ public class RobotContainer {
 	// Subsystems
 	// ============================
 
-	/** Swerve drive subsystem with gyro and module IO variants per robot mode. */
 	private Drive drive;
 
-	/** Intake subsystem managing arm angle and wheel speed. */
 	private SUB_Intake intake;
-
-	/** Vision subsystem feeding pose estimates to the drive. */
 	private SUB_Vision vision;
-
-	/** Elevator subsystem controlling vertical carriage position. */
 	private SUB_Elevator elevator;
 
-	/** Superstructure orchestrating all mechanism states based on game context. */
 	private oldSUB_Superstructure superstructure;
 
-	/** LED subsystem for operator feedback. */
 	private SUB_Led led = new SUB_Led(1, 62, AUTO_NAME);
-
-	/** Climb subsystem for endgame bar latch and pull-up. */
-	// private SUB_Climb climb;
 
 	/** Reference to the built PathPlanner auto command for autonomousInit(). */
 	public static Command AUTO_COMMAND;

@@ -7,25 +7,14 @@
 
 package frc.robot.subsystems.shooter;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Voltage;
 import frc.robot.constants.RobotConstants;
-
-
 
 public class IO_ShooterReal implements IO_ShooterBase {
 
@@ -39,15 +28,14 @@ public class IO_ShooterReal implements IO_ShooterBase {
 	private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0);
 
 	public IO_ShooterReal(
-		TalonFXConfiguration shooterMotorOneConfiguration,
-		TalonFXConfiguration shooterMotorTwoConfiguration,
-		TalonFXConfiguration turretMotorConfiguration
-	) {
+			TalonFXConfiguration shooterMotorOneConfiguration,
+			TalonFXConfiguration shooterMotorTwoConfiguration,
+			TalonFXConfiguration turretMotorConfiguration) {
 
 		shooterMotorOne = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
 		shooterMotorOne.getConfigurator().apply(shooterMotorOneConfiguration);
 
-		shooterMotorTwo = new TalonFX(0, RobotConstants.CANBUS_CANIVORE); 
+		shooterMotorTwo = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
 		shooterMotorTwo.getConfigurator().apply(shooterMotorTwoConfiguration);
 
 		shooterMotorsRequest = new VelocityVoltage(0.0);
@@ -55,9 +43,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		turretMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
 		turretMotor.getConfigurator().apply(turretMotorConfiguration);
 		turretMotorRequest = new PositionVoltage(0.0);
-
 	}
-
 
 	@Override
 	public void updateInputs(ShooterInputs inputs) {
@@ -71,21 +57,19 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		inputs.shooterMotorOneCurrent = shooterMotorTwo.getStatorCurrent().getValueAsDouble();
 
 		inputs.turretMotorCurrentPosition = turretMotor.getPosition().getValueAsDouble();
-		inputs.turretMotorCurrentTargetPosition = turretMotorRequest.Position; // TODO: Might need to multiply by motor conversion factor in future.
+		inputs.turretMotorCurrentTargetPosition =
+				turretMotorRequest
+						.Position; // TODO: Might need to multiply by motor conversion factor in future.
 		inputs.turretMotorCurrent = turretMotor.getStatorCurrent().getValueAsDouble();
-
-		
 	}
-	
+
 	@Override
-	public Pair<StatusCode,StatusCode> setShooterVelocities(double velocity) {
+	public Pair<StatusCode, StatusCode> setShooterVelocities(double velocity) {
 
 		velocityRequest.withVelocity(velocity);
-		
+
 		return Pair.of(
-			shooterMotorOne.setControl(velocityRequest),
-			shooterMotorTwo.setControl(velocityRequest)
-			);
+				shooterMotorOne.setControl(velocityRequest), shooterMotorTwo.setControl(velocityRequest));
 	}
 
 	@Override
@@ -93,5 +77,4 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		turretMotorRequest.withPosition(position);
 		return turretMotor.setControl(turretMotorRequest);
 	}
-
 }

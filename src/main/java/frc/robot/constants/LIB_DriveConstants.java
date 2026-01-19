@@ -76,7 +76,8 @@ public class LIB_DriveConstants {
 	// SECTION 3: PHYSICAL CONSTANTS (Measure carefully)
 	// ====================================================================
 
-	public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5); // Theoretical max speed (m/s)
+	public static final LinearVelocity kSpeedAt12Volts =
+			MetersPerSecond.of(5); // Theoretical max speed (m/s)
 	public static final double kDriveGearRatio = 6.12; // Drive motor gear ratio
 	public static final double kSteerGearRatio = (150.0 / 7.0); // Steer motor gear ratio
 	private static final double kCoupleRatio = 3.57; // Azimuth coupling ratio

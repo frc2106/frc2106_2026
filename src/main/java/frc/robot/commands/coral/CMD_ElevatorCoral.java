@@ -8,8 +8,8 @@
 package frc.robot.commands.coral;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.superstructure.oldSUB_Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
+import frc.robot.subsystems.superstructure.oldSUB_Superstructure;
 
 public class CMD_ElevatorCoral extends Command {
 	private final oldSUB_Superstructure superstructure;

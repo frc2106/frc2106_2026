@@ -7,12 +7,10 @@
 
 package frc.robot.subsystems.shooter;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import com.ctre.phoenix6.StatusCode;
-
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface IO_ShooterBase {
 
@@ -32,11 +30,9 @@ public interface IO_ShooterBase {
 		public double turretMotorCurrent = 0.0;
 	}
 
-
 	public default void updateInputs(ShooterInputs inputs) {}
 
 	public Pair<StatusCode, StatusCode> setShooterVelocities(double velocity);
 
 	public StatusCode setTurretPosition(Rotation2d position);
-
 }

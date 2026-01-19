@@ -7,8 +7,7 @@
 
 package frc.robot.subsystems.superstructure;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-
+/*
 public class RobotStatus {
 
 	enum RobotState {
@@ -60,3 +59,4 @@ public class RobotStatus {
 		this.shooter.isAtTarget = isAtTargetShooterSpeedRPM;
 	}
 }
+*/
