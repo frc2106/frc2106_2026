@@ -31,71 +31,48 @@ import frc.robot.lib.windingmotor.drive.gyro.IO_GyroBase;
 import frc.robot.lib.windingmotor.drive.module.*;
 import frc.robot.lib.windingmotor.vision.IO_VisionCamera;
 import frc.robot.lib.windingmotor.vision.SUB_Vision;
-import frc.robot.subsystems.elevator.IO_ElevatorReal;
-import frc.robot.subsystems.elevator.SUB_Elevator;
+import frc.robot.subsystems.indexer.IO_IndexerReal;
+import frc.robot.subsystems.indexer.SUB_Indexer;
+import frc.robot.subsystems.shooter.IO_ShooterReal;
+import frc.robot.subsystems.shooter.SUB_Shooter;
+import frc.robot.subsystems.superstructure.SUB_Superstructure;
 import frc.robot.subsystems.intake.IO_IntakeReal;
 import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
-import frc.robot.subsystems.superstructure.SuperstructureState;
-import frc.robot.subsystems.superstructure.oldSUB_Superstructure;
 
 @SuppressWarnings("unused")
 public class RobotContainer {
 
-	// ============================
-	// Autonomous Configuration
-	// ============================
-
-	/** Name of the currently hard-coded PathPlanner auto to run in auto mode. */
+	// The auto to run
 	public static final String AUTO_NAME = "Right_3P";
-
-	// ============================
-	// Controller Configuration
-	// ============================
-
-	/** Driver joystick for translation/rotation inputs and auto-align triggers. */
-	private CommandXboxController driverController;
-
-	/** Operator joystick for scoring presets, eject, and climb sequencing. */
-	private CommandXboxController operatorController;
-
-	// ============================
-	// Dashboard Choosers
-	// ============================
-
-	/**
-	 * Alliance-side selector for red vs blue field transformations (unused in current logic but
-	 * available).
-	 */
-	private SendableChooser<Boolean> isRedChooser;
-
-	// ============================
-	// Subsystems
-	// ============================
-
-	private Drive drive;
-
-	private SUB_Intake intake;
-	private SUB_Vision vision;
-	private SUB_Elevator elevator;
-
-	private oldSUB_Superstructure superstructure;
-
-	private SUB_Led led = new SUB_Led(1, 62, AUTO_NAME);
-
-	/** Reference to the built PathPlanner auto command for autonomousInit(). */
 	public static Command AUTO_COMMAND;
 
-	// ============================
-	// Construction and Initialization
-	// ============================
+	// Controllers
+	private CommandXboxController driverController;
+	private CommandXboxController operatorController;
+
+	// Are we on red???
+	private SendableChooser<Boolean> isRedChooser;
+
+	// Subsystems
+	private SUB_Indexer indexer;
+	private SUB_Intake intake;
+	private SUB_Led led = new SUB_Led(1, 62, AUTO_NAME);
+	private SUB_Shooter shooter;
+
+	// Libary Subsystems
+	private Drive drive;
+	private SUB_Vision vision;	
+
+	// The superstructure
+	private SUB_Superstructure superstructure;
 
 	public RobotContainer() {
 		// Initialize Robot Components
 		initializeControllers();
 		initializeSubsystems();
-		configurePathplannerCommands();
-		configureButtonBindings();
+		//configurePathplannerCommands();
+		//configureButtonBindings();
 
 		// Add alliance selector to SmartDashboard
 		isRedChooser = new SendableChooser<Boolean>();
@@ -107,43 +84,19 @@ public class RobotContainer {
 		// Create and cache the PathPlanner auto command
 		AUTO_COMMAND = AutoBuilder.buildAuto(AUTO_NAME);
 
-		// Start USB camera feed for driver visibility
-		CameraServer.startAutomaticCapture();
-
-		// Optional: could start a second camera here for alignment
-		// CameraServer.startAutomaticCapture();
-		// alignmentCamera = new AlignmentCamera(0, "Driver CAM");
 	}
 
-	/**
-	 * Initialize controller objects with USB port numbers. Port 0 = driver, Port 1 = operator per FRC
-	 * convention.
-	 */
+
 	private void initializeControllers() {
 		driverController = new CommandXboxController(0);
 		operatorController = new CommandXboxController(1);
 	}
 
-	/**
-	 * Initialize all subsystems with appropriate IO implementations based on
-	 * RobotConstants.ROBOT_MODE.
-	 *
-	 * <p>Three modes are supported: - REAL: Hardware IO implementations that talk to actual motor
-	 * controllers, sensors, and gyro - SIM: Physics simulation IO implementations that model
-	 * mechanism behavior for testing without hardware - REPLAY: "stub" IO implementations that read
-	 * from logs; used with AdvantageKit replay to debug using real data
-	 *
-	 * <p>The Switch construct is the standard pattern for selecting IO variants while keeping
-	 * subsystem logic identical.
-	 */
 	private void initializeSubsystems() {
-		// Intake and elevator always use real IO (they could be extended with sim variants later)
-		intake = new SUB_Intake(new IO_IntakeReal());
-		elevator = new SUB_Elevator(new IO_ElevatorReal());
-		// climb = new SUB_Climb(new IO_ClimbReal());
-
-		// Initialize CANand event loop (used by some sensor implementations)
-		CanandEventLoop.getInstance();
+		
+		indexer = new SUB_Indexer(new IO_IndexerReal(null, null));
+		intake = new SUB_Intake(new IO_IntakeReal(null, null));
+		shooter = new SUB_Shooter(new IO_ShooterReal(null, null, null));
 
 		// Drive subsystem: IO varies dramatically by mode
 		switch (RobotConstants.ROBOT_MODE) {
@@ -191,7 +144,15 @@ public class RobotContainer {
 								LIB_VisionConstants.camera1Name, LIB_VisionConstants.robotToCamera1));
 
 		// Superstructure binds all mechanisms together
-		superstructure = new oldSUB_Superstructure(drive, intake, elevator, led, operatorController);
+		superstructure = new SUB_Superstructure(
+			indexer,
+			intake,
+			led,
+			shooter,
+			drive,
+			vision,
+			operatorController
+		);
 
 		// Setup Sendable Choosers
 		isRedChooser = new SendableChooser<Boolean>();
@@ -215,13 +176,8 @@ public class RobotContainer {
 						*/
 	}
 
-	/**
-	 * Register all NamedCommands that PathPlanner autonomous routines can reference.
-	 *
-	 * <p>Each command typically wraps a CMD_Superstructure state change, allowing the PP path to
-	 * coordinate scoring actions at specific waypoints. The names here must match exactly what is
-	 * used in the PP GUI.
-	 */
+
+	/* 
 	private void configurePathplannerCommands() {
 		NamedCommands.registerCommand(
 				"Intake_Coral", new CMD_Superstructure(superstructure, SuperstructureState.CORAL_STATION));
@@ -261,14 +217,10 @@ public class RobotContainer {
 				"ALGAE_PROCESSOR",
 				new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_PROCESSOR));
 	}
+				*/
 
-	/**
-	 * Bind input axes and buttons to commands using CommandXboxController's fluent API.
-	 *
-	 * <p>Includes: - Default drive command with rotation assist - Coral scoring preset buttons (L4,
-	 * L3, etc.) - Dynamic algae handling - Intake/eject controls - Auto-align triggers with
-	 * debouncing - Climb sequence activation
-	 */
+
+	/*
 	private void configureButtonBindings() {
 		// Drive w/ Assist Rotation: default command runs continuously unless interrupted
 		drive.setDefaultCommand(
@@ -328,14 +280,15 @@ public class RobotContainer {
 				.debounce(.1, DebounceType.kBoth);
 
 		// Climb Automatic: operator confirmation looped into the sequence itself
-		/* operatorController
+		 operatorController
 				.povRight()
 				.onTrue(
 						climb.climbSequence(
 								() -> operatorController.povRight().getAsBoolean(), 1.0, led, superstructure));
 		// Climb zero/reset
-		operatorController.povLeft().onTrue(climb.goToPosition(0, 1)); */
+		operatorController.povLeft().onTrue(climb.goToPosition(0, 1)); 
 	}
+	*/
 
 	/**
 	 * Return the command to run in autonomous mode.
