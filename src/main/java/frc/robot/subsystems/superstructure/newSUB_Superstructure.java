@@ -7,55 +7,104 @@
 
 package frc.robot.subsystems.superstructure;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.LIB_ZoneConstants.ZonePose;
 import frc.robot.lib.windingmotor.drive.Drive;
-import frc.robot.subsystems.elevator.SUB_Elevator;
+import frc.robot.lib.windingmotor.vision.SUB_Vision;
 import frc.robot.subsystems.intake.SUB_Intake;
+import frc.robot.subsystems.indexer.SUB_Indexer;
+import frc.robot.subsystems.shooter.SUB_Shooter;
 import frc.robot.subsystems.led.SUB_Led;
 
 public class newSUB_Superstructure extends SubsystemBase {
 
-	public static ZonePose globalFirstPose = ZonePose.NONE;
-	public static ZonePose globalSecondPose = ZonePose.NONE;
-
-	private SuperstructureState.State currentSuperstructureState = SuperstructureState.IDLE;
-
-	private Pair<ZonePose, ZonePose> localAutoAlignZone = Pair.of(ZonePose.NONE, ZonePose.NONE);
-
-	public SUB_Intake intake;
-
-	public SUB_Elevator elevator;
-	public SUB_Led led;
-	public Drive drive;
-
-	private boolean previousIntakeSensorState = false;
-
-	private CommandXboxController operatorController;
-
-	/**
-	 * Construct a Superstructure that will coordinate the specified subsystems and operator
-	 * interface.
-	 *
-	 * @param drive drive subsystem used to provide nearest-tag and distance context for dynamic
-	 *     targeting
-	 * @param intake intake subsystem that consumes state: wheel speed and arm angle
-	 * @param elevator elevator subsystem that consumes state: target height
-	 * @param led LED subsystem for operator feedback states
-	 * @param operatorController operator input device used for endgame rumble feedback
-	 */
-	public newSUB_Superstructure(
-			Drive drive,
-			SUB_Intake intake,
-			SUB_Elevator elevator,
-			SUB_Led led,
-			CommandXboxController operatorController) {
-		this.drive = drive;
-		this.intake = intake;
-		this.elevator = elevator;
-		this.led = led;
-		this.operatorController = operatorController;
+	enum RobotState{
+		IDLE,
+		EJECTING,
+		SHOOTING,
+		INTAKING
 	}
+
+	private SUB_Indexer indexerRef;
+	private SUB_Intake intakeRef;
+	private SUB_Led ledRef;
+	private SUB_Shooter shooterRef;
+
+	private Drive driveRef;
+	private SUB_Vision visionRef;	
+
+	private CommandXboxController operatorControllerRef;
+
+	private RobotState currentRobotState = RobotState.IDLE;
+
+
+	// Robot Constants
+	private final double INTAKE_MAX_EXTENSION_METERS = 0.15;
+
+
+	public newSUB_Superstructure(
+			SUB_Indexer inexerRef,
+			SUB_Intake intakeRef,
+			SUB_Led ledRef,
+			SUB_Shooter shooterRef,
+			Drive driveRef,
+			SUB_Vision visionRef,
+			CommandXboxController operatorControllerRef
+			) {
+		this.indexerRef = inexerRef;
+		this.intakeRef = intakeRef;
+		this.ledRef = ledRef;
+		this.shooterRef = shooterRef;
+		this.driveRef = driveRef;
+		this.visionRef = visionRef;
+		this.operatorControllerRef = operatorControllerRef;
+	}
+
+	@Override
+	public void periodic() {
+		
+		// +12V is full forward
+		// 0V is nothing
+		// -12V is full reverse
+		switch(currentRobotState){
+			case IDLE:
+				indexerRef.setSpinnerVoltage(0.0);
+				indexerRef.setKickerVoltage (0.0);
+				intakeRef.setIntakeVoltage(0.0);
+				intakeRef.setSliderPosition(0.0);
+				break;
+
+			case EJECTING:
+				indexerRef.setSpinnerVoltage(-5.0);
+				indexerRef.setKickerVoltage (-10.0);
+				intakeRef.setIntakeVoltage(-10.0);
+				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
+				break; 
+
+			case SHOOTING:
+				indexerRef.setSpinnerVoltage(5.0);
+				indexerRef.setKickerVoltage (10.0);
+				intakeRef.setIntakeVoltage(0.0);
+				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS/2);
+				break; 
+		
+			case INTAKING:
+				indexerRef.setSpinnerVoltage(5.0);
+				indexerRef.setKickerVoltage (0.0);
+				intakeRef.setIntakeVoltage(10.0);
+				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
+				break; 
+
+		}
+
+	}
+
+	public void setRobotState(RobotState newRobotState){
+		currentRobotState = newRobotState; 
+	}
+
 }
