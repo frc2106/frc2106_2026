@@ -9,11 +9,11 @@ package frc.robot.commands.coral;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.generic.CMD_Superstructure;
-import frc.robot.subsystems.superstructure.SUB_Superstructure;
+import frc.robot.subsystems.superstructure.oldSUB_Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 
 public class CMD_IntakeCoral extends SequentialCommandGroup {
-	public CMD_IntakeCoral(SUB_Superstructure superstructure) {
+	public CMD_IntakeCoral(oldSUB_Superstructure superstructure) {
 
 		addCommands(
 				new CMD_Superstructure(superstructure, SuperstructureState.CORAL_STATION),

@@ -14,10 +14,14 @@ import frc.robot.subsystems.shooter.SUB_Shooter;
 
 public class SUB_RobotStatus extends SubsystemBase {
 
+
 	// Subsystems
 	Drive drive;
 	SUB_Intake intake;
 	SUB_Shooter shooter;
 
-	public SUB_RobotStatus(Drive drive, SUB_Intake intaek) {}
+	public SUB_Superstructure(Drive drive, SUB_Intake intaek) {
+
+
+	}
 }

@@ -15,40 +15,7 @@ public class RobotStatus {
 		IDLE,
 		INTAKE,
 		EJECT
-	}
 
-	// Mutable nested class for Intake state
-	public static class IntakeStatus {
-		public double targetVoltage = 0.0;
-		public double currentVoltage = 0.0;
-	}
-
-	// Mutable nested class for Intake Slider state
-	public static class IntakeSliderStatus {
-		public double targetPositionMeters = 0.0;
-		public double currentPositionMeters = 0.0;
-		public boolean isAtTarget = false;
-	}
-
-	// Mutable nested class for Indexer
-	public static class IndexerStatus {
-		public double targetVoltage = 0.0;
-		public double currentVoltage = 0.0;
-	}
-
-	// Mutable nested class for Shooter state
-	public static class ShooterStatus {
-		public double targetRPM = 0.0;
-		public double currentRPM = 0.0;
-		public boolean isAtTarget = false;
-	}
-
-	// Mutable nested class for Robot Angle state
-	public static class AngleStatus {
-		public Rotation2d targetAngle = new Rotation2d();
-		public Rotation2d currentAngle = new Rotation2d();
-		public boolean isAtTarget = false;
-	}
 
 	// Robot state
 	public RobotState currentRobotState = RobotState.IDLE;

@@ -24,7 +24,7 @@ import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.superstructure.SuperstructureState.State;
 import org.littletonrobotics.junction.Logger;
 
-public class SUB_Superstructure extends SubsystemBase {
+public class oldSUB_Superstructure extends SubsystemBase {
 
 	public static ZonePose globalFirstPose = ZonePose.NONE;
 	public static ZonePose globalSecondPose = ZonePose.NONE;
@@ -54,7 +54,7 @@ public class SUB_Superstructure extends SubsystemBase {
 	 * @param led LED subsystem for operator feedback states
 	 * @param operatorController operator input device used for endgame rumble feedback
 	 */
-	public SUB_Superstructure(
+	public oldSUB_Superstructure(
 			Drive drive,
 			SUB_Intake intake,
 			SUB_Elevator elevator,

@@ -8,16 +8,16 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.superstructure.SuperstructureState;
 import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.StatusCode;
 
 public class SUB_Intake extends SubsystemBase {
 
 	private final IO_IntakeBase io;
 
-	private final IO_IntakeBase.IntakeInputs inputs = new IO_IntakeBase.IntakeInputs();
+	private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
 
-	//private SuperstructureState.State localState = SuperstructureState.IDLE;
 
 	public SUB_Intake(IO_IntakeBase io) {
 		this.io = io;
@@ -25,20 +25,16 @@ public class SUB_Intake extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		// Update motor setpoints based on current superstructure state
-		//io.setIntakeVoltage(localState.getSpeed());
-		//io.setSliderPosition(localState.getDeg());
 
-		// Read latest sensor data and motor feedback
 		io.updateInputs(inputs);
-
-		// Log all intake data for debugging and analysis
 		Logger.processInputs("Intake", inputs);
 	}
 
-	public void updateLocalState(SuperstructureState.State newLocalState) {
-		localState = newLocalState;
+	public StatusCode setIntakeVoltage(double voltage) {
+		return io.setIntakeVoltage(voltage);
 	}
 
-
+	public StatusCode setSliderPosition(double meters) {
+		return io.setSliderPosition(meters);
+	}
 }

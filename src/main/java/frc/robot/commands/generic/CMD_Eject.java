@@ -8,13 +8,13 @@
 package frc.robot.commands.generic;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.superstructure.SUB_Superstructure;
+import frc.robot.subsystems.superstructure.oldSUB_Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 
 public class CMD_Eject extends Command {
-	private final SUB_Superstructure superstructure;
+	private final oldSUB_Superstructure superstructure;
 
-	public CMD_Eject(SUB_Superstructure superstructure) {
+	public CMD_Eject(oldSUB_Superstructure superstructure) {
 		this.superstructure = superstructure;
 		addRequirements(superstructure);
 	}

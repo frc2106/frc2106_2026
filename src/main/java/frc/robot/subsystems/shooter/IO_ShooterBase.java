@@ -9,57 +9,34 @@ package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.AutoLog;
 
-/**
- * Base interface for shooter IO operations.
- *
- * <p>The shooter uses two Kraken motors in a flywheel configuration for launching game pieces. Both
- * motors are controlled with velocity closed-loop control for consistent shot accuracy.
- *
- * <p>Design features: - Dual motor configuration for high power output - Velocity control for
- * consistent shot speed - Independent telemetry for each motor - Connection monitoring for health
- * alerts
- *
- * <p>The IO pattern enables real hardware, simulation, and replay implementations.
- */
+import com.ctre.phoenix6.StatusCode;
+
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public interface IO_ShooterBase {
-	/**
-	 * Container for shooter inputs that will be logged and replayed.
-	 *
-	 * <p>Provides telemetry for both shooter motors including velocity, current, voltage, and
-	 * connection status. The @AutoLog annotation generates ShooterIOInputsAutoLogged for AdvantageKit
-	 * replay.
-	 */
+
 	@AutoLog
 	public static class ShooterInputs {
-		// Top motor (motor closest to intake)
-		public boolean topMotorConnected = false;
-		public double topMotorVelocityRPM = 0.0;
-		public double topMotorAppliedVolts = 0.0;
-		public double topMotorCurrentAmps = 0.0;
-		public double topMotorTempCelsius = 0.0;
 
-		// Bottom motor (motor farthest from intake)
-		public boolean bottomMotorConnected = false;
-		public double bottomMotorVelocityRPM = 0.0;
-		public double bottomMotorAppliedVolts = 0.0;
-		public double bottomMotorCurrentAmps = 0.0;
-		public double bottomMotorTempCelsius = 0.0;
+		public double shooterMotorOneVelocity = 0.0;
+		public double shooterMotorOneTargetVelocity = 0.0;
+		public double shooterMotorOneCurrent = 0.0;
+
+		public double shooterMotorTwoVelocity = 0.0;
+		public double shooterMotorTwoTargetVelocity = 0.0;
+		public double shooterMotorTwoCurrent = 0.0;
+
+		public double turretMotorCurrentPosition = 0.0;
+		public double turretMotorCurrentTargetPosition = 0.0;
+		public double turretMotorCurrent = 0.0;
 	}
 
-	/**
-	 * Updates the inputs object with latest shooter data.
-	 *
-	 * @param inputs The inputs object to populate
-	 */
+
 	public default void updateInputs(ShooterInputs inputs) {}
 
-	/**
-	 * Sets the velocity setpoint for both shooter motors.
-	 *
-	 * @param velocityRPM Desired velocity in RPM (revolutions per minute)
-	 */
-	public default void setVelocity(double velocityRPM) {}
+	public Pair<StatusCode, StatusCode> setShooterVelocities(double velocity);
 
-	/** Stops both shooter motors by setting velocity to zero. */
-	public default void stop() {}
+	public StatusCode setTurretPosition(Rotation2d position);
+
 }

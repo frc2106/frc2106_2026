@@ -8,14 +8,14 @@
 package frc.robot.commands.coral;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.superstructure.SUB_Superstructure;
+import frc.robot.subsystems.superstructure.oldSUB_Superstructure;
 import frc.robot.subsystems.superstructure.SuperstructureState;
 
 public class CMD_ElevatorCoral extends Command {
-	private final SUB_Superstructure superstructure;
+	private final oldSUB_Superstructure superstructure;
 	private final boolean isMovingUp;
 
-	public CMD_ElevatorCoral(SUB_Superstructure superstructure, boolean isMovingUp) {
+	public CMD_ElevatorCoral(oldSUB_Superstructure superstructure, boolean isMovingUp) {
 		this.superstructure = superstructure;
 		this.isMovingUp = isMovingUp;
 		addRequirements(superstructure);
