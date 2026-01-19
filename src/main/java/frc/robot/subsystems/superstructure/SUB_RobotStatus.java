@@ -20,7 +20,8 @@ public class SUB_RobotStatus extends SubsystemBase {
 	SUB_Intake intake;
 	SUB_Shooter shooter;
 
-	public SUB_Superstructure(Drive drive, SUB_Intake intaek) {
+	public SUB_Superstructure(Drive drive, SUB_Intake intake, SUB_Shooter shooter) {
+	
 
 
 	}

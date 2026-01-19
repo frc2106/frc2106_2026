@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -60,11 +61,12 @@ public class IO_ShooterReal implements IO_ShooterBase {
 
 	@Override
 	public void updateInputs(ShooterInputs inputs) {
-		inputs.shooterMotorOneVelocity = shooterMotorOne.getMotorVelocity().getValueAsDouble();
+
+		inputs.shooterMotorOneVelocity = shooterMotorOne.getVelocity().getValueAsDouble();
 		inputs.shooterMotorOneTargetVelocity = shooterMotorOne.getOutputMeasure().getValueAsDouble();
 		inputs.shooterMotorOneCurrent = shooterMotorOne.getStatorCurrent().getValueAsDouble();
 
-		inputs.shooterMotorOneVelocity = shooterMotorTwo.getMotorVelocity().getValueAsDouble();
+		inputs.shooterMotorOneVelocity = shooterMotorTwo.getVelocity().getValueAsDouble();
 		inputs.shooterMotorOneTargetVelocity = shooterMotorTwo.getOutputMeasure().getValueAsDouble();
 		inputs.shooterMotorOneCurrent = shooterMotorTwo.getStatorCurrent().getValueAsDouble();
 
@@ -72,7 +74,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		inputs.turretMotorCurrentTargetPosition = turretMotorRequest.Position; // TODO: Might need to multiply by motor conversion factor in future.
 		inputs.turretMotorCurrent = turretMotor.getStatorCurrent().getValueAsDouble();
 
-		inputs.sensor = sensor.getValueAsBoolean();
+		
 	}
 	
 	@Override
@@ -81,9 +83,15 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		velocityRequest.withVelocity(velocity);
 		
 		return Pair.of(
-			shooterMotorOn.setControl(velocityRequest),
-			motorTwo.setControl(velocityRequest)
+			shooterMotorOne.setControl(velocityRequest),
+			shooterMotorTwo.setControl(velocityRequest)
 			);
+	}
+
+	@Override
+	public StatusCode setTurretPosition(Rotation2d position) {
+		turretMotorRequest.withPosition(position);
+		return turretMotor.setControl(turretMotorRequest);
 	}
 
 }
