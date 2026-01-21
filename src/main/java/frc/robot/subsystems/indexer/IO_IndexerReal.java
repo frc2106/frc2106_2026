@@ -1,4 +1,4 @@
-// Copyright (c) 2024 - 2025 : FRC 2106 : The Junkyard Dogs
+// Copyright (c) 2025 - 2026 : FRC 2106 : The Junkyard Dogs
 // https://www.team2106.org
 
 // Use of this source code is governed by an MIT-style
@@ -30,11 +30,13 @@ public class IO_IndexerReal implements IO_IndexerBase {
 			TalonFXConfiguration spinnerMotorConfiguration,
 			TalonFXConfiguration kickerMotorConfiguration) {
 
-		spinnerMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		spinnerMotor =
+				new TalonFX(RobotConstants.Indexer.SPINNER_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		spinnerMotor.getConfigurator().apply(spinnerMotorConfiguration);
 		spinnerMotorRequest = new VoltageOut(0.0);
 
-		kickerMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		kickerMotor =
+				new TalonFX(RobotConstants.Indexer.KICKER_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		kickerMotor.getConfigurator().apply(kickerMotorConfiguration);
 		kickerVoltageRequest = new VoltageOut(0.0);
 

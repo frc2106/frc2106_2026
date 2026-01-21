@@ -1,4 +1,4 @@
-// Copyright (c) 2024 - 2025 : FRC 2106 : The Junkyard Dogs
+// Copyright (c) 2025 - 2026 : FRC 2106 : The Junkyard Dogs
 // https://www.team2106.org
 
 // Use of this source code is governed by an MIT-style
@@ -7,9 +7,7 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,10 +25,10 @@ import frc.robot.lib.windingmotor.vision.IO_VisionCamera;
 import frc.robot.lib.windingmotor.vision.SUB_Vision;
 import frc.robot.subsystems.indexer.IO_IndexerReal;
 import frc.robot.subsystems.indexer.SUB_Indexer;
-import frc.robot.subsystems.intake.IO_IntakeRealBoxBot;
+import frc.robot.subsystems.intake.IO_IntakeReal;
 import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
-import frc.robot.subsystems.shooter.IO_ShooterRealBoxBot;
+import frc.robot.subsystems.shooter.IO_ShooterReal;
 import frc.robot.subsystems.shooter.SUB_Shooter;
 import frc.robot.subsystems.superstructure.SUB_Superstructure;
 
@@ -108,9 +106,23 @@ public class RobotContainer {
 	private void initializeSubsystems() {
 
 		indexer =
-				new SUB_Indexer(new IO_IndexerReal(new TalonFXConfiguration(), new TalonFXConfiguration()));
-		intake = new SUB_Intake(new IO_IntakeRealBoxBot(new TalonFXConfiguration()));
-		shooter = new SUB_Shooter(new IO_ShooterRealBoxBot(new SparkFlexConfig()));
+				new SUB_Indexer(
+						new IO_IndexerReal(
+								RobotConstants.Indexer.KICKER_MOTOR_CONFIG,
+								RobotConstants.Indexer.SPINNER_MOTOR_CONFIG));
+
+		intake =
+				new SUB_Intake(
+						new IO_IntakeReal(
+								RobotConstants.Intake.INTAKE_MOTOR_CONFIG,
+								RobotConstants.Intake.SLIDER_MOTOR_CONFIG));
+
+		shooter =
+				new SUB_Shooter(
+						new IO_ShooterReal(
+								RobotConstants.Shooter.SHOOTER_MOTOR_ONE_CONFIG,
+								RobotConstants.Shooter.SHOOTER_MOTOR_TWO_CONFIG,
+								RobotConstants.Shooter.TURRET_MOTOR_CONFIG));
 
 		// Drive subsystem: IO varies dramatically by mode
 		switch (RobotConstants.ROBOT_MODE) {

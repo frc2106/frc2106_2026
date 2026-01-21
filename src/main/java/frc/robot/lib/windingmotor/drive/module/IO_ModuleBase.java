@@ -1,4 +1,4 @@
-// Copyright (c) 2024 - 2025 : FRC 2106 : The Junkyard Dogs
+// Copyright (c) 2025 - 2026 : FRC 2106 : The Junkyard Dogs
 // https://www.team2106.org
 
 // Use of this source code is governed by an MIT-style

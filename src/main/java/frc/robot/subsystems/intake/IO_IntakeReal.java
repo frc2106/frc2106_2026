@@ -1,4 +1,4 @@
-// Copyright (c) 2024 - 2025 : FRC 2106 : The Junkyard Dogs
+// Copyright (c) 2025 - 2026 : FRC 2106 : The Junkyard Dogs
 // https://www.team2106.org
 
 // Use of this source code is governed by an MIT-style
@@ -31,11 +31,13 @@ public class IO_IntakeReal implements IO_IntakeBase {
 			TalonFXConfiguration intakeMotorConfiguration,
 			TalonFXConfiguration sliderMotorConfiguration) {
 
-		intakeMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		intakeMotor =
+				new TalonFX(RobotConstants.Intake.INTAKE_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		intakeMotor.getConfigurator().apply(intakeMotorConfiguration);
 		intakeMotorRequest = new VoltageOut(0.0);
 
-		sliderMotor = new TalonFX(10, RobotConstants.CANBUS_CANIVORE);
+		sliderMotor =
+				new TalonFX(RobotConstants.Intake.SLIDER_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		sliderMotor.getConfigurator().apply(sliderMotorConfiguration);
 		sliderMotorRequest = new PositionVoltage(0.0);
 

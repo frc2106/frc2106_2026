@@ -1,4 +1,4 @@
-// Copyright (c) 2024 - 2025 : FRC 2106 : The Junkyard Dogs
+// Copyright (c) 2025 - 2026 : FRC 2106 : The Junkyard Dogs
 // https://www.team2106.org
 
 // Use of this source code is governed by an MIT-style
@@ -32,15 +32,20 @@ public class IO_ShooterReal implements IO_ShooterBase {
 			TalonFXConfiguration shooterMotorTwoConfiguration,
 			TalonFXConfiguration turretMotorConfiguration) {
 
-		shooterMotorOne = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		shooterMotorOne =
+				new TalonFX(
+						RobotConstants.Shooter.SHOOTER_MOTOR_ONE_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		shooterMotorOne.getConfigurator().apply(shooterMotorOneConfiguration);
 
-		shooterMotorTwo = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		shooterMotorTwo =
+				new TalonFX(
+						RobotConstants.Shooter.SHOOTER_MOTOR_TWO_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		shooterMotorTwo.getConfigurator().apply(shooterMotorTwoConfiguration);
 
 		shooterMotorsRequest = new VelocityVoltage(0.0);
 
-		turretMotor = new TalonFX(0, RobotConstants.CANBUS_CANIVORE);
+		turretMotor =
+				new TalonFX(RobotConstants.Shooter.TURRET_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		turretMotor.getConfigurator().apply(turretMotorConfiguration);
 		turretMotorRequest = new PositionVoltage(0.0);
 	}
@@ -52,14 +57,12 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		inputs.shooterMotorOneTargetVelocity = shooterMotorsRequest.getVelocityMeasure().in(RPM);
 		inputs.shooterMotorOneCurrent = shooterMotorOne.getStatorCurrent().getValueAsDouble();
 
-		inputs.shooterMotorOneVelocity = shooterMotorTwo.getVelocity().getValueAsDouble();
-		inputs.shooterMotorOneTargetVelocity = shooterMotorsRequest.getVelocityMeasure().in(RPM);
-		inputs.shooterMotorOneCurrent = shooterMotorTwo.getStatorCurrent().getValueAsDouble();
+		inputs.shooterMotorTwoVelocity = shooterMotorTwo.getVelocity().getValueAsDouble();
+		inputs.shooterMotorTwoTargetVelocity = shooterMotorsRequest.getVelocityMeasure().in(RPM);
+		inputs.shooterMotorTwoCurrent = shooterMotorTwo.getStatorCurrent().getValueAsDouble();
 
 		inputs.turretMotorCurrentPosition = turretMotor.getPosition().getValueAsDouble();
-		inputs.turretMotorCurrentTargetPosition =
-				turretMotorRequest
-						.Position; // TODO: Might need to multiply by motor conversion factor in future.
+		inputs.turretMotorCurrentTargetPosition = turretMotorRequest.Position;
 		inputs.turretMotorCurrent = turretMotor.getStatorCurrent().getValueAsDouble();
 	}
 
@@ -75,7 +78,26 @@ public class IO_ShooterReal implements IO_ShooterBase {
 
 	@Override
 	public StatusCode setTurretPosition(Rotation2d position) {
-		turretMotorRequest.withPosition(position.getRadians());
+
+		double targetRadians = position.getRadians();
+
+		// Handle case where vision/field-relative angle might be outside our physical range
+		// Normalize the angle to [-π, π] first if it's a field-relative angle
+		if (Math.abs(targetRadians) > Math.PI) {
+			// Normalize to [-π, π] range
+			targetRadians = Math.atan2(Math.sin(targetRadians), Math.cos(targetRadians));
+		}
+
+		// Clamp to our physical limits
+		if (targetRadians > RobotConstants.Shooter.TURRET_RADIANS_MAX) {
+			targetRadians = RobotConstants.Shooter.TURRET_RADIANS_MAX;
+		} else if (targetRadians < RobotConstants.Shooter.TURRET_RADIANS_MIN) {
+			targetRadians = RobotConstants.Shooter.TURRET_RADIANS_MIN;
+		}
+
+		// Send position command - PID takes the direct path
+		// With ±130° range, direct path is always valid (no wrap-around possible)
+		turretMotorRequest.withPosition(targetRadians);
 		return turretMotor.setControl(turretMotorRequest);
 	}
 
