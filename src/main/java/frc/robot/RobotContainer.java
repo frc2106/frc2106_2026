@@ -167,7 +167,8 @@ public class RobotContainer {
 						new IO_VisionCamera(
 								LIB_VisionConstants.camera0Name, LIB_VisionConstants.robotToCamera0),
 						new IO_VisionCamera(
-								LIB_VisionConstants.camera1Name, LIB_VisionConstants.robotToCamera1));
+								LIB_VisionConstants.camera1Name, LIB_VisionConstants.robotToCamera1)
+								);
 
 		// Superstructure binds all mechanisms together
 		superstructure =
