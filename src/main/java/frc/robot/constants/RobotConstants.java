@@ -116,7 +116,7 @@ public final class RobotConstants {
 
 		static {
 			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 20; // Amps
-			TURRET_MOTOR_CONFIG.Feedback.SensorToMechanismRatio = 0.50819881;
+			TURRET_MOTOR_CONFIG.Feedback.SensorToMechanismRatio = 0.0808823529;
 			// 0.07143; // Rotations to turret angle in radians (rot) * (2pi) * (gear ratio)
 			TURRET_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake; // Break or Coast
 			TURRET_MOTOR_CONFIG.MotorOutput.Inverted =
