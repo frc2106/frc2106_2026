@@ -60,7 +60,5 @@ public class IO_ShooterRealBoxBot implements IO_ShooterBase {
 	}
 
 	@Override
-	public void setShooterVoltages(double voltages) {
-		shooterMotorOne.set(voltages);
-	}
+	public void setShooterVoltages(double voltages) {}
 }

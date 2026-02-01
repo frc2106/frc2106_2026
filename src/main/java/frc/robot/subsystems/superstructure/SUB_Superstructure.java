@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib.windingmotor.drive.Drive;
@@ -22,7 +23,10 @@ public class SUB_Superstructure extends SubsystemBase {
 		IDLE,
 		EJECTING,
 		SHOOTING,
-		INTAKING
+		INTAKING,
+		READY,
+		CENTER_TURRET,
+		TURRET_LEFT,
 	}
 
 	private SUB_Indexer indexerRef;
@@ -69,29 +73,44 @@ public class SUB_Superstructure extends SubsystemBase {
 				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(0.0);
 				intakeRef.setSliderPosition(0.0);
-				shooterRef.setShooterVoltages(0.0);
+				shooterRef.setShooterVelocities(0.0);
 				break;
 
 			case EJECTING:
 				indexerRef.setSpinnerVoltage(-5.0);
-				indexerRef.setKickerVoltage(-10.0);
-				intakeRef.setIntakeVoltage(-10.0);
+				indexerRef.setKickerVoltage(-8.0);
+				intakeRef.setIntakeVoltage(0.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 
 			case SHOOTING:
 				indexerRef.setSpinnerVoltage(5.0);
-				indexerRef.setKickerVoltage(10.0);
-				intakeRef.setIntakeVoltage(6.0);
+				indexerRef.setKickerVoltage(0.0);
+				intakeRef.setIntakeVoltage(0.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
-				shooterRef.setShooterVoltages(-0.50);
+				shooterRef.setShooterVelocities(100.0);
 				break;
 
 			case INTAKING:
-				indexerRef.setSpinnerVoltage(5.0);
+				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(8.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
+				break;
+
+			case READY:
+				indexerRef.setSpinnerVoltage(0.0);
+				indexerRef.setKickerVoltage(0.0);
+				intakeRef.setIntakeVoltage(0.0);
+				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
+				break;
+
+			case CENTER_TURRET:
+				shooterRef.setTurretPosition(Rotation2d.kZero);
+				break;
+
+			case TURRET_LEFT:
+				shooterRef.setTurretPosition(Rotation2d.kCCW_90deg);
 				break;
 		}
 	}

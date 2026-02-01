@@ -63,7 +63,7 @@ public class IO_IndexerReal implements IO_IndexerBase {
 
 	@Override
 	public StatusCode setKickerVoltage(double voltage) {
-
-		return StatusCode.DeviceIsNull;
+		kickerVoltageRequest.withOutput(voltage);
+		return kickerMotor.setControl(kickerVoltageRequest);
 	}
 }

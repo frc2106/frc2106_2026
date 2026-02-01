@@ -42,6 +42,7 @@ public class RobotContainer {
 	// Controllers
 	private CommandXboxController driverController;
 	private CommandXboxController operatorController;
+	private CommandXboxController turretTestcontroller;
 
 	// Are we on red???
 	private SendableChooser<Boolean> isRedChooser;
@@ -79,13 +80,25 @@ public class RobotContainer {
 		drive.setDefaultCommand(
 				DriveCommands.driveNormal(
 						drive,
-						() -> driverController.getRawAxis(1),
-						() -> -driverController.getRawAxis(0),
-						() -> -driverController.getRawAxis(3)));
+						() -> -operatorController.getRawAxis(1) * 0.6,
+						() -> -operatorController.getRawAxis(0) * 0.6,
+						() -> -operatorController.getRawAxis(4) * 0.6));
 
 		operatorController
-				.a()
+				.leftTrigger()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKING));
+
+		operatorController
+				.leftTrigger()
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
+
+		operatorController
+				.rightTrigger()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.EJECTING));
+
+		operatorController
+				.rightTrigger()
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
 
 		operatorController
 				.x()
@@ -95,12 +108,22 @@ public class RobotContainer {
 				.b()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
 
+		turretTestcontroller
+				.y()
+				.onTrue(
+						new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CENTER_TURRET));
+
+		turretTestcontroller
+				.x()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_LEFT));
+
 		// drive.setDefaultCommand(DriveCommands.driveTest(drive));
 	}
 
 	private void initializeControllers() {
 		driverController = new CommandXboxController(0);
-		operatorController = new CommandXboxController(3);
+		operatorController = new CommandXboxController(1);
+		turretTestcontroller = new CommandXboxController(2);
 	}
 
 	private void initializeSubsystems() {
@@ -167,8 +190,7 @@ public class RobotContainer {
 						new IO_VisionCamera(
 								LIB_VisionConstants.camera0Name, LIB_VisionConstants.robotToCamera0),
 						new IO_VisionCamera(
-								LIB_VisionConstants.camera1Name, LIB_VisionConstants.robotToCamera1)
-								);
+								LIB_VisionConstants.camera1Name, LIB_VisionConstants.robotToCamera1));
 
 		// Superstructure binds all mechanisms together
 		superstructure =

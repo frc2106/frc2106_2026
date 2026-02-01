@@ -43,7 +43,7 @@ public class LIB_VisionConstants {
 	// SECTION 2: CAMERA 0 - FRONT CAMERA
 	// ====================================================================
 
-	public static String camera0Name = "OV9281_02"; // PhotonVision camera name
+	public static String camera0Name = "OV2311_11"; // PhotonVision camera name
 	public static Transform3d robotToCamera0 =
 			new Transform3d(
 					new Translation3d(
@@ -59,7 +59,7 @@ public class LIB_VisionConstants {
 	// SECTION 3: CAMERA 1 - BACK CAMERA
 	// ====================================================================
 
-	public static String camera1Name = "OV9281_03"; // PhotonVision camera name
+	public static String camera1Name = "OV2311_12"; // PhotonVision camera name
 	public static Transform3d robotToCamera1 =
 			new Transform3d(
 					new Translation3d(
@@ -75,7 +75,7 @@ public class LIB_VisionConstants {
 	// SECTION 4: CAMERA 2 - FRONT LEFT CAMERA
 	// ====================================================================
 
-	public static String camera2Name = "OV2311_4"; // PhotonVision camera name
+	public static String camera2Name = "OV2311_13"; // PhotonVision camera name
 	public static Transform3d robotToCamera2 =
 			new Transform3d(
 					new Translation3d(
@@ -91,7 +91,7 @@ public class LIB_VisionConstants {
 	// SECTION 5: CAMERA 3 - FRONT RIGHT CAMERA
 	// ====================================================================
 
-	public static String camera3Name = "OV2311_5"; // PhotonVision camera name
+	public static String camera3Name = "OV2311_14"; // PhotonVision camera name
 	public static Transform3d robotToCamera3 =
 			new Transform3d(
 					new Translation3d(

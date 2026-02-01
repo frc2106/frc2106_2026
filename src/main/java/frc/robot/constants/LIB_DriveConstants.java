@@ -41,12 +41,12 @@ public class LIB_DriveConstants {
 	 */
 	private static final Slot0Configs steerGains =
 			new Slot0Configs()
-					.withKP(100) // Proportional gain
-					.withKI(0) // Integral gain
-					.withKD(0.5) // Derivative gain
-					.withKS(0.1) // Static friction feedforward (V)
-					.withKV(1.91) // Velocity feedforward (V/(rot/s))
-					.withKA(0.0) // Acceleration feedforward (V/(rot/s²))
+					.withKP(100) // Proportional gain (100)
+					.withKI(0.0) // Integral gain (0)
+					.withKD(0.5) // Derivative gain (0.5)
+					.withKS(0.1) // Static friction feedforward (V) 0.1
+					.withKV(1.91) // Velocity feedforward (V/(rot/s)) 1.91
+					.withKA(0.0) // Acceleration feedforward (V/(rot/s²)) 0.0
 					.withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
 	/**
@@ -55,11 +55,11 @@ public class LIB_DriveConstants {
 	 */
 	private static final Slot0Configs driveGains =
 			new Slot0Configs()
-					.withKP(2.5) // Proportional gain
+					.withKP(1.5) // Proportional gain 2.5
 					.withKI(0) // Integral gain
 					.withKD(0) // Derivative gain
 					.withKS(0) // Static friction feedforward (V)
-					.withKV(0.75); // Velocity feedforward (V/(rot/s))
+					.withKV(0.0); // Velocity feedforward (V/(rot/s))0.75
 
 	// ====================================================================
 	// SECTION 2: CONTROL CONFIGURATION

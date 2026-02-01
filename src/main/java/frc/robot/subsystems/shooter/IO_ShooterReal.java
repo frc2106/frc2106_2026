@@ -48,6 +48,8 @@ public class IO_ShooterReal implements IO_ShooterBase {
 				new TalonFX(RobotConstants.Shooter.TURRET_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		turretMotor.getConfigurator().apply(turretMotorConfiguration);
 		turretMotorRequest = new PositionVoltage(0.0);
+
+		turretMotor.setPosition(0);
 	}
 
 	@Override
