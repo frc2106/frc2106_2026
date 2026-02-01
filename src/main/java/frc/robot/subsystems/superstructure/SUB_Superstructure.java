@@ -27,6 +27,9 @@ public class SUB_Superstructure extends SubsystemBase {
 		READY,
 		CENTER_TURRET,
 		TURRET_LEFT,
+		TURRET_RIGHT,
+		TURRET_BACK,
+		TURRET_JOYSTICK
 	}
 
 	private SUB_Indexer indexerRef;
@@ -105,14 +108,26 @@ public class SUB_Superstructure extends SubsystemBase {
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 
-			case CENTER_TURRET:
-				shooterRef.setTurretPosition(Rotation2d.kZero);
-				break;
+				/*case CENTER_TURRET:
+					shooterRef.setTurretPosition(Rotation2d.kZero);
+					break;
 
-			case TURRET_LEFT:
-				shooterRef.setTurretPosition(Rotation2d.kCCW_90deg);
-				break;
+				case TURRET_LEFT:
+					shooterRef.setTurretPosition(Rotation2d.kCCW_90deg);
+					break;
+
+				case TURRET_RIGHT:
+					shooterRef.setTurretPosition(Rotation2d.kCW_90deg);
+					break; */
+
 		}
+
+		turretAngleLoop();
+	}
+
+	public void turretAngleLoop() {
+		shooterRef.setTurretPosition(
+				Rotation2d.fromRadians(operatorControllerRef.getRawAxis(0) * (Math.PI)));
 	}
 
 	public void setRobotState(RobotState newRobotState) {

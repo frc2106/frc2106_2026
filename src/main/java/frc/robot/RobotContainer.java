@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.drive.DriveCommands;
 import frc.robot.commands.generic.CMD_Superstructure;
 import frc.robot.constants.LIB_DriveConstants;
 import frc.robot.constants.LIB_VisionConstants;
@@ -77,12 +76,12 @@ public class RobotContainer {
 		// Create and cache the PathPlanner auto command
 		AUTO_COMMAND = AutoBuilder.buildAuto(AUTO_NAME);
 
-		drive.setDefaultCommand(
-				DriveCommands.driveNormal(
-						drive,
-						() -> -operatorController.getRawAxis(1) * 0.6,
-						() -> -operatorController.getRawAxis(0) * 0.6,
-						() -> -operatorController.getRawAxis(4) * 0.6));
+		/*drive.setDefaultCommand(
+		DriveCommands.driveNormal(
+				drive,
+				() -> -operatorController.getRawAxis(1) * 0.6,
+				() -> -operatorController.getRawAxis(0) * 0.6,
+				() -> -operatorController.getRawAxis(4) * 0.6)); */
 
 		operatorController
 				.leftTrigger()
@@ -194,7 +193,7 @@ public class RobotContainer {
 
 		// Superstructure binds all mechanisms together
 		superstructure =
-				new SUB_Superstructure(indexer, intake, led, shooter, drive, vision, driverController);
+				new SUB_Superstructure(indexer, intake, led, shooter, drive, vision, operatorController);
 
 		// Setup Sendable Choosers
 		isRedChooser = new SendableChooser<Boolean>();
