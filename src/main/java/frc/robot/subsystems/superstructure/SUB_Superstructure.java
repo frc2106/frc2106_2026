@@ -128,39 +128,31 @@ public class SUB_Superstructure extends SubsystemBase {
 		turretLoop();
 	}
 
-	public void turretLoop() {
+public void turretLoop() {
+    // Get robot pose
+    Pose2d currentRobotPose = driveRef.getPose();
 
-		// Get robot pose
-		Pose2d currentRobotPose = driveRef.getPose();
+    // VELOCITY
+    double distanceMeters = currentRobotPose.getTranslation().getDistance(turretTargetPose);
+    double velocityTargetRPM =
+            (-69.53748 * Math.pow(distanceMeters, 2)) 
+            + (1183.67738 * distanceMeters) 
+            + (610.35088);
+    shooterRef.setShooterVelocities(velocityTargetRPM);
 
-		// VELOCITY
+    // TURRET ANGLE
+    double deltaX = turretTargetPose.getX() - currentRobotPose.getX();
+    double deltaY = turretTargetPose.getY() - currentRobotPose.getY();
 
-		// Get distance from our target
-		double distanceMeters = currentRobotPose.getTranslation().getDistance(turretTargetPose);
+    Rotation2d angleToTarget = new Rotation2d(deltaX, deltaY);
+    Rotation2d turretAngle = angleToTarget.minus(currentRobotPose.getRotation());
+    
+    // NEGATE to fix inversion
+    turretAngle = turretAngle.unaryMinus();
+    
+    shooterRef.setTurretPosition(turretAngle);
+}
 
-		// Calculate the RPM needed to reach our target
-		// This is based off a TEST equation: https://www.desmos.com/calculator/5lntkukgt6
-		double velocityTargetRPM =
-				(-69.53748 * Math.pow(distanceMeters, 2)) + (1183.67738 * distanceMeters) + (610.35088);
-
-		// Set the target velocity
-		shooterRef.setShooterVelocities(velocityTargetRPM);
-
-		// TURRET ANGLE
-
-		// Calculate angle from robot to target
-		double deltaX = turretTargetPose.getX() - currentRobotPose.getX();
-		double deltaY = turretTargetPose.getY() - currentRobotPose.getY();
-
-		// Field-relative angle to target
-		Rotation2d angleToTarget = new Rotation2d(deltaX, deltaY);
-
-		// Convert to robot-relative (subtract robot heading)
-		Rotation2d turretAngle = angleToTarget.minus(currentRobotPose.getRotation());
-
-		// Set turret position
-		shooterRef.setTurretPosition(turretAngle);
-	}
 
 	public void setRobotState(RobotState newRobotState) {
 		currentRobotState = newRobotState;
