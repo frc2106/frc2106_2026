@@ -131,16 +131,17 @@ public class SUB_Superstructure extends SubsystemBase {
 	public void turretLoop() {
 
 		// Get robot pose
-		Translation2d currentRobotPose = driveRef.getPose().getTranslation();
-		
-		// VELOCITY 
+		Pose2d currentRobotPose = driveRef.getPose();
+
+		// VELOCITY
 
 		// Get distance from our target
-		double distanceMeters = currentRobotPose.getDistance(turretTargetPose);
+		double distanceMeters = currentRobotPose.getTranslation().getDistance(turretTargetPose);
 
 		// Calculate the RPM needed to reach our target
 		// This is based off a TEST equation: https://www.desmos.com/calculator/5lntkukgt6
-		double velocityTargetRPM = (-69.53748 * Math.pow(distanceMeters, 2)) + (1183.67738 * distanceMeters) + (610.35088);
+		double velocityTargetRPM =
+				(-69.53748 * Math.pow(distanceMeters, 2)) + (1183.67738 * distanceMeters) + (610.35088);
 
 		// Set the target velocity
 		shooterRef.setShooterVelocities(velocityTargetRPM);
@@ -150,16 +151,15 @@ public class SUB_Superstructure extends SubsystemBase {
 		// Calculate angle from robot to target
 		double deltaX = turretTargetPose.getX() - currentRobotPose.getX();
 		double deltaY = turretTargetPose.getY() - currentRobotPose.getY();
-		
+
 		// Field-relative angle to target
 		Rotation2d angleToTarget = new Rotation2d(deltaX, deltaY);
-		
+
 		// Convert to robot-relative (subtract robot heading)
-		Rotation2d turretAngle = angleToTarget.minus(currentRobotPose.getAngle());
-		
+		Rotation2d turretAngle = angleToTarget.minus(currentRobotPose.getRotation());
+
 		// Set turret position
 		shooterRef.setTurretPosition(turretAngle);
-
 	}
 
 	public void setRobotState(RobotState newRobotState) {
