@@ -45,7 +45,7 @@ public class SUB_Superstructure extends SubsystemBase {
 	private CommandXboxController operatorControllerRef;
 
 	private RobotState currentRobotState = RobotState.IDLE;
-	private Translation2d turretTargetPose = new Translation2d();
+	private Translation2d turretTargetPose = new Translation2d(4.631, 4.031);
 
 	// Robot Constants
 	private final double INTAKE_MAX_EXTENSION_METERS = 0.15;
@@ -144,7 +144,7 @@ public class SUB_Superstructure extends SubsystemBase {
 				(-69.53748 * Math.pow(distanceMeters, 2)) + (1183.67738 * distanceMeters) + (610.35088);
 
 		// Set the target velocity
-		shooterRef.setShooterVelocities(velocityTargetRPM);
+		// shooterRef.setShooterVelocities(velocityTargetRPM);
 
 		// TURRET ANGLE
 
@@ -158,8 +158,8 @@ public class SUB_Superstructure extends SubsystemBase {
 		// Convert to robot-relative (subtract robot heading)
 		Rotation2d turretAngle = angleToTarget.minus(currentRobotPose.getRotation());
 
-		turretAngle = turretAngle.unaryMinus();
-		
+		// turretAngle = turretAngle.unaryMinus();
+
 		// Set turret position
 		shooterRef.setTurretPosition(turretAngle);
 	}
