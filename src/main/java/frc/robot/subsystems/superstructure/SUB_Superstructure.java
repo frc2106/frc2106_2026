@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.constants.RobotConstants;
 import frc.robot.lib.windingmotor.drive.Drive;
 import frc.robot.lib.windingmotor.vision.SUB_Vision;
 import frc.robot.subsystems.indexer.SUB_Indexer;
@@ -26,12 +27,10 @@ public class SUB_Superstructure extends SubsystemBase {
 		EJECTING,
 		SHOOTING,
 		INTAKING,
-		READY,
-		CENTER_TURRET,
-		TURRET_LEFT,
-		TURRET_RIGHT,
-		TURRET_BACK,
-		TURRET_JOYSTICK
+		INTAKE_OFF,
+		INTAKE_HALF,
+		INTAKE_IN,
+		READY
 	}
 
 	private SUB_Indexer indexerRef;
@@ -46,6 +45,9 @@ public class SUB_Superstructure extends SubsystemBase {
 
 	private RobotState currentRobotState = RobotState.IDLE;
 	private Translation2d turretTargetPose = new Translation2d(4.631, 4.031);
+
+	private Boolean activelyShooting = false;
+	private Boolean activelyReady = false;
 
 	// Robot Constants
 	private final double INTAKE_MAX_EXTENSION_METERS = 0.15;
@@ -90,25 +92,25 @@ public class SUB_Superstructure extends SubsystemBase {
 				break;
 
 			case SHOOTING:
-				indexerRef.setSpinnerVoltage(5.0);
-				indexerRef.setKickerVoltage(0.0);
-				intakeRef.setIntakeVoltage(0.0);
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
-				shooterRef.setShooterVelocities(100.0);
 				break;
 
 			case INTAKING:
-				indexerRef.setSpinnerVoltage(0.0);
-				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(8.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 
+			case INTAKE_OFF:
+				intakeRef.setIntakeVoltage(0.0);
+
+			case INTAKE_HALF:
+				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
+
+			case INTAKE_IN:
+				intakeRef.setSliderPosition(0.0);
+
 			case READY:
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
-				intakeRef.setIntakeVoltage(0.0);
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 
 				/*case CENTER_TURRET:
@@ -125,7 +127,9 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		}
 
-		turretLoop();
+		demo();
+
+		// turretLoop();
 	}
 
 	public void turretLoop() {
@@ -143,9 +147,6 @@ public class SUB_Superstructure extends SubsystemBase {
 		double velocityTargetRPM =
 				(-69.53748 * Math.pow(distanceMeters, 2)) + (1183.67738 * distanceMeters) + (610.35088);
 
-		// Set the target velocity
-		// shooterRef.setShooterVelocities(velocityTargetRPM);
-
 		// TURRET ANGLE
 
 		// Calculate angle from robot to target
@@ -162,6 +163,66 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		// Set turret position
 		shooterRef.setTurretPosition(turretAngle);
+
+		// Set the target velocity
+		if (currentRobotState == RobotState.SHOOTING || activelyShooting) {
+
+			if (currentRobotState == RobotState.SHOOTING) {
+				activelyShooting = true;
+			} else if (currentRobotState == RobotState.IDLE) {
+				activelyShooting = false;
+			}
+
+			shooterRef.setShooterVelocities(velocityTargetRPM);
+
+			if (turretAngle.getRadians()
+							> shooterRef.getTurretPosition() - RobotConstants.Shooter.TURRET_OFFSET
+					&& turretAngle.getRadians()
+							< shooterRef.getTurretPosition() + RobotConstants.Shooter.TURRET_OFFSET) {
+
+				indexerRef.setKickerVoltage(8.0);
+				indexerRef.setSpinnerVoltage(8.0);
+
+			} else {
+
+				indexerRef.setKickerVoltage(0.0);
+				indexerRef.setSpinnerVoltage(0.0);
+			}
+		}
+
+		if (currentRobotState == RobotState.READY || activelyReady) {
+
+			if (currentRobotState == RobotState.READY) {
+				activelyReady = true;
+			} else if (currentRobotState == RobotState.IDLE) {
+				activelyReady = false;
+			}
+
+			shooterRef.setShooterVelocities(velocityTargetRPM);
+		}
+	}
+
+	public void demo() {
+
+		Rotation2d currentRobotRotation = driveRef.getRotation();
+
+		double deltaX = operatorControllerRef.getLeftX();
+		double deltaY = operatorControllerRef.getLeftY();
+
+		Rotation2d angleToTarget = new Rotation2d(deltaX, deltaY);
+
+		Rotation2d turretAngle = angleToTarget.minus(currentRobotRotation);
+
+		shooterRef.setTurretPosition(turretAngle);
+
+		if (currentRobotState == RobotState.SHOOTING || activelyShooting) {
+			if (currentRobotState == RobotState.SHOOTING) {
+				activelyShooting = true;
+			} else if (currentRobotState == RobotState.IDLE) {
+				activelyShooting = false;
+			}
+			shooterRef.setShooterVelocities(100);
+		}
 	}
 
 	public void setRobotState(RobotState newRobotState) {

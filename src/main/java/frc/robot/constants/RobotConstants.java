@@ -48,6 +48,8 @@ public final class RobotConstants {
 		// Slider motor
 		public static final int SLIDER_MOTOR_CAN_ID = 10;
 
+		public static final double INTAKE_MAX_EXTENSION_METERS = 1.0;
+
 		public static final TalonFXConfiguration SLIDER_MOTOR_CONFIG = new TalonFXConfiguration();
 
 		static {
@@ -111,6 +113,8 @@ public final class RobotConstants {
 		public static final double TURRET_ROT_TO_TURRETRADIANS = 0.3590;
 		public static final double TURRET_RADIANS_MAX = 2.26893; // 130 deg max
 		public static final double TURRET_RADIANS_MIN = -2.26893; // -130 deg max
+
+		public static final double TURRET_OFFSET = 0.05;
 
 		public static final TalonFXConfiguration TURRET_MOTOR_CONFIG = new TalonFXConfiguration();
 

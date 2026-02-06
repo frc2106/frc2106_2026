@@ -8,6 +8,7 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radian;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -101,6 +102,11 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		// With ±130° range, direct path is always valid (no wrap-around possible)
 		turretMotorRequest.withPosition(targetRadians);
 		return turretMotor.setControl(turretMotorRequest);
+	}
+
+	@Override
+	public double getTurretPosition() {
+		return turretMotorRequest.getPositionMeasure().abs(Radian);
 	}
 
 	@Override

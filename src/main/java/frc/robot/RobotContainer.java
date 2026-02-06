@@ -77,12 +77,19 @@ public class RobotContainer {
 		// Create and cache the PathPlanner auto command
 		AUTO_COMMAND = AutoBuilder.buildAuto(AUTO_NAME);
 
+		/* drive.setDefaultCommand(
+		DriveCommands.driveNormal(
+				drive,
+				() -> -operatorController.getRawAxis(1) * 0.6,
+				() -> -operatorController.getRawAxis(0) * 0.6,
+				() -> -operatorController.getRawAxis(4) * 0.3)); */
+
 		drive.setDefaultCommand(
 				DriveCommands.driveNormal(
 						drive,
-						() -> -operatorController.getRawAxis(1) * 0.6,
-						() -> -operatorController.getRawAxis(0) * 0.6,
-						() -> -operatorController.getRawAxis(4) * 0.3));
+						() -> driverController.getRawAxis(1),
+						() -> -driverController.getRawAxis(0),
+						() -> -driverController.getRawAxis(3)));
 
 		operatorController
 				.leftTrigger()
@@ -90,32 +97,23 @@ public class RobotContainer {
 
 		operatorController
 				.leftTrigger()
-				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE_OFF));
 
 		operatorController
 				.rightTrigger()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.EJECTING));
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.SHOOTING));
 
-		operatorController
-				.rightTrigger()
-				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
+		/* operatorController
+		.rightTrigger()
+		.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY)); */
 
 		operatorController
 				.x()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.SHOOTING));
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
 
 		operatorController
 				.b()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
-
-		turretTestcontroller
-				.y()
-				.onTrue(
-						new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CENTER_TURRET));
-
-		turretTestcontroller
-				.x()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_LEFT));
 
 		// drive.setDefaultCommand(DriveCommands.driveTest(drive));
 	}

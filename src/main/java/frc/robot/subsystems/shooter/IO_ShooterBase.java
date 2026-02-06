@@ -37,4 +37,6 @@ public interface IO_ShooterBase {
 	public void setShooterVoltages(double voltages);
 
 	public StatusCode setTurretPosition(Rotation2d position);
+
+	public double getTurretPosition();
 }

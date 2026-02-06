@@ -38,4 +38,8 @@ public class SUB_Shooter extends SubsystemBase {
 	public void setShooterVoltages(double voltages) {
 		io.setShooterVoltages(voltages);
 	}
+
+	public double getTurretPosition() {
+		return io.getTurretPosition();
+	}
 }
