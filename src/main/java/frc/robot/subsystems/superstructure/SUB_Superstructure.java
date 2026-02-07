@@ -77,6 +77,8 @@ public class SUB_Superstructure extends SubsystemBase {
 		// -12V is full reverse
 		switch (currentRobotState) {
 			case IDLE:
+				activelyShooting = false;
+				activelyReady = false;
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(0.0);
@@ -92,6 +94,8 @@ public class SUB_Superstructure extends SubsystemBase {
 				break;
 
 			case SHOOTING:
+				activelyShooting = true;
+				activelyReady = false;
 				break;
 
 			case INTAKING:
@@ -111,6 +115,8 @@ public class SUB_Superstructure extends SubsystemBase {
 			case READY:
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
+				activelyReady = true;
+				activelyShooting = false;
 				break;
 
 				/*case CENTER_TURRET:
@@ -127,9 +133,9 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		}
 
-		demo();
+		//demo();
 
-		// turretLoop();
+		turretLoop();
 	}
 
 	public void turretLoop() {
@@ -165,13 +171,7 @@ public class SUB_Superstructure extends SubsystemBase {
 		shooterRef.setTurretPosition(turretAngle);
 
 		// Set the target velocity
-		if (currentRobotState == RobotState.SHOOTING || activelyShooting) {
-
-			if (currentRobotState == RobotState.SHOOTING) {
-				activelyShooting = true;
-			} else if (currentRobotState == RobotState.IDLE) {
-				activelyShooting = false;
-			}
+		if (activelyShooting) {
 
 			shooterRef.setShooterVelocities(velocityTargetRPM);
 
@@ -190,13 +190,7 @@ public class SUB_Superstructure extends SubsystemBase {
 			}
 		}
 
-		if (currentRobotState == RobotState.READY || activelyReady) {
-
-			if (currentRobotState == RobotState.READY) {
-				activelyReady = true;
-			} else if (currentRobotState == RobotState.IDLE) {
-				activelyReady = false;
-			}
+		if (activelyReady) {
 
 			shooterRef.setShooterVelocities(velocityTargetRPM);
 		}
