@@ -10,6 +10,7 @@ package frc.robot.subsystems.superstructure;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.RobotConstants;
@@ -140,13 +141,14 @@ public class SUB_Superstructure extends SubsystemBase {
 
 	public void turretLoop() {
 
-		// Get robot pose
+		// Get turret pose
 		Pose2d currentRobotPose = driveRef.getPose();
-
-		// VELOCITY
+		Translation2d turretOffsetRobot = new Translation2d(-5.687, 6.687);
+		Translation2d turretOffsetField = turretOffsetRobot.rotateBy(currentRobotPose.getRotation());
+		Translation2d turretPos = currentRobotPose.getTranslation().plus(turretOffsetField);
 
 		// Get distance from our target
-		double distanceMeters = currentRobotPose.getTranslation().getDistance(turretTargetPose);
+		double distanceMeters = turretPos.getDistance(turretTargetPose);
 
 		// Calculate the RPM needed to reach our target
 		// This is based off a TEST equation: https://www.desmos.com/calculator/5lntkukgt6
@@ -155,9 +157,17 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		// TURRET ANGLE
 
+		//speed to distance ration
+		double vdRatio = 1;
+
+		// Robot velocity in FIELD frame (vx, vy in m/s)
+		//ChassisSpeeds fieldSpeeds = driveRef.getFieldRelativeSpeeds(); 
+		//double vx = fieldSpeeds.vxMetersPerSecond * vdRatio;
+		//double vy = fieldSpeeds.vyMetersPerSecond * vdRatio;
+
 		// Calculate angle from robot to target
-		double deltaX = turretTargetPose.getX() - currentRobotPose.getX();
-		double deltaY = turretTargetPose.getY() - currentRobotPose.getY();
+		double deltaX = turretTargetPose.getX()- turretPos.getX();
+		double deltaY = turretTargetPose.getY()- turretPos.getY();
 
 		// Field-relative angle to target
 		Rotation2d angleToTarget = new Rotation2d(deltaX, deltaY);
