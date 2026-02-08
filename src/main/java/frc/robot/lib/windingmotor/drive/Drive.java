@@ -515,7 +515,7 @@ public class Drive extends SubsystemBase {
 
 	/** Returns measured chassis speeds calculated from module states. */
 	@AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
-    public ChassisSpeeds getChassisSpeeds() {
+	public ChassisSpeeds getChassisSpeeds() {
 		return kinematics.toChassisSpeeds(getModuleStates());
 	}
 
