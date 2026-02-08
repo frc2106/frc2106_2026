@@ -140,6 +140,31 @@ public final class RobotConstants {
 			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitThreshold = TURRET_RADIANS_MIN;
 		}
+
+		// Turret offset from robot center (in robot frame) - MEASURE THESE!
+			public static final double TURRET_OFFSET_X_METERS = -0.00144;
+			public static final double TURRET_OFFSET_Y_METERS = 0.00170;
+			
+			// Shooter RPM lookup table: {distance_meters, rpm}
+			// TODO: Characterize these values from real shooting data!
+			public static final double[][] SHOOTER_RPM_DATA = {
+				{1.5, 800.0},   // Close shot
+				{2.0, 1000.0},
+				{2.5, 1200.0},
+				{3.0, 1400.0},
+				{3.5, 1600.0},
+				{4.0, 1800.0},
+				{4.5, 2000.0},
+				{5.0, 2200.0},
+				{5.5, 2400.0},
+				{6.0, 2600.0}   // Far shot
+			};
+			
+			public static final double SHOOTER_ANGLE_RADIANS = Math.toRadians(55.0); // MEASURE YOUR ANGLE
+			public static final double SHOOTER_WHEEL_DIAMETER_METERS = 0.1016; // 4 inches
+			public static final double SHOOTER_EFFICIENCY_FACTOR = 0.5; // CHARACTERIZE THIS (0.4-0.6 typical)
+
+		
 	}
 
 	// Indexer----------------------------------------------------------------------------------------------------

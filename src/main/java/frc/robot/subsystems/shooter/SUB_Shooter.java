@@ -11,35 +11,90 @@ import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.RobotConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class SUB_Shooter extends SubsystemBase {
-	private final IO_ShooterBase io;
-	private final ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
+    private final IO_ShooterBase io;
+    private final ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
 
-	public SUB_Shooter(IO_ShooterBase io) {
-		this.io = io;
-	}
+    public SUB_Shooter(IO_ShooterBase io) {
+        this.io = io;
+    }
 
-	@Override
-	public void periodic() {
-		io.updateInputs(inputs);
-		Logger.processInputs("Shooter", inputs);
-	}
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("Shooter", inputs);
+    }
 
-	public Pair<StatusCode, StatusCode> setShooterVelocities(double velocity) {
-		return io.setShooterVelocities(velocity);
-	}
+    public Pair<StatusCode, StatusCode> setShooterVelocities(double velocity) {
+        return io.setShooterVelocities(velocity);
+    }
 
-	public StatusCode setTurretPosition(Rotation2d position) {
-		return io.setTurretPosition(position);
-	}
+    public StatusCode setTurretPosition(Rotation2d position) {
+        return io.setTurretPosition(position);
+    }
 
-	public void setShooterVoltages(double voltages) {
-		io.setShooterVoltages(voltages);
-	}
+    public void setShooterVoltages(double voltages) {
+        io.setShooterVoltages(voltages);
+    }
 
-	public double getTurretPosition() {
-		return io.getTurretPosition();
-	}
+    public double getTurretPosition() {
+        return io.getTurretPosition();
+    }
+
+    /**
+     * Check if turret is within acceptable tolerance of target angle
+     * 
+     * @param targetAngle The desired turret angle
+     * @return true if turret is aimed within tolerance
+     */
+    public boolean isTurretAtTarget(Rotation2d targetAngle) {
+        double currentAngle = getTurretPosition();
+        double targetRad = targetAngle.getRadians();
+        return Math.abs(targetRad - currentAngle) < RobotConstants.Shooter.TURRET_OFFSET;
+    }
+
+    /**
+     * Check if shooter wheels are at target velocity within tolerance
+     * 
+     * @param targetRPM The desired shooter velocity in RPM
+     * @param toleranceRPM The acceptable velocity tolerance in RPM
+     * @return true if both shooter motors are within tolerance
+     */
+    public boolean isShooterAtSpeed(double targetRPM, double toleranceRPM) {
+        return Math.abs(inputs.shooterMotorOneVelocity - targetRPM) < toleranceRPM
+                && Math.abs(inputs.shooterMotorTwoVelocity - targetRPM) < toleranceRPM;
+    }
+
+    /**
+     * Check if shooter wheels are at target velocity with default tolerance (50 RPM)
+     * 
+     * @param targetRPM The desired shooter velocity in RPM
+     * @return true if both shooter motors are within 50 RPM tolerance
+     */
+    public boolean isShooterAtSpeed(double targetRPM) {
+        return isShooterAtSpeed(targetRPM, 50.0);
+    }
+
+    /**
+     * Check if shooter is ready to fire (turret aimed and wheels at speed)
+     * 
+     * @param targetAngle The desired turret angle
+     * @param targetRPM The desired shooter velocity
+     * @return true if both turret and shooter are ready
+     */
+    public boolean isReadyToShoot(Rotation2d targetAngle, double targetRPM) {
+        return isTurretAtTarget(targetAngle) && isShooterAtSpeed(targetRPM);
+    }
+
+    /**
+     * Get the current shooter motor velocities average
+     * 
+     * @return Average velocity of both shooter motors in RPM
+     */
+    public double getAverageShooterVelocity() {
+        return (inputs.shooterMotorOneVelocity + inputs.shooterMotorTwoVelocity) / 2.0;
+    }
 }

@@ -10,6 +10,7 @@ package frc.robot.subsystems.superstructure;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -20,216 +21,282 @@ import frc.robot.subsystems.indexer.SUB_Indexer;
 import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.shooter.SUB_Shooter;
+import org.littletonrobotics.junction.Logger;
 
 public class SUB_Superstructure extends SubsystemBase {
 
-	public enum RobotState {
-		IDLE,
-		EJECTING,
-		SHOOTING,
-		INTAKING,
-		INTAKE_OFF,
-		INTAKE_HALF,
-		INTAKE_IN,
-		READY
+    public enum RobotState {
+        IDLE,
+        EJECTING,
+        SHOOTING,
+        INTAKING,
+        INTAKE_OFF,
+        INTAKE_HALF,
+        INTAKE_IN,
+        READY
+    }
+
+    private SUB_Indexer indexerRef;
+    private SUB_Intake intakeRef;
+    private SUB_Led ledRef;
+    private SUB_Shooter shooterRef;
+
+    private Drive driveRef;
+    private SUB_Vision visionRef;
+
+    private CommandXboxController operatorControllerRef;
+
+    private RobotState currentRobotState = RobotState.IDLE;
+    private Translation2d turretTargetPose = new Translation2d(4.631, 4.031);
+
+    private Boolean activelyShooting = false;
+    private Boolean activelyReady = false;
+
+    // Robot Constants
+    private final double INTAKE_MAX_EXTENSION_METERS = 0.15;
+
+    // Lookup tables for shooting while moving
+    private final InterpolatingDoubleTreeMap shooterRPMTable;
+
+    // Turret offset from robot center (in robot frame)
+    private final Translation2d TURRET_OFFSET_ROBOT =
+            new Translation2d(
+                    RobotConstants.Shooter.TURRET_OFFSET_X_METERS,
+                    RobotConstants.Shooter.TURRET_OFFSET_Y_METERS);
+
+    public SUB_Superstructure(
+            SUB_Indexer indexerRef,
+            SUB_Intake intakeRef,
+            SUB_Led ledRef,
+            SUB_Shooter shooterRef,
+            Drive driveRef,
+            SUB_Vision visionRef,
+            CommandXboxController operatorControllerRef) {
+        this.indexerRef = indexerRef;
+        this.intakeRef = intakeRef;
+        this.ledRef = ledRef;
+        this.shooterRef = shooterRef;
+        this.driveRef = driveRef;
+        this.visionRef = visionRef;
+        this.operatorControllerRef = operatorControllerRef;
+
+        // Initialize shooter RPM lookup table from constants
+        shooterRPMTable = new InterpolatingDoubleTreeMap();
+        for (double[] dataPoint : RobotConstants.Shooter.SHOOTER_RPM_DATA) {
+            shooterRPMTable.put(dataPoint[0], dataPoint[1]);
+        }
+    }
+
+    @Override
+    public void periodic() {
+
+        // Log current state
+        Logger.recordOutput("Superstructure/RobotState", currentRobotState.toString());
+        Logger.recordOutput("Superstructure/ActivelyShooting", activelyShooting);
+        Logger.recordOutput("Superstructure/ActivelyReady", activelyReady);
+
+        // +12V is full forward
+        // 0V is nothing
+        // -12V is full reverse
+        switch (currentRobotState) {
+            case IDLE:
+                activelyShooting = false;
+                activelyReady = false;
+                indexerRef.setSpinnerVoltage(0.0);
+                indexerRef.setKickerVoltage(0.0);
+                intakeRef.setIntakeVoltage(0.0);
+                intakeRef.setSliderPosition(0.0);
+                shooterRef.setShooterVelocities(0.0);
+                break;
+
+            case EJECTING:
+                indexerRef.setSpinnerVoltage(-5.0);
+                indexerRef.setKickerVoltage(-8.0);
+                intakeRef.setIntakeVoltage(0.0);
+                intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
+                break;
+
+            case SHOOTING:
+                activelyShooting = true;
+                activelyReady = false;
+                break;
+
+            case INTAKING:
+                intakeRef.setIntakeVoltage(8.0);
+                intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
+                break;
+
+            case INTAKE_OFF:
+                intakeRef.setIntakeVoltage(0.0);
+                break;
+
+            case INTAKE_HALF:
+                intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
+                break;
+
+            case INTAKE_IN:
+                intakeRef.setSliderPosition(0.0);
+                break;
+
+            case READY:
+                indexerRef.setSpinnerVoltage(0.0);
+                indexerRef.setKickerVoltage(0.0);
+                activelyReady = true;
+                activelyShooting = false;
+                break;
+        }
+
+        updateTurretAngle();
+        updateShooterVelocity();
+    }
+
+    /**
+     * Calculate and set turret angle to compensate for robot motion.
+     * Uses virtual goal method to account for shot flight time.
+     */
+    private void updateTurretAngle() {
+        Pose2d robotPose = driveRef.getPose();
+
+        // Calculate turret position in field frame
+        Translation2d turretOffsetField = TURRET_OFFSET_ROBOT.rotateBy(robotPose.getRotation());
+        Translation2d turretPos = robotPose.getTranslation().plus(turretOffsetField);
+
+        // Get field-relative velocity for motion compensation
+        ChassisSpeeds fieldSpeeds =
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                        driveRef.getChassisSpeeds(), robotPose.getRotation());
+
+        // Calculate virtual goal position accounting for robot motion
+        Translation2d virtualGoal = calculateVirtualGoal(turretPos, fieldSpeeds);
+
+        // Calculate angle from turret to virtual goal (field-relative)
+        double deltaX = virtualGoal.getX() - turretPos.getX();
+        double deltaY = virtualGoal.getY() - turretPos.getY();
+        Rotation2d fieldRelativeAngle = new Rotation2d(deltaX, deltaY);
+
+        // Convert to robot-relative angle for turret
+        Rotation2d turretAngle = fieldRelativeAngle.minus(robotPose.getRotation());
+
+        // Set turret position
+        shooterRef.setTurretPosition(turretAngle);
+
+        // Log turret aiming data
+        Logger.recordOutput("Superstructure/Turret/Position", turretPos);
+        Logger.recordOutput("Superstructure/Turret/TargetAngleRobotRelative", turretAngle.getDegrees());
+        Logger.recordOutput("Superstructure/Turret/TargetAngleFieldRelative", fieldRelativeAngle.getDegrees());
+        Logger.recordOutput("Superstructure/Turret/CurrentAngle", shooterRef.getTurretPosition());
+    }
+
+    /**
+     * Calculate and set shooter wheel velocity based on distance to target.
+     * Accounts for virtual goal position when robot is moving.
+     */
+    private void updateShooterVelocity() {
+        Pose2d robotPose = driveRef.getPose();
+
+        // Calculate turret position in field frame
+        Translation2d turretOffsetField = TURRET_OFFSET_ROBOT.rotateBy(robotPose.getRotation());
+        Translation2d turretPos = robotPose.getTranslation().plus(turretOffsetField);
+
+        // Get field-relative velocity for motion compensation
+        ChassisSpeeds fieldSpeeds =
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                        driveRef.getChassisSpeeds(), robotPose.getRotation());
+
+        // Calculate virtual goal position accounting for robot motion
+        Translation2d virtualGoal = calculateVirtualGoal(turretPos, fieldSpeeds);
+
+        // Calculate distance to virtual goal
+        double distance = turretPos.getDistance(virtualGoal);
+
+        // Look up required RPM for this distance
+        double targetRPM = shooterRPMTable.get(distance);
+
+        // Set shooter velocity
+        shooterRef.setShooterVelocities(targetRPM);
+
+        // Log shooter velocity data
+        Logger.recordOutput("Superstructure/Shooter/DistanceToVirtualGoal", distance);
+        Logger.recordOutput("Superstructure/Shooter/TargetRPM", targetRPM);
+        Logger.recordOutput("Superstructure/Shooter/AverageRPM", shooterRef.getAverageShooterVelocity());
+    }
+
+	/**
+	 * Calculate virtual goal position compensating for robot motion during shot flight time.
+	 * Uses physics-based flight time calculation for fixed-angle shooter.
+	 *
+	 * @param turretPos Current turret position in field frame
+	 * @param fieldSpeeds Robot velocity in field frame (m/s)
+	 * @return Virtual goal position accounting for motion compensation
+	 */
+	private Translation2d calculateVirtualGoal(
+			Translation2d turretPos, ChassisSpeeds fieldSpeeds) {
+
+		// Calculate distance to actual target
+		double distanceToTarget = turretPos.getDistance(turretTargetPose);
+
+		// Look up shooter RPM for this distance
+		double targetRPM = shooterRPMTable.get(distanceToTarget);
+		
+		// Convert RPM to exit velocity (m/s)
+		double wheelCircumference = Math.PI * RobotConstants.Shooter.SHOOTER_WHEEL_DIAMETER_METERS;
+		double wheelSurfaceSpeed = (targetRPM / 60.0) * wheelCircumference;
+		double exitVelocity = wheelSurfaceSpeed * RobotConstants.Shooter.SHOOTER_EFFICIENCY_FACTOR;
+		
+		// Calculate horizontal velocity component (fixed angle)
+		double horizontalVelocity = exitVelocity * Math.cos(RobotConstants.Shooter.SHOOTER_ANGLE_RADIANS);
+		
+		// Calculate flight time: time = distance / horizontal velocity
+		double flightTime = distanceToTarget / horizontalVelocity;
+
+		// Calculate robot displacement during flight time
+		double displacementX = flightTime * fieldSpeeds.vxMetersPerSecond;
+		double displacementY = flightTime * fieldSpeeds.vyMetersPerSecond;
+
+		// Calculate virtual goal by subtracting robot displacement during flight
+		// We subtract because we need to aim "behind" our direction of motion
+		double virtualX = turretTargetPose.getX() - displacementX;
+		double virtualY = turretTargetPose.getY() - displacementY;
+
+		Translation2d virtualGoal = new Translation2d(virtualX, virtualY);
+
+		// Log motion compensation data
+		Logger.recordOutput("Superstructure/MotionComp/ActualGoal", turretTargetPose);
+		Logger.recordOutput("Superstructure/MotionComp/VirtualGoal", virtualGoal);
+		Logger.recordOutput("Superstructure/MotionComp/DistanceToActualGoal", distanceToTarget);
+		Logger.recordOutput("Superstructure/MotionComp/TargetRPM", targetRPM);
+		Logger.recordOutput("Superstructure/MotionComp/ExitVelocityMPS", exitVelocity);
+		Logger.recordOutput("Superstructure/MotionComp/HorizontalVelocityMPS", horizontalVelocity);
+		Logger.recordOutput("Superstructure/MotionComp/FlightTimeSeconds", flightTime);
+		Logger.recordOutput("Superstructure/MotionComp/RobotVelocityX", fieldSpeeds.vxMetersPerSecond);
+		Logger.recordOutput("Superstructure/MotionComp/RobotVelocityY", fieldSpeeds.vyMetersPerSecond);
+		Logger.recordOutput("Superstructure/MotionComp/DisplacementX", displacementX);
+		Logger.recordOutput("Superstructure/MotionComp/DisplacementY", displacementY);
+		
+		// Calculate and log the compensation offset
+		double compensationOffset = turretTargetPose.getDistance(virtualGoal);
+		Logger.recordOutput("Superstructure/MotionComp/CompensationOffsetMeters", compensationOffset);
+
+		return virtualGoal;
 	}
 
-	private SUB_Indexer indexerRef;
-	private SUB_Intake intakeRef;
-	private SUB_Led ledRef;
-	private SUB_Shooter shooterRef;
+    public void setRobotState(RobotState newRobotState) {
+        currentRobotState = newRobotState;
+    }
 
-	private Drive driveRef;
-	private SUB_Vision visionRef;
+    /**
+     * Update the target position for the turret.
+     * Useful for autonomous or dynamic target switching.
+     */
+    public void setTurretTarget(Translation2d newTarget) {
+        turretTargetPose = newTarget;
+        Logger.recordOutput("Superstructure/TargetPoseUpdated", newTarget);
+    }
 
-	private CommandXboxController operatorControllerRef;
-
-	private RobotState currentRobotState = RobotState.IDLE;
-	private Translation2d turretTargetPose = new Translation2d(4.631, 4.031);
-
-	private Boolean activelyShooting = false;
-	private Boolean activelyReady = false;
-
-	// Robot Constants
-	private final double INTAKE_MAX_EXTENSION_METERS = 0.15;
-
-	public SUB_Superstructure(
-			SUB_Indexer inexerRef,
-			SUB_Intake intakeRef,
-			SUB_Led ledRef,
-			SUB_Shooter shooterRef,
-			Drive driveRef,
-			SUB_Vision visionRef,
-			CommandXboxController operatorControllerRef) {
-		this.indexerRef = inexerRef;
-		this.intakeRef = intakeRef;
-		this.ledRef = ledRef;
-		this.shooterRef = shooterRef;
-		this.driveRef = driveRef;
-		this.visionRef = visionRef;
-		this.operatorControllerRef = operatorControllerRef;
-	}
-
-	@Override
-	public void periodic() {
-
-		// +12V is full forward
-		// 0V is nothing
-		// -12V is full reverse
-		switch (currentRobotState) {
-			case IDLE:
-				activelyShooting = false;
-				activelyReady = false;
-				indexerRef.setSpinnerVoltage(0.0);
-				indexerRef.setKickerVoltage(0.0);
-				intakeRef.setIntakeVoltage(0.0);
-				intakeRef.setSliderPosition(0.0);
-				shooterRef.setShooterVelocities(0.0);
-				break;
-
-			case EJECTING:
-				indexerRef.setSpinnerVoltage(-5.0);
-				indexerRef.setKickerVoltage(-8.0);
-				intakeRef.setIntakeVoltage(0.0);
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
-				break;
-
-			case SHOOTING:
-				activelyShooting = true;
-				activelyReady = false;
-				break;
-
-			case INTAKING:
-				intakeRef.setIntakeVoltage(8.0);
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
-				break;
-
-			case INTAKE_OFF:
-				intakeRef.setIntakeVoltage(0.0);
-
-			case INTAKE_HALF:
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
-
-			case INTAKE_IN:
-				intakeRef.setSliderPosition(0.0);
-
-			case READY:
-				indexerRef.setSpinnerVoltage(0.0);
-				indexerRef.setKickerVoltage(0.0);
-				activelyReady = true;
-				activelyShooting = false;
-				break;
-
-				/*case CENTER_TURRET:
-					shooterRef.setTurretPosition(Rotation2d.kZero);
-					break;
-
-				case TURRET_LEFT:
-					shooterRef.setTurretPosition(Rotation2d.kCCW_90deg);
-					break;
-
-				case TURRET_RIGHT:
-					shooterRef.setTurretPosition(Rotation2d.kCW_90deg);
-					break; */
-
-		}
-
-		//demo();
-
-		turretLoop();
-	}
-
-	public void turretLoop() {
-
-		// Get turret pose
-		Pose2d currentRobotPose = driveRef.getPose();
-		Translation2d turretOffsetRobot = new Translation2d(-5.687, 6.687);
-		Translation2d turretOffsetField = turretOffsetRobot.rotateBy(currentRobotPose.getRotation());
-		Translation2d turretPos = currentRobotPose.getTranslation().plus(turretOffsetField);
-
-		// Get distance from our target
-		double distanceMeters = turretPos.getDistance(turretTargetPose);
-
-		// Calculate the RPM needed to reach our target
-		// This is based off a TEST equation: https://www.desmos.com/calculator/5lntkukgt6
-		double velocityTargetRPM =
-				(-69.53748 * Math.pow(distanceMeters, 2)) + (1183.67738 * distanceMeters) + (610.35088);
-
-		// TURRET ANGLE
-
-		//speed to distance ration
-		double vdRatio = 1;
-
-		// Robot velocity in FIELD frame (vx, vy in m/s)
-		//ChassisSpeeds fieldSpeeds = driveRef.getFieldRelativeSpeeds(); 
-		//double vx = fieldSpeeds.vxMetersPerSecond * vdRatio;
-		//double vy = fieldSpeeds.vyMetersPerSecond * vdRatio;
-
-		// Calculate angle from robot to target
-		double deltaX = turretTargetPose.getX()- turretPos.getX();
-		double deltaY = turretTargetPose.getY()- turretPos.getY();
-
-		// Field-relative angle to target
-		Rotation2d angleToTarget = new Rotation2d(deltaX, deltaY);
-
-		// Convert to robot-relative (subtract robot heading)
-		Rotation2d turretAngle = angleToTarget.minus(currentRobotPose.getRotation());
-
-		// turretAngle = turretAngle.unaryMinus();
-
-		// Set turret position
-		shooterRef.setTurretPosition(turretAngle);
-
-		// Set the target velocity
-		if (activelyShooting) {
-
-			shooterRef.setShooterVelocities(velocityTargetRPM);
-
-			if (turretAngle.getRadians()
-							> shooterRef.getTurretPosition() - RobotConstants.Shooter.TURRET_OFFSET
-					&& turretAngle.getRadians()
-							< shooterRef.getTurretPosition() + RobotConstants.Shooter.TURRET_OFFSET) {
-
-				indexerRef.setKickerVoltage(8.0);
-				indexerRef.setSpinnerVoltage(8.0);
-
-			} else {
-
-				indexerRef.setKickerVoltage(0.0);
-				indexerRef.setSpinnerVoltage(0.0);
-			}
-		}
-
-		if (activelyReady) {
-
-			shooterRef.setShooterVelocities(velocityTargetRPM);
-		}
-	}
-
-	public void demo() {
-
-		Rotation2d currentRobotRotation = driveRef.getRotation();
-
-		double deltaX = operatorControllerRef.getLeftX();
-		double deltaY = operatorControllerRef.getLeftY();
-
-		Rotation2d angleToTarget = new Rotation2d(deltaX, deltaY);
-
-		Rotation2d turretAngle = angleToTarget.minus(currentRobotRotation);
-
-		shooterRef.setTurretPosition(turretAngle);
-
-		if (currentRobotState == RobotState.SHOOTING || activelyShooting) {
-			if (currentRobotState == RobotState.SHOOTING) {
-				activelyShooting = true;
-			} else if (currentRobotState == RobotState.IDLE) {
-				activelyShooting = false;
-			}
-			shooterRef.setShooterVelocities(100);
-		}
-	}
-
-	public void setRobotState(RobotState newRobotState) {
-		currentRobotState = newRobotState;
-	}
+    /**
+     * Get the current turret target position.
+     */
+    public Translation2d getTurretTarget() {
+        return turretTargetPose;
+    }
 }
