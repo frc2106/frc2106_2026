@@ -27,12 +27,19 @@ public class SUB_Indexer extends SubsystemBase {
 	}
 
 	public StatusCode setSpinnerVoltage(double voltage) {
-		io.setSpinnerVoltage(voltage);
-		return StatusCode.DeviceIsNull;
+		return io.setSpinnerVoltage(voltage);
 	}
 
 	public StatusCode setKickerVoltage(double voltage) {
 		io.setKickerVoltage(voltage);
 		return StatusCode.DeviceIsNull;
+	}
+
+	public StatusCode setSpinnerVelocity(double Velocity) {
+		return io.setSpinnerVoltage(Velocity);
+	}
+
+	public StatusCode setKickerVelocity(double Velocity) {
+		return io.setKickerVoltage(Velocity);
 	}
 }

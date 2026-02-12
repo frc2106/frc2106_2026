@@ -33,7 +33,9 @@ public class SUB_Superstructure extends SubsystemBase {
 		INTAKE_OFF,
 		INTAKE_HALF,
 		INTAKE_IN,
-		READY
+		READY,
+		TURRET_CENTER,
+		TURRET_LEFT
 	}
 
 	private SUB_Indexer indexerRef;
@@ -51,6 +53,10 @@ public class SUB_Superstructure extends SubsystemBase {
 
 	private Boolean activelyShooting = false;
 	private Boolean activelyReady = false;
+
+	// test values
+	private Rotation2d center = new Rotation2d(0.0);
+	private Rotation2d left = new Rotation2d(Math.PI / 2);
 
 	// Robot Constants
 	private final double INTAKE_MAX_EXTENSION_METERS = 0.15;
@@ -105,25 +111,29 @@ public class SUB_Superstructure extends SubsystemBase {
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(0.0);
-				intakeRef.setSliderPosition(0.0);
+				// intakeRef.setSliderPosition(0.0);
 				shooterRef.setShooterVelocities(0.0);
 				break;
 
 			case EJECTING:
 				indexerRef.setSpinnerVoltage(-5.0);
 				indexerRef.setKickerVoltage(-8.0);
-				intakeRef.setIntakeVoltage(0.0);
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
+				// intakeRef.setIntakeVoltage(0.0);
+				// intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 
 			case SHOOTING:
-				activelyShooting = true;
-				activelyReady = false;
+				// activelyShooting = true;
+				// activelyReady = false;
+				shooterRef.setShooterVelocities(100);
+				indexerRef.setSpinnerVelocity(100);
+				indexerRef.setKickerVelocity(50);
+
 				break;
 
 			case INTAKING:
 				intakeRef.setIntakeVoltage(8.0);
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
+				// intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 
 			case INTAKE_OFF:
@@ -131,23 +141,34 @@ public class SUB_Superstructure extends SubsystemBase {
 				break;
 
 			case INTAKE_HALF:
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
+				// intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
 				break;
 
 			case INTAKE_IN:
-				intakeRef.setSliderPosition(0.0);
+				// intakeRef.setSliderPosition(0.0);
 				break;
 
 			case READY:
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
-				activelyReady = true;
-				activelyShooting = false;
+				shooterRef.setShooterVelocities(100);
+				// activelyReady = true;
+				// activelyShooting = false;
+				break;
+
+			case TURRET_CENTER:
+				shooterRef.setTurretPosition(center);
+				break;
+
+			case TURRET_LEFT:
+				shooterRef.setTurretPosition(left);
 				break;
 		}
 
-		updateTurretAngle();
-		updateShooterVelocity();
+		// demo();
+
+		// updateTurretAngle();
+		// updateShooterVelocity();
 	}
 
 	/**
@@ -278,6 +299,29 @@ public class SUB_Superstructure extends SubsystemBase {
 		Logger.recordOutput("Superstructure/MotionComp/CompensationOffsetMeters", compensationOffset);
 
 		return virtualGoal;
+	}
+
+	public void demo() {
+
+		Rotation2d currentRobotRotation = driveRef.getRotation();
+
+		double deltaX = operatorControllerRef.getLeftX();
+		double deltaY = operatorControllerRef.getLeftY();
+
+		Rotation2d angleToTarget = new Rotation2d(deltaX, deltaY);
+
+		Rotation2d turretAngle = angleToTarget.minus(currentRobotRotation);
+
+		shooterRef.setTurretPosition(turretAngle);
+
+		if (activelyShooting) {
+			if (currentRobotState == RobotState.SHOOTING) {
+				activelyShooting = true;
+			} else if (currentRobotState == RobotState.IDLE) {
+				activelyShooting = false;
+			}
+			shooterRef.setShooterVelocities(100);
+		}
 	}
 
 	public void setRobotState(RobotState newRobotState) {

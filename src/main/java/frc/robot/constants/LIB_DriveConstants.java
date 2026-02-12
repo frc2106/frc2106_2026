@@ -125,33 +125,33 @@ public class LIB_DriveConstants {
 	// ====================================================================
 
 	// Front Left Module
-	private static final int kFrontLeftDriveMotorId = 7; // Drive motor CAN ID
-	private static final int kFrontLeftSteerMotorId = 8; // Steer motor CAN ID
-	private static final int kFrontLeftEncoderId = 23; // CANcoder CAN ID
+	private static final int kFrontLeftDriveMotorId = 7; // Drive motor CAN ID 7
+	private static final int kFrontLeftSteerMotorId = 8; // Steer motor CAN ID 8
+	private static final int kFrontLeftEncoderId = 23; // CANcoder CAN ID 23
 	private static final Angle kFrontLeftEncoderOffset = Radians.of(-1.526); // Encoder offset (rad)
 	private static final boolean kFrontLeftSteerMotorInverted = true; // Steer motor inversion
 	private static final boolean kFrontLeftEncoderInverted = false; // Encoder inversion
 
 	// Front Right Module
-	private static final int kFrontRightDriveMotorId = 1; // Drive motor CAN ID
-	private static final int kFrontRightSteerMotorId = 2; // Steer motor CAN ID
-	private static final int kFrontRightEncoderId = 20; // CANcoder CAN ID
+	private static final int kFrontRightDriveMotorId = 5; // Drive motor CAN ID 1
+	private static final int kFrontRightSteerMotorId = 6; // Steer motor CAN ID 2
+	private static final int kFrontRightEncoderId = 22; // CANcoder CAN ID 20
 	private static final Angle kFrontRightEncoderOffset = Radians.of(-1.397); // Encoder offset (rad)
 	private static final boolean kFrontRightSteerMotorInverted = true; // Steer motor inversion
 	private static final boolean kFrontRightEncoderInverted = false; // Encoder inversion
 
 	// Back Left Module
-	private static final int kBackLeftDriveMotorId = 5; // Drive motor CAN ID
-	private static final int kBackLeftSteerMotorId = 6; // Steer motor CAN ID
-	private static final int kBackLeftEncoderId = 22; // CANcoder CAN ID
+	private static final int kBackLeftDriveMotorId = 1; // Drive motor CAN ID 5
+	private static final int kBackLeftSteerMotorId = 2; // Steer motor CAN ID 6
+	private static final int kBackLeftEncoderId = 20; // CANcoder CAN ID 22
 	private static final Angle kBackLeftEncoderOffset = Radians.of(-0.729); // Encoder offset (rad)
 	private static final boolean kBackLeftSteerMotorInverted = true; // Steer motor inversion
 	private static final boolean kBackLeftEncoderInverted = false; // Encoder inversion
 
 	// Back Right Module
-	private static final int kBackRightDriveMotorId = 3; // Drive motor CAN ID
-	private static final int kBackRightSteerMotorId = 4; // Steer motor CAN ID
-	private static final int kBackRightEncoderId = 21; // CANcoder CAN ID
+	private static final int kBackRightDriveMotorId = 3; // Drive motor CAN ID 3
+	private static final int kBackRightSteerMotorId = 4; // Steer motor CAN ID 4
+	private static final int kBackRightEncoderId = 21; // CANcoder CAN ID 21
 	private static final Angle kBackRightEncoderOffset = Radians.of(1.528); // Encoder offset (rad)
 	private static final boolean kBackRightSteerMotorInverted = true; // Steer motor inversion
 	private static final boolean kBackRightEncoderInverted = false; // Encoder inversion

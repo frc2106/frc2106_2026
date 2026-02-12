@@ -103,9 +103,9 @@ public class RobotContainer {
 				.rightTrigger()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.SHOOTING));
 
-		/* operatorController
-		.rightTrigger()
-		.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY)); */
+		operatorController
+				.rightTrigger()
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
 
 		operatorController
 				.x()
@@ -114,6 +114,14 @@ public class RobotContainer {
 		operatorController
 				.b()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
+
+		turretTestcontroller
+				.y()
+				.onTrue(
+						new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_CENTER));
+		turretTestcontroller
+				.x()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_LEFT));
 
 		// drive.setDefaultCommand(DriveCommands.driveTest(drive));
 	}
