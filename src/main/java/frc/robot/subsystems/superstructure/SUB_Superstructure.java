@@ -59,7 +59,7 @@ public class SUB_Superstructure extends SubsystemBase {
 	private Rotation2d left = new Rotation2d(Math.PI / 2);
 
 	// Robot Constants
-	private final double INTAKE_MAX_EXTENSION_METERS = 0.15;
+	private final double INTAKE_MAX_EXTENSION_METERS = 11.3;
 
 	// Lookup tables for shooting while moving
 	private final InterpolatingDoubleTreeMap shooterRPMTable;
@@ -111,7 +111,7 @@ public class SUB_Superstructure extends SubsystemBase {
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(0.0);
-				// intakeRef.setSliderPosition(0.0);
+				intakeRef.setSliderPosition(0.0);
 				shooterRef.setShooterVelocities(0.0);
 				break;
 
@@ -125,15 +125,15 @@ public class SUB_Superstructure extends SubsystemBase {
 			case SHOOTING:
 				// activelyShooting = true;
 				// activelyReady = false;
-				shooterRef.setShooterVelocities(100);
-				indexerRef.setSpinnerVelocity(100);
-				indexerRef.setKickerVelocity(50);
+				shooterRef.setShooterVelocities(1.0);
+				indexerRef.setSpinnerVelocity(15.0);
+				indexerRef.setKickerVelocity(25.0);
 
 				break;
 
 			case INTAKING:
 				intakeRef.setIntakeVoltage(8.0);
-				// intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
+				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 
 			case INTAKE_OFF:
@@ -141,11 +141,11 @@ public class SUB_Superstructure extends SubsystemBase {
 				break;
 
 			case INTAKE_HALF:
-				// intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
+				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
 				break;
 
 			case INTAKE_IN:
-				// intakeRef.setSliderPosition(0.0);
+				intakeRef.setSliderPosition(0.0);
 				break;
 
 			case READY:

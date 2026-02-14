@@ -91,11 +91,11 @@ public class RobotContainer {
 						() -> -driverController.getRawAxis(0),
 						() -> -driverController.getRawAxis(3)));
 
-		operatorController
+		turretTestcontroller
 				.leftTrigger()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKING));
 
-		operatorController
+		turretTestcontroller
 				.leftTrigger()
 				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE_OFF));
 
@@ -111,7 +111,7 @@ public class RobotContainer {
 				.x()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
 
-		operatorController
+		turretTestcontroller
 				.b()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
 
