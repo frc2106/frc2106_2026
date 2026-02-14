@@ -34,12 +34,4 @@ public class SUB_Indexer extends SubsystemBase {
 		io.setKickerVoltage(voltage);
 		return StatusCode.DeviceIsNull;
 	}
-
-	public StatusCode setSpinnerVelocity(double Velocity) {
-		return io.setSpinnerVoltage(Velocity);
-	}
-
-	public StatusCode setKickerVelocity(double Velocity) {
-		return io.setKickerVoltage(Velocity);
-	}
 }

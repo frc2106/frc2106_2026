@@ -26,6 +26,7 @@ public class SUB_Shooter extends SubsystemBase {
 	public void periodic() {
 		io.updateInputs(inputs);
 		Logger.processInputs("Shooter", inputs);
+		io.setShooterVelocities(2000);
 	}
 
 	public Pair<StatusCode, StatusCode> setShooterVelocities(double velocity) {

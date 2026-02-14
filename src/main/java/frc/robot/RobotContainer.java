@@ -91,11 +91,11 @@ public class RobotContainer {
 						() -> -driverController.getRawAxis(0),
 						() -> -driverController.getRawAxis(3)));
 
-		turretTestcontroller
+		operatorController
 				.leftTrigger()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKING));
 
-		turretTestcontroller
+		operatorController
 				.leftTrigger()
 				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE_OFF));
 
@@ -112,7 +112,7 @@ public class RobotContainer {
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
 
 		turretTestcontroller
-				.b()
+				.a()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
 
 		turretTestcontroller
@@ -120,8 +120,8 @@ public class RobotContainer {
 				.onTrue(
 						new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_CENTER));
 		turretTestcontroller
-				.x()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_LEFT));
+				.b()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_RIGHT));
 
 		// drive.setDefaultCommand(DriveCommands.driveTest(drive));
 	}

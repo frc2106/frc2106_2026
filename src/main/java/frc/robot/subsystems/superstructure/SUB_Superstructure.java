@@ -35,7 +35,7 @@ public class SUB_Superstructure extends SubsystemBase {
 		INTAKE_IN,
 		READY,
 		TURRET_CENTER,
-		TURRET_LEFT
+		TURRET_RIGHT
 	}
 
 	private SUB_Indexer indexerRef;
@@ -56,7 +56,7 @@ public class SUB_Superstructure extends SubsystemBase {
 
 	// test values
 	private Rotation2d center = new Rotation2d(0.0);
-	private Rotation2d left = new Rotation2d(Math.PI / 2);
+	private Rotation2d left = new Rotation2d(-Math.PI / 2);
 
 	// Robot Constants
 	private final double INTAKE_MAX_EXTENSION_METERS = 11.3;
@@ -112,7 +112,7 @@ public class SUB_Superstructure extends SubsystemBase {
 				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(0.0);
 				intakeRef.setSliderPosition(0.0);
-				shooterRef.setShooterVelocities(0.0);
+
 				break;
 
 			case EJECTING:
@@ -125,9 +125,8 @@ public class SUB_Superstructure extends SubsystemBase {
 			case SHOOTING:
 				// activelyShooting = true;
 				// activelyReady = false;
-				shooterRef.setShooterVelocities(1.0);
-				indexerRef.setSpinnerVelocity(15.0);
-				indexerRef.setKickerVelocity(25.0);
+				indexerRef.setSpinnerVoltage(12.0);
+				indexerRef.setKickerVoltage(10.0);
 
 				break;
 
@@ -151,7 +150,6 @@ public class SUB_Superstructure extends SubsystemBase {
 			case READY:
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
-				shooterRef.setShooterVelocities(100);
 				// activelyReady = true;
 				// activelyShooting = false;
 				break;
@@ -160,12 +158,14 @@ public class SUB_Superstructure extends SubsystemBase {
 				shooterRef.setTurretPosition(center);
 				break;
 
-			case TURRET_LEFT:
+			case TURRET_RIGHT:
 				shooterRef.setTurretPosition(left);
 				break;
 		}
 
 		// demo();
+
+		// shooterRef.setShooterVelocities(4000);
 
 		// updateTurretAngle();
 		// updateShooterVelocity();
@@ -299,29 +299,6 @@ public class SUB_Superstructure extends SubsystemBase {
 		Logger.recordOutput("Superstructure/MotionComp/CompensationOffsetMeters", compensationOffset);
 
 		return virtualGoal;
-	}
-
-	public void demo() {
-
-		Rotation2d currentRobotRotation = driveRef.getRotation();
-
-		double deltaX = operatorControllerRef.getLeftX();
-		double deltaY = operatorControllerRef.getLeftY();
-
-		Rotation2d angleToTarget = new Rotation2d(deltaX, deltaY);
-
-		Rotation2d turretAngle = angleToTarget.minus(currentRobotRotation);
-
-		shooterRef.setTurretPosition(turretAngle);
-
-		if (activelyShooting) {
-			if (currentRobotState == RobotState.SHOOTING) {
-				activelyShooting = true;
-			} else if (currentRobotState == RobotState.IDLE) {
-				activelyShooting = false;
-			}
-			shooterRef.setShooterVelocities(100);
-		}
 	}
 
 	public void setRobotState(RobotState newRobotState) {

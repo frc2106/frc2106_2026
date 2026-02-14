@@ -125,7 +125,7 @@ public class IO_ModuleReal implements IO_ModuleBase {
 		this.constants = constants;
 		driveTalon = new TalonFX(constants.DriveMotorId, RobotConstants.CANBUS_CANIVORE);
 		turnTalon = new TalonFX(constants.SteerMotorId, RobotConstants.CANBUS_CANIVORE);
-		cancoder = new CANcoder(constants.EncoderId);
+		cancoder = new CANcoder(constants.EncoderId, RobotConstants.CANBUS_CANIVORE);
 
 		// Configure drive motor
 		var driveConfig = constants.DriveMotorInitialConfigs;
