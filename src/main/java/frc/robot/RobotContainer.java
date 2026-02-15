@@ -111,7 +111,7 @@ public class RobotContainer {
 				.x()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
 
-		turretTestcontroller
+		operatorController
 				.a()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
 

@@ -18,6 +18,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.constants.RobotConstants;
 
 public class IO_ShooterReal implements IO_ShooterBase {
@@ -56,7 +57,8 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		turretMotor.getConfigurator().apply(turretMotorConfiguration);
 		turretMotorRequest = new PositionVoltage(0.0);
 
-		turretMotor.setPosition(0);
+		//turretMotor.setPosition(0);
+
 	}
 
 	@Override
@@ -94,9 +96,9 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		double targetRadians = position.getRadians();
 
 		// Normalize and clamp are fine, they should stay in radians
-		if (Math.abs(targetRadians) > Math.PI) {
-			targetRadians = Math.atan2(Math.sin(targetRadians), Math.cos(targetRadians));
-		}
+		//if (Math.abs(targetRadians) > Math.PI) {
+		//	targetRadians = Math.atan2(Math.sin(targetRadians), Math.cos(targetRadians));
+		//}
 
 		if (targetRadians > RobotConstants.Shooter.TURRET_RADIANS_MAX) {
 			targetRadians = RobotConstants.Shooter.TURRET_RADIANS_MAX;
@@ -114,9 +116,6 @@ public class IO_ShooterReal implements IO_ShooterBase {
 	@Override
 	public void setTurretVoltage(double voltage){
 		turretMotorVoltageRequest.withOutput(voltage);
-		
-
-
 	}
 
 	@Override
@@ -130,4 +129,6 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		shooterMotorOne.setControl(shooterMotorsVoltageRequest);
 		shooterMotorTwo.setControl(shooterMotorsVoltageRequest);
 	}
+
+	
 }

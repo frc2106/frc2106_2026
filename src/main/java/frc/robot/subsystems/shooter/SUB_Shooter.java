@@ -13,14 +13,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.RobotConstants;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class SUB_Shooter extends SubsystemBase {
 	private final IO_ShooterBase io;
 	private final ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
 
+	 private final DigitalInput turretHomeSensor = new DigitalInput(9); // DIO 
+
 	public SUB_Shooter(IO_ShooterBase io) {
 		this.io = io;
 	}
+
+	public boolean isTurretHomeSensorTriggered() {
+        // Invert if your sensor is active-low
+        return turretHomeSensor.get();
+    }
 
 	@Override
 	public void periodic() {

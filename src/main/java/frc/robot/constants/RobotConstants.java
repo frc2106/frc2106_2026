@@ -123,8 +123,8 @@ public final class RobotConstants {
 		// Turret motor
 		public static final int TURRET_MOTOR_CAN_ID = 22;
 
-		public static final double TURRET_RADIANS_MAX = 0.53; // 130 deg max
-		public static final double TURRET_RADIANS_MIN = -6.55; // -130 deg max
+		public static final double TURRET_RADIANS_MAX = 0.5; // 28.6479 deg max
+		public static final double TURRET_RADIANS_MIN = -6.1; // -349.504 deg max
 
 		public static final double TURRET_OFFSET = 0.0; // 0.05
 
@@ -141,15 +141,9 @@ public final class RobotConstants {
 			TURRET_MOTOR_CONFIG.MotorOutput.Inverted =
 					InvertedValue.CounterClockwise_Positive; // Which way is positive?
 
-			TURRET_MOTOR_CONFIG.Slot0.kP = 0.0; // Slot 0 P value was 9.0
-			TURRET_MOTOR_CONFIG.Slot0.kI = 0.0; // Slot 0 I value
-			TURRET_MOTOR_CONFIG.Slot0.kD = 0.0; // Slot 0 D value
-
-			/*
-			 * 			TURRET_MOTOR_CONFIG.Slot0.kP = 6.0; // Slot 0 P value was 9.0
+			TURRET_MOTOR_CONFIG.Slot0.kP = 6.0; // Slot 0 P value was 9.0
 			TURRET_MOTOR_CONFIG.Slot0.kI = 0.013; // Slot 0 I value
 			TURRET_MOTOR_CONFIG.Slot0.kD = 0.07; // Slot 0 D value
-			 */
 
 			TURRET_MOTOR_CONFIG.Slot0.kS = 0.0; // was 1.2
 			TURRET_MOTOR_CONFIG.Slot0.kV = 0.0; // was 0.2

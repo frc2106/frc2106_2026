@@ -148,7 +148,7 @@ public class SUB_Superstructure extends SubsystemBase {
 				break;
 
 			case READY:
-				indexerRef.setSpinnerVoltage(0.0);
+				indexerRef.setSpinnerVoltage(-2.0);
 				indexerRef.setKickerVoltage(0.0);
 				// activelyReady = true;
 				// activelyShooting = false;
