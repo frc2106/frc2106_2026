@@ -132,6 +132,8 @@ public final class RobotConstants {
 
 		public static final TalonFXConfiguration TURRET_MOTOR_CONFIG = new TalonFXConfiguration();
 
+		public static final double TURRET_SLOW_MOVE_VOLTAGE = 0.0;
+
 		static {
 			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 30; // Amps
 			// 11T motor -> 154T turret: 154 / 11 ≈ 14.0

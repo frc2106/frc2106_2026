@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radian;
 
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -31,6 +32,10 @@ public class IO_ShooterReal implements IO_ShooterBase {
 
 	private final TalonFX turretMotor;
 	private final PositionVoltage turretMotorRequest;
+
+	private final DigitalInput turretHomingSensor = new DigitalInput(9); // DIO 9
+	// private Boolean homed = false;
+	private double slowVolts = RobotConstants.Shooter.TURRET_SLOW_MOVE_VOLTAGE;
 
 	public IO_ShooterReal(
 			TalonFXConfiguration shooterMotorOneConfiguration,
@@ -57,7 +62,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		turretMotor.getConfigurator().apply(turretMotorConfiguration);
 		turretMotorRequest = new PositionVoltage(0.0);
 
-		//turretMotor.setPosition(0);
+		// turretMotor.setPosition(0);
 
 	}
 
@@ -96,9 +101,9 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		double targetRadians = position.getRadians();
 
 		// Normalize and clamp are fine, they should stay in radians
-		//if (Math.abs(targetRadians) > Math.PI) {
+		// if (Math.abs(targetRadians) > Math.PI) {
 		//	targetRadians = Math.atan2(Math.sin(targetRadians), Math.cos(targetRadians));
-		//}
+		// }
 
 		if (targetRadians > RobotConstants.Shooter.TURRET_RADIANS_MAX) {
 			targetRadians = RobotConstants.Shooter.TURRET_RADIANS_MAX;
@@ -114,7 +119,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 	}
 
 	@Override
-	public void setTurretVoltage(double voltage){
+	public void setTurretVoltage(double voltage) {
 		turretMotorVoltageRequest.withOutput(voltage);
 	}
 
@@ -130,5 +135,42 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		shooterMotorTwo.setControl(shooterMotorsVoltageRequest);
 	}
 
-	
+	@Override
+	public Boolean homeTurret(Boolean homed) {
+
+		if (!homed) {
+			var homingLimit = new CurrentLimitsConfigs();
+			homingLimit.StatorCurrentLimit = 10.0; // 10A stator limit
+			homingLimit.StatorCurrentLimitEnable = true;
+			turretMotor.getConfigurator().apply(homingLimit);
+
+			setTurretVoltage(slowVolts);
+
+			double current = turretMotor.getStatorCurrent().getValueAsDouble();
+			double velocity = Math.abs(turretMotor.getVelocity().getValueAsDouble()); // rps
+
+			boolean isStalled = (current > 8.0) && (velocity < 2.0); // Tune these thresholds!
+
+			if (isStalled) {
+				slowVolts = slowVolts * -1;
+			}
+
+			if (turretHomingSensor.get()) {
+				setTurretVoltage(0.0);
+
+				// Convert home angle from radians -> turret rotations
+				double homeRadians = -0.75 * Math.PI;
+				double homeRotations = homeRadians / RobotConstants.Shooter.ROT_TO_RAD;
+
+				turretMotor.setPosition(homeRotations); // Now in rotations!
+
+				var normalLimit = new CurrentLimitsConfigs();
+				normalLimit.StatorCurrentLimit = 30.0; // your normal value
+				normalLimit.StatorCurrentLimitEnable = true;
+				turretMotor.getConfigurator().apply(normalLimit);
+				homed = true;
+			}
+		}
+		return homed;
+	}
 }

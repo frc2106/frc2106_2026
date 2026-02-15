@@ -54,6 +54,8 @@ public class SUB_Superstructure extends SubsystemBase {
 	private Boolean activelyShooting = false;
 	private Boolean activelyReady = false;
 
+	private Boolean homed = false;
+
 	// test values
 	private Rotation2d center = new Rotation2d(0.0);
 	private Rotation2d left = new Rotation2d(-Math.PI / 2);
@@ -197,8 +199,15 @@ public class SUB_Superstructure extends SubsystemBase {
 		// Convert to robot-relative angle for turret
 		Rotation2d turretAngle = fieldRelativeAngle.minus(robotPose.getRotation());
 
-		// Set turret position
-		shooterRef.setTurretPosition(turretAngle);
+		// finds hall effect sensor to find the turrets position
+		if (shooterRef.homeTurret(homed)) {
+			homed = true;
+		}
+
+		// Set turret position if turret is homed
+		if (homed) {
+			shooterRef.setTurretPosition(turretAngle);
+		}
 
 		// Log turret aiming data
 		Logger.recordOutput("Superstructure/Turret/Position", turretPos);

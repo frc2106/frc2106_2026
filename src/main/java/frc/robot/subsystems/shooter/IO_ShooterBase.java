@@ -43,4 +43,6 @@ public interface IO_ShooterBase {
 	public void setTurretVoltage(double voltage);
 
 	public double getTurretPosition();
+
+	public Boolean homeTurret(Boolean homed);
 }
