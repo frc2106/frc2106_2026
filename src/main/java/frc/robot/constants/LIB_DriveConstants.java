@@ -162,25 +162,25 @@ public class LIB_DriveConstants {
 
 	// Front Left Position
 	private static final Distance kFrontLeftXPos = Inches.of(10.375); // X position from center (in)
-	private static final Distance kFrontLeftYPos = Inches.of(10.375); // Y position from center (in)
+	private static final Distance kFrontLeftYPos = Inches.of(11.375); // Y position from center (in)
 
 	// Front Right Position
 	private static final Distance kFrontRightXPos = Inches.of(10.375); // X position from center (in)
-	private static final Distance kFrontRightYPos = Inches.of(-10.375); // Y position from center (in)
+	private static final Distance kFrontRightYPos = Inches.of(-11.375); // Y position from center (in)
 
 	// Back Left Position
 	private static final Distance kBackLeftXPos = Inches.of(-10.375); // X position from center (in)
-	private static final Distance kBackLeftYPos = Inches.of(10.375); // Y position from center (in)
+	private static final Distance kBackLeftYPos = Inches.of(11.375); // Y position from center (in)
 
 	// Back Right Position
 	private static final Distance kBackRightXPos = Inches.of(-10.375); // X position from center (in)
-	private static final Distance kBackRightYPos = Inches.of(-10.375); // Y position from center (in)
+	private static final Distance kBackRightYPos = Inches.of(-11.375); // Y position from center (in)
 
 	// ====================================================================
 	// SECTION 10: PATHPLANNER CONFIG
 	// ====================================================================
 
-	public static final double ROBOT_MASS_KG = 59.0;
+	public static final double ROBOT_MASS_KG = 64.41;
 	public static final double ROBOT_MOI = 6.883;
 	public static final double WHEEL_COF = 1.2;
 

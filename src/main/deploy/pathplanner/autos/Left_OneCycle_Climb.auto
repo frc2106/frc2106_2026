@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left_A"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left_B"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left_C_CLIMB"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Left_Side",
+  "choreoAuto": false
+}
