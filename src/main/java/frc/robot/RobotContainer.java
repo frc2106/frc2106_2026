@@ -118,10 +118,10 @@ public class RobotContainer {
 		turretTestcontroller
 				.y()
 				.onTrue(
-						new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_CENTER));
+						new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_TEST_ONE));
 		turretTestcontroller
-				.b()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_RIGHT));
+				.y()
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_TEST_TWO));
 
 		// drive.setDefaultCommand(DriveCommands.driveTest(drive));
 	}

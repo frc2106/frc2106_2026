@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.75,
-        "y": 5.0
+        "x": 7.713790560471976,
+        "y": 4.8240412979351035
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.726725663716815,
-        "y": 6.214564896755162
+        "x": 7.690516224188791,
+        "y": 6.038606194690265
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left_A_END"
     },
     {
       "anchor": {
@@ -67,7 +67,7 @@
   "folder": "CenterRush",
   "idealStartingState": {
     "velocity": 1.5,
-    "rotation": 48.35734932892164
+    "rotation": 71.02880817233292
   },
   "useDefaultConstraints": true
 }

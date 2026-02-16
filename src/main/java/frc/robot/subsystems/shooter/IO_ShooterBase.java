@@ -30,6 +30,7 @@ public interface IO_ShooterBase {
 		public double turretMotorCurrent = 0.0;
 
 		public boolean turretPositionSensor = false;
+		public double turretVelocity = 0.0;
 	}
 
 	public default void updateInputs(ShooterInputs inputs) {}

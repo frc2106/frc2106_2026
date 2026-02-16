@@ -82,6 +82,8 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		inputs.turretMotorCurrentTargetPosition =
 				turretMotorRequest.Position * RobotConstants.Shooter.ROT_TO_RAD;
 		inputs.turretMotorCurrent = turretMotor.getStatorCurrent().getValueAsDouble();
+		inputs.turretPositionSensor = turretHomingSensor.get();
+		inputs.turretVelocity = Math.abs(turretMotor.getVelocity().getValueAsDouble()); //rps
 	}
 
 	@Override

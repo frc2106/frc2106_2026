@@ -34,8 +34,8 @@ public class SUB_Superstructure extends SubsystemBase {
 		INTAKE_HALF,
 		INTAKE_IN,
 		READY,
-		TURRET_CENTER,
-		TURRET_RIGHT
+		TURRET_TEST_ONE,
+		TURRET_TEST_TWO
 	}
 
 	private SUB_Indexer indexerRef;
@@ -156,12 +156,12 @@ public class SUB_Superstructure extends SubsystemBase {
 				// activelyShooting = false;
 				break;
 
-			case TURRET_CENTER:
-				shooterRef.setTurretPosition(center);
+			case TURRET_TEST_ONE:
+				shooterRef.setTurretVoltage(0.0);
 				break;
 
-			case TURRET_RIGHT:
-				shooterRef.setTurretPosition(left);
+			case TURRET_TEST_TWO:
+				shooterRef.setTurretVoltage(0.0);
 				break;
 		}
 

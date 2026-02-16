@@ -10,6 +10,7 @@ package frc.robot.subsystems.shooter;
 import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.RobotConstants;
 import org.littletonrobotics.junction.Logger;
@@ -97,6 +98,10 @@ public class SUB_Shooter extends SubsystemBase {
 	 */
 	public double getAverageShooterVelocity() {
 		return (inputs.shooterMotorOneVelocity + inputs.shooterMotorTwoVelocity) / 2.0;
+	}
+
+	public void setTurretVoltage(double voltage) {
+		io.setTurretVoltage(voltage);
 	}
 
 	public Boolean homeTurret(Boolean homed) {

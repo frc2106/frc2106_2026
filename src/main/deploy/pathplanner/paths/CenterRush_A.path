@@ -8,30 +8,34 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.745137055837564,
-        "y": 0.3931878172588835
+        "x": 7.708304568527918,
+        "y": 0.36556345177665095
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.75,
-        "y": 5.0
+        "x": 7.713790560471976,
+        "y": 4.8240412979351035
       },
       "prevControl": {
-        "x": 8.03979695431472,
-        "y": 0.5036852791878186
+        "x": 7.828010152284264,
+        "y": 0.7707208121827422
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left_A_END"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.8418852147472474,
       "rotationDegrees": 80.0
+    },
+    {
+      "waypointRelativePos": 0.943747624477386,
+      "rotationDegrees": -96.08077899396281
     }
   ],
   "constraintZones": [],
@@ -47,7 +51,7 @@
   },
   "goalEndState": {
     "velocity": 3.0,
-    "rotation": 59.99999999999999
+    "rotation": 71.02880817233292
   },
   "reversed": false,
   "folder": "CenterRush",
