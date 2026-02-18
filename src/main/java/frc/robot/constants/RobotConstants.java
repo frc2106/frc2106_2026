@@ -125,7 +125,7 @@ public final class RobotConstants {
 		public static final int TURRET_MOTOR_CAN_ID = 22;
 
 		public static final double TURRET_RADIANS_MAX = 0.5; // 28.65 deg
-		public static final double TURRET_RADIANS_MIN = 0.5 - 2 * Math.PI; // -331.35 deg
+		public static final double TURRET_RADIANS_MIN = -6.0; // -331.35 deg
 
 		public static final double TURRET_OFFSET = 0.0;
 

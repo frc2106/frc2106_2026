@@ -168,6 +168,8 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		// demo();
 
+		// shooterRef.setTurretPosition(new Rotation2d(-Math.PI));
+
 		// shooterRef.setShooterVelocities(4000);
 
 		updateTurretAngle();
@@ -197,8 +199,17 @@ public class SUB_Superstructure extends SubsystemBase {
 		double deltaY = virtualGoal.getY() - turretPos.getY();
 		Rotation2d fieldRelativeAngle = new Rotation2d(deltaX, deltaY);
 
+		Rotation2d newFieldRelativeAngle = fieldRelativeAngle;
+
+		if (fieldRelativeAngle.getRadians()
+				> new Rotation2d(RobotConstants.Shooter.TURRET_RADIANS_MAX).getRadians()) {
+			newFieldRelativeAngle =
+					new Rotation2d(
+							fieldRelativeAngle.getRadians() - new Rotation2d(2 * Math.PI).getRadians());
+		}
+
 		// Convert to robot-relative angle for turret
-		Rotation2d turretAngle = fieldRelativeAngle.minus(robotPose.getRotation());
+		Rotation2d turretAngle = newFieldRelativeAngle.minus(robotPose.getRotation());
 
 		// finds hall effect sensor to find the turrets position
 		// if (shooterRef.homeTurret(homed)) {
