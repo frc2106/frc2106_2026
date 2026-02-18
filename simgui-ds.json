@@ -88,5 +88,12 @@
       "buttonCount": 0,
       "povCount": 0
     }
+  ],
+  "robotJoysticks": [
+    {},
+    {
+      "guid": "050000005e0400008e02000030110000",
+      "useGamepad": true
+    }
   ]
 }

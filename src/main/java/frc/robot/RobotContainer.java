@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.drive.DriveCommands;
@@ -18,9 +19,11 @@ import frc.robot.commands.generic.CMD_Superstructure;
 import frc.robot.constants.LIB_DriveConstants;
 import frc.robot.constants.LIB_VisionConstants;
 import frc.robot.constants.RobotConstants;
+import frc.robot.constants.RobotConstants.RobotMode;
 import frc.robot.lib.windingmotor.drive.Drive;
 import frc.robot.lib.windingmotor.drive.gyro.*;
 import frc.robot.lib.windingmotor.drive.module.*;
+import frc.robot.lib.windingmotor.util.fieldsim.SimulationManager;
 import frc.robot.lib.windingmotor.vision.IO_VisionCamera;
 import frc.robot.lib.windingmotor.vision.SUB_Vision;
 import frc.robot.subsystems.indexer.IO_IndexerReal;
@@ -29,6 +32,7 @@ import frc.robot.subsystems.intake.IO_IntakeReal;
 import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.shooter.IO_ShooterReal;
+import frc.robot.subsystems.shooter.IO_ShooterSim;
 import frc.robot.subsystems.shooter.SUB_Shooter;
 import frc.robot.subsystems.superstructure.SUB_Superstructure;
 
@@ -36,7 +40,7 @@ import frc.robot.subsystems.superstructure.SUB_Superstructure;
 public class RobotContainer {
 
 	// The auto to run
-	public static final String AUTO_NAME = "LINE";
+	public static final String AUTO_NAME = "LEFT_CLIMB";
 	public static Command AUTO_COMMAND;
 
 	// Controllers
@@ -80,9 +84,11 @@ public class RobotContainer {
 		drive.setDefaultCommand(
 				DriveCommands.driveNormal(
 						drive,
-						() -> -operatorController.getRawAxis(1) * 0.6,
-						() -> -operatorController.getRawAxis(0) * 0.6,
-						() -> -operatorController.getRawAxis(4) * 0.3));
+						() -> -operatorController.getRawAxis(1),
+						() -> -operatorController.getRawAxis(0),
+						() -> -operatorController.getRawAxis(4),
+						1.0, // A VALUE OF 1.0 is FULL ROBOT SPEED
+						0.4)); // keep rotation conservative
 
 		/*drive.setDefaultCommand(
 		DriveCommands.driveNormal(
@@ -124,6 +130,17 @@ public class RobotContainer {
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_LEFT));
 
 		// drive.setDefaultCommand(DriveCommands.driveTest(drive));
+
+		// Fuel sim
+		if (RobotConstants.ROBOT_MODE == RobotMode.SIM && RobotConstants.ENABLE_SIM_MANAGER) {
+			SimulationManager.getInstance().registerRobot(drive, intake, shooter);
+
+			// Reset button on SmartDashboard
+			SmartDashboard.putData(
+					"Reset Fuel",
+					Commands.runOnce(() -> SimulationManager.getInstance().resetFuel())
+							.ignoringDisable(true));
+		}
 	}
 
 	private void initializeControllers() {
@@ -146,13 +163,6 @@ public class RobotContainer {
 								RobotConstants.Intake.INTAKE_MOTOR_CONFIG,
 								RobotConstants.Intake.SLIDER_MOTOR_CONFIG));
 
-		shooter =
-				new SUB_Shooter(
-						new IO_ShooterReal(
-								RobotConstants.Shooter.SHOOTER_MOTOR_ONE_CONFIG,
-								RobotConstants.Shooter.SHOOTER_MOTOR_TWO_CONFIG,
-								RobotConstants.Shooter.TURRET_MOTOR_CONFIG));
-
 		// Drive subsystem: IO varies dramatically by mode
 		switch (RobotConstants.ROBOT_MODE) {
 			case REAL:
@@ -164,6 +174,13 @@ public class RobotContainer {
 								new IO_ModuleReal(LIB_DriveConstants.FrontRight),
 								new IO_ModuleReal(LIB_DriveConstants.BackLeft),
 								new IO_ModuleReal(LIB_DriveConstants.BackRight));
+
+				shooter =
+						new SUB_Shooter(
+								new IO_ShooterReal(
+										RobotConstants.Shooter.SHOOTER_MOTOR_ONE_CONFIG,
+										RobotConstants.Shooter.SHOOTER_MOTOR_TWO_CONFIG,
+										RobotConstants.Shooter.TURRET_MOTOR_CONFIG));
 				break;
 
 			case SIM:
@@ -175,6 +192,14 @@ public class RobotContainer {
 								new IO_ModuleSim(LIB_DriveConstants.FrontRight),
 								new IO_ModuleSim(LIB_DriveConstants.BackLeft),
 								new IO_ModuleSim(LIB_DriveConstants.BackRight));
+
+				shooter =
+						new SUB_Shooter(
+								new IO_ShooterSim(
+										RobotConstants.Shooter.SHOOTER_MOTOR_ONE_CONFIG,
+										RobotConstants.Shooter.SHOOTER_MOTOR_TWO_CONFIG,
+										RobotConstants.Shooter.TURRET_MOTOR_CONFIG));
+
 				break;
 
 			default:
@@ -186,6 +211,7 @@ public class RobotContainer {
 								new IO_ModuleBase() {},
 								new IO_ModuleBase() {},
 								new IO_ModuleBase() {});
+
 				break;
 		}
 

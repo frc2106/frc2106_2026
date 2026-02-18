@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.RobotConstants;
+import frc.robot.constants.RobotConstants.RobotMode;
 import frc.robot.lib.windingmotor.drive.Drive;
 import frc.robot.lib.windingmotor.vision.SUB_Vision;
 import frc.robot.subsystems.indexer.SUB_Indexer;
@@ -130,6 +131,13 @@ public class SUB_Superstructure extends SubsystemBase {
 				indexerRef.setSpinnerVoltage(12.0);
 				indexerRef.setKickerVoltage(10.0);
 
+				// FOR SIMULATION ONLY
+				// Only trigger projectile when kicker is actually running and shooter is at target speed
+				if (RobotConstants.ROBOT_MODE == RobotMode.SIM) {
+					if (shooterRef.isShooterAtSpeed(shooterRef.getShooterVelocityRPMSetpoint(), 100.0)) {
+						shooterRef.onShoot();
+					}
+				}
 				break;
 
 			case INTAKING:
@@ -173,7 +181,7 @@ public class SUB_Superstructure extends SubsystemBase {
 		// shooterRef.setShooterVelocities(4000);
 
 		updateTurretAngle();
-		// updateShooterVelocity();
+		updateShooterVelocity();
 	}
 
 	/**
@@ -224,6 +232,15 @@ public class SUB_Superstructure extends SubsystemBase {
 				"Superstructure/Turret/ActualGoal", new Pose2d(turretTargetPose, new Rotation2d()));
 		Logger.recordOutput(
 				"Superstructure/Turret/VirtualGoal", new Pose2d(virtualGoal, new Rotation2d()));
+
+		// Turret pointing direction — translation = where turret physically sits on field,
+		// rotation = where it's actually pointing vs where it's trying to point
+		Logger.recordOutput(
+				"Superstructure/Turret/ActualAim",
+				new Pose2d(turretPos, new Rotation2d(shooterRef.getTurretPosition() + robotHeadingRad)));
+		Logger.recordOutput(
+				"Superstructure/Turret/TargetAim", new Pose2d(turretPos, new Rotation2d(fieldAngleRad)));
+
 		Logger.recordOutput("Superstructure/Turret/RangeCenter", turretRangeCenter);
 		Logger.recordOutput("Superstructure/Turret/RawTurretTarget", turretAngleRad);
 		Logger.recordOutput(

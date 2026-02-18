@@ -66,7 +66,7 @@ public class DriveCommands {
 		double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
 		Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
-		// Square magnitude for more precise control
+		// Square magnitude for more precise control at low speeds
 		linearMagnitude = linearMagnitude * linearMagnitude;
 
 		// Return new linear velocity
@@ -82,30 +82,24 @@ public class DriveCommands {
 			Drive drive,
 			DoubleSupplier xSupplier,
 			DoubleSupplier ySupplier,
-			DoubleSupplier omegaSupplier) {
+			DoubleSupplier omegaSupplier,
+			double linearScalar,
+			double omegaScalar) {
 		return Commands.run(
 				() -> {
-					// Get linear velocity
 					Translation2d linearVelocity =
 							getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-					// Apply rotation deadband
 					double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+					// Square for soft curve — preserves sign, gentle at low input, full power at full stick
+					omega = Math.copySign(omega * omega, omega);
 
-					// Square rotation value for more precise control
-					// omega = Math.copySign(omega * omega, omega);
-
-					// Convert to field relative speeds & send command
 					ChassisSpeeds speeds =
 							new ChassisSpeeds(
-									linearVelocity.getX() * 5.0,
-									linearVelocity.getY() * 5.0,
-									omega * drive.getMaxAngularSpeedRadPerSec());
-					/*
-					boolean isFlipped =
-							DriverStation.getAlliance().isPresent()
-									&& DriverStation.getAlliance().get() == Alliance.Red;
-					*/
+									linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * linearScalar,
+									linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * linearScalar,
+									omega * drive.getMaxAngularSpeedRadPerSec() * omegaScalar);
+
 					drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getRotation()));
 				},
 				drive);

@@ -35,4 +35,8 @@ public class SUB_Intake extends SubsystemBase {
 	public StatusCode setSliderPosition(double meters) {
 		return io.setSliderPosition(meters);
 	}
+
+	public boolean isIntakeRunning() {
+		return inputs.intakeTargetVoltage != 0.0;
+	}
 }

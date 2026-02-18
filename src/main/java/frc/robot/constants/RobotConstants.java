@@ -27,6 +27,9 @@ public final class RobotConstants {
 	// Robot operating mode
 	public static final RobotMode ROBOT_MODE = RobotMode.REAL;
 
+	// For POWERFUL machines using sim ONLY
+	public static final boolean ENABLE_SIM_MANAGER = false;
+
 	// Intake
 	// ---------------------------------------------------------------------------------------------------------------
 	public final class Intake {
@@ -185,7 +188,7 @@ public final class RobotConstants {
 		public static final double SHOOTER_WHEEL_DIAMETER_METERS =
 				0.0762; // 3 inches between 4in and 2in
 		public static final double SHOOTER_EFFICIENCY_FACTOR =
-				0.8; // CHARACTERIZE THIS (0.4-0.6 typical)
+				0.5; // CHARACTERIZE THIS (0.4-0.6 typical)
 	}
 
 	// Indexer----------------------------------------------------------------------------------------------------

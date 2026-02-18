@@ -45,6 +45,10 @@ public class SUB_Shooter extends SubsystemBase {
 		return io.getTurretPosition();
 	}
 
+	public double getShooterVelocityRPMSetpoint() {
+		return inputs.shooterMotorOneTargetVelocity;
+	}
+
 	/**
 	 * Check if turret is within acceptable tolerance of target angle
 	 *
@@ -105,5 +109,10 @@ public class SUB_Shooter extends SubsystemBase {
 
 	public Boolean homeTurret(Boolean homed) {
 		return homed;
+	}
+
+	// FOR SIMULATION ONLY
+	public void onShoot() {
+		io.onShootSimulation();
 	}
 }

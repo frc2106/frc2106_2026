@@ -165,4 +165,8 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		}
 		return homed;
 	}
+
+	@Override
+	// DO NOTHING, only used in simulation class.
+	public void onShootSimulation() {}
 }
