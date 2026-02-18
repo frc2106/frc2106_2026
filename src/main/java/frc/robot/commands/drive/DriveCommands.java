@@ -57,9 +57,6 @@ public class DriveCommands {
 	private static final double TRANSLATION_KP = 4.5;
 	private static final double TRANSLATION_KD = 0.1;
 
-	private static final double mExpo = 0.2;
-	private static final double rExpo = 0.4;
-
 	private static final ExpDecayFF rotationController = new ExpDecayFF(6.5, 1.5, 0.25);
 
 	private DriveCommands() {}
@@ -114,7 +111,9 @@ public class DriveCommands {
 			DoubleSupplier ySupplier,
 			DoubleSupplier omegaSupplier,
 			double linearScalar,
-			double omegaScalar) {
+			double omegaScalar,
+			double mExpo,
+			double rExpo) {
 		return Commands.run(
 				() -> {
 					double x = xSupplier.getAsDouble();
