@@ -156,11 +156,11 @@ public final class RobotConstants {
 			// Soft limits converted to rotations via toRotations()
 			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-					toRotations(TURRET_RADIANS_MAX); // 0.5 rad → ~0.0796 rot
+					toRotations(TURRET_RADIANS_MAX);
 
 			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-					toRotations(TURRET_RADIANS_MIN); // -5.783 rad → ~-0.9204 rot
+					toRotations(TURRET_RADIANS_MIN);
 		}
 
 		// Turret offset from robot center (in robot frame) - MEASURE THESE!
