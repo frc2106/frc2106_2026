@@ -180,41 +180,58 @@ public class SUB_Superstructure extends SubsystemBase {
 	 * Calculate and set turret angle to compensate for robot motion. Uses virtual goal method to
 	 * account for shot flight time.
 	 */
-private void updateTurretAngle() {
-    Pose2d robotPose = driveRef.getPose();
+	private void updateTurretAngle() {
+		Pose2d robotPose = driveRef.getPose();
 
-    Translation2d turretOffsetField = TURRET_OFFSET_ROBOT.rotateBy(robotPose.getRotation());
-    Translation2d turretPos = robotPose.getTranslation().plus(turretOffsetField);
+		Translation2d turretOffsetField = TURRET_OFFSET_ROBOT.rotateBy(robotPose.getRotation());
+		Translation2d turretPos = robotPose.getTranslation().plus(turretOffsetField);
 
-    ChassisSpeeds fieldSpeeds =
-            ChassisSpeeds.fromRobotRelativeSpeeds(driveRef.getChassisSpeeds(), robotPose.getRotation());
+		ChassisSpeeds fieldSpeeds =
+				ChassisSpeeds.fromRobotRelativeSpeeds(driveRef.getChassisSpeeds(), robotPose.getRotation());
 
-    Translation2d virtualGoal = calculateVirtualGoal(turretPos, fieldSpeeds);
+		Translation2d virtualGoal = calculateVirtualGoal(turretPos, fieldSpeeds);
 
-    double deltaX = virtualGoal.getX() - turretPos.getX();
-    double deltaY = virtualGoal.getY() - turretPos.getY();
+		double deltaX = virtualGoal.getX() - turretPos.getX();
+		double deltaY = virtualGoal.getY() - turretPos.getY();
 
-    double fieldAngleRad = Math.atan2(deltaY, deltaX);
+		double fieldAngleRad = Math.atan2(deltaY, deltaX);
 
-    // Normalize robot heading to [-π, π] to prevent unbounded accumulation
-    double robotHeadingRad = robotPose.getRotation().getRadians();
-    robotHeadingRad = Math.atan2(Math.sin(robotHeadingRad), Math.cos(robotHeadingRad));
+		double robotHeadingRad = robotPose.getRotation().getRadians();
+		robotHeadingRad = Math.atan2(Math.sin(robotHeadingRad), Math.cos(robotHeadingRad));
 
-    double turretAngleRad = fieldAngleRad - robotHeadingRad;
+		double turretAngleRad = fieldAngleRad - robotHeadingRad;
 
-    shooterRef.setTurretPosition(turretAngleRad);
+		// Normalize to [-π, π]
+		turretAngleRad = Math.atan2(Math.sin(turretAngleRad), Math.cos(turretAngleRad));
 
-    // Log as Pose2d so AdvantageScope renders them on the 2D field map
-    Logger.recordOutput("Superstructure/Turret/TurretPosition",
-            new Pose2d(turretPos, new Rotation2d(fieldAngleRad)));
-    Logger.recordOutput("Superstructure/Turret/ActualGoal",
-            new Pose2d(turretTargetPose, new Rotation2d()));
-    Logger.recordOutput("Superstructure/Turret/VirtualGoal",
-            new Pose2d(virtualGoal, new Rotation2d()));
-    Logger.recordOutput("Superstructure/Turret/TargetAngleRobotRelative", Math.toDegrees(turretAngleRad));
-    Logger.recordOutput("Superstructure/Turret/TargetAngleFieldRelative", Math.toDegrees(fieldAngleRad));
-    Logger.recordOutput("Superstructure/Turret/CurrentAngle", shooterRef.getTurretPosition());
-}
+		// Unwrap toward center of turret's valid range (-2.75 rad)
+		double turretRangeCenter =
+				(RobotConstants.Shooter.TURRET_RADIANS_MAX + RobotConstants.Shooter.TURRET_RADIANS_MIN)
+						/ 2.0;
+		while (turretAngleRad - turretRangeCenter > Math.PI) {
+			turretAngleRad -= 2 * Math.PI;
+		}
+		while (turretAngleRad - turretRangeCenter < -Math.PI) {
+			turretAngleRad += 2 * Math.PI;
+		}
+
+		shooterRef.setTurretPosition(turretAngleRad);
+
+		Logger.recordOutput(
+				"Superstructure/Turret/TurretPosition",
+				new Pose2d(turretPos, new Rotation2d(fieldAngleRad)));
+		Logger.recordOutput(
+				"Superstructure/Turret/ActualGoal", new Pose2d(turretTargetPose, new Rotation2d()));
+		Logger.recordOutput(
+				"Superstructure/Turret/VirtualGoal", new Pose2d(virtualGoal, new Rotation2d()));
+		Logger.recordOutput("Superstructure/Turret/RangeCenter", turretRangeCenter);
+		Logger.recordOutput("Superstructure/Turret/RawTurretTarget", turretAngleRad);
+		Logger.recordOutput(
+				"Superstructure/Turret/TargetAngleRobotRelative", Math.toDegrees(turretAngleRad));
+		Logger.recordOutput(
+				"Superstructure/Turret/TargetAngleFieldRelative", Math.toDegrees(fieldAngleRad));
+		Logger.recordOutput("Superstructure/Turret/CurrentAngle", shooterRef.getTurretPosition());
+	}
 
 	/**
 	 * Calculate and set shooter wheel velocity based on distance to target. Accounts for virtual goal
@@ -290,10 +307,10 @@ private void updateTurretAngle() {
 		Translation2d virtualGoal = new Translation2d(virtualX, virtualY);
 
 		// Log motion compensation data
-		Logger.recordOutput("Superstructure/MotionComp/ActualGoal",
-				new Pose2d(turretTargetPose, new Rotation2d()));
-		Logger.recordOutput("Superstructure/MotionComp/VirtualGoal",
-				new Pose2d(virtualGoal, new Rotation2d()));
+		Logger.recordOutput(
+				"Superstructure/MotionComp/ActualGoal", new Pose2d(turretTargetPose, new Rotation2d()));
+		Logger.recordOutput(
+				"Superstructure/MotionComp/VirtualGoal", new Pose2d(virtualGoal, new Rotation2d()));
 		Logger.recordOutput("Superstructure/MotionComp/DistanceToActualGoal", distanceToTarget);
 		Logger.recordOutput("Superstructure/MotionComp/TargetRPM", targetRPM);
 		Logger.recordOutput("Superstructure/MotionComp/ExitVelocityMPS", exitVelocity);

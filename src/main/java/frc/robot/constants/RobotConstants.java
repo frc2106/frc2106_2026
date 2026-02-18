@@ -121,15 +121,14 @@ public final class RobotConstants {
 		}
 
 		// Turret motor
-		// Turret motor
 		public static final int TURRET_MOTOR_CAN_ID = 22;
 
-		public static final double TURRET_RADIANS_MAX = 0.5; // 28.65 deg
-		public static final double TURRET_RADIANS_MIN = -6.0; // -331.35 deg
+		public static final double TURRET_RADIANS_MAX = 0.5;
+		public static final double TURRET_RADIANS_MIN = -6.0;
 
 		public static final double TURRET_OFFSET = 0.0;
 
-		public static final double ROT_TO_RAD = 2.0 * Math.PI; // radians per turret rotation
+		public static final double ROT_TO_RAD = 2.0 * Math.PI;
 
 		/** Converts radians to turret mechanism rotations using ROT_TO_RAD */
 		public static double toRotations(double radians) {
