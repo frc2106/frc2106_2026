@@ -88,9 +88,9 @@ public class RobotContainer {
 						() -> -operatorController.getRawAxis(0),
 						() -> -operatorController.getRawAxis(4),
 						1.0, // A VALUE OF 1.0 is FULL ROBOT SPEED
-						1.0,
-						0.2,
-						0.4)); // keep rotation conservative
+						1.0, // keep rotation conservative
+						0.2, // movement expo
+						0.4)); // rotation expo
 
 		/*drive.setDefaultCommand(
 		DriveCommands.driveNormal(
