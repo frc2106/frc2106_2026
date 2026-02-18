@@ -8,7 +8,6 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Radian;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -34,7 +33,6 @@ public class IO_ShooterReal implements IO_ShooterBase {
 	private final PositionVoltage turretMotorRequest;
 
 	private final DigitalInput turretHomingSensor = new DigitalInput(9); // DIO 9
-	// private Boolean homed = false;
 	private double slowVolts = RobotConstants.Shooter.TURRET_SLOW_MOVE_VOLTAGE;
 
 	public IO_ShooterReal(
@@ -53,7 +51,6 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		shooterMotorTwo.getConfigurator().apply(shooterMotorTwoConfiguration);
 
 		shooterMotorsRequest = new VelocityVoltage(0.0);
-
 		shooterMotorsVoltageRequest = new VoltageOut(0.0);
 		turretMotorVoltageRequest = new VoltageOut(0.0);
 
@@ -61,13 +58,10 @@ public class IO_ShooterReal implements IO_ShooterBase {
 				new TalonFX(RobotConstants.Shooter.TURRET_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		turretMotor.getConfigurator().apply(turretMotorConfiguration);
 		turretMotorRequest = new PositionVoltage(0.0);
-
-		// turretMotor.setPosition(0);
 	}
 
 	@Override
 	public void updateInputs(ShooterInputs inputs) {
-
 		inputs.shooterMotorOneVelocity = shooterMotorOne.getVelocity().getValueAsDouble() * 60;
 		inputs.shooterMotorOneTargetVelocity = shooterMotorsRequest.getVelocityMeasure().in(RPM);
 		inputs.shooterMotorOneCurrent = shooterMotorOne.getStatorCurrent().getValueAsDouble();
@@ -76,6 +70,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		inputs.shooterMotorTwoTargetVelocity = shooterMotorsRequest.getVelocityMeasure().in(RPM);
 		inputs.shooterMotorTwoCurrent = shooterMotorTwo.getStatorCurrent().getValueAsDouble();
 
+		// Read actual encoder position and convert rotations -> radians for logging
 		inputs.turretMotorCurrentPosition =
 				turretMotor.getPosition().getValueAsDouble() * RobotConstants.Shooter.ROT_TO_RAD;
 		inputs.turretMotorCurrentTargetPosition =
@@ -88,9 +83,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 	@Override
 	public Pair<StatusCode, StatusCode> setShooterVelocities(double targetRPM) {
 		double targetRPS = targetRPM / 60.0; // convert RPM -> rps
-
 		shooterMotorsRequest.withVelocity(targetRPS);
-
 		return Pair.of(
 				shooterMotorOne.setControl(shooterMotorsRequest),
 				shooterMotorTwo.setControl(shooterMotorsRequest));
@@ -98,35 +91,32 @@ public class IO_ShooterReal implements IO_ShooterBase {
 
 	@Override
 	public StatusCode setTurretPosition(Rotation2d position) {
-		// target in radians from WPILib
 		double targetRadians = position.getRadians();
 
-		// Normalize and clamp are fine, they should stay in radians
-		if (Math.abs(targetRadians) > Math.PI) {
-			targetRadians = Math.atan2(Math.sin(targetRadians), Math.cos(targetRadians));
-		}
-
+		// Clamp to physical turret limits
 		if (targetRadians > RobotConstants.Shooter.TURRET_RADIANS_MAX) {
 			targetRadians = RobotConstants.Shooter.TURRET_RADIANS_MAX;
 		} else if (targetRadians < RobotConstants.Shooter.TURRET_RADIANS_MIN) {
 			targetRadians = RobotConstants.Shooter.TURRET_RADIANS_MIN;
 		}
 
-		// CONVERT radians -> turret rotations for the Talon
-		double targetRotations = targetRadians / RobotConstants.Shooter.ROT_TO_RAD;
-
+		// Convert radians -> turret rotations via shared helper
+		double targetRotations = RobotConstants.Shooter.toRotations(targetRadians);
 		turretMotorRequest.withPosition(targetRotations);
 		return turretMotor.setControl(turretMotorRequest);
 	}
 
 	@Override
 	public void setTurretVoltage(double voltage) {
+		// FIX: must call setControl() or the motor never receives the command
 		turretMotorVoltageRequest.withOutput(voltage);
+		turretMotor.setControl(turretMotorVoltageRequest);
 	}
 
 	@Override
 	public double getTurretPosition() {
-		return turretMotorRequest.getPositionMeasure().abs(Radian);
+		// FIX: read actual encoder position, not the requested target position
+		return turretMotor.getPosition().getValueAsDouble() * RobotConstants.Shooter.ROT_TO_RAD;
 	}
 
 	@Override
@@ -138,43 +128,28 @@ public class IO_ShooterReal implements IO_ShooterBase {
 
 	@Override
 	public Boolean homeTurret(Boolean homed) {
-
 		if (!homed) {
 			var homingLimit = new CurrentLimitsConfigs();
-			// homingLimit.StatorCurrentLimit = 10.0; // 10A stator limit
 			homingLimit.StatorCurrentLimitEnable = true;
 			turretMotor.getConfigurator().apply(homingLimit);
 
 			setTurretVoltage(slowVolts);
 
 			double current = turretMotor.getStatorCurrent().getValueAsDouble();
-			// double velocity = Math.abs(turretMotor.getVelocity().getValueAsDouble()); // rps
-
-			boolean isStalled = (current > 8.0); // Tune these thresholds!
+			boolean isStalled = (current > 8.0);
 
 			if (isStalled) {
-				turretMotor.setPosition(2 * Math.PI);
-			}
-
-			/* if (isStalled) {
-				slowVolts = slowVolts * -1;
-			}
-
-			if (turretHomingSensor.get()) {
-				setTurretVoltage(0.0);
-
-				// Convert home angle from radians -> turret rotations
-				double homeRadians = -0.75 * Math.PI;
-				double homeRotations = homeRadians / RobotConstants.Shooter.ROT_TO_RAD;
-
-				turretMotor.setPosition(homeRotations); // Now in rotations!
+				// FIX: setPosition() takes rotations — use toRotations() for consistency
+				turretMotor.setPosition(
+						RobotConstants.Shooter.toRotations(RobotConstants.Shooter.TURRET_RADIANS_MAX));
 
 				var normalLimit = new CurrentLimitsConfigs();
-				normalLimit.StatorCurrentLimit = 30.0; // your normal value
+				normalLimit.StatorCurrentLimit = 40.0;
 				normalLimit.StatorCurrentLimitEnable = true;
 				turretMotor.getConfigurator().apply(normalLimit);
+
 				homed = true;
-			} */
+			}
 		}
 		return homed;
 	}

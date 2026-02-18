@@ -121,41 +121,46 @@ public final class RobotConstants {
 		}
 
 		// Turret motor
+		// Turret motor
 		public static final int TURRET_MOTOR_CAN_ID = 22;
 
-		public static final double TURRET_RADIANS_MAX = 0.5; // 28.6479 deg max
-		public static final double TURRET_RADIANS_MIN = 0.5 - 2 * Math.PI; // -349.504 deg max
+		public static final double TURRET_RADIANS_MAX = 0.5; // 28.65 deg
+		public static final double TURRET_RADIANS_MIN = 0.5 - 2 * Math.PI; // -331.35 deg
 
-		public static final double TURRET_OFFSET = 0.0; // 0.05
+		public static final double TURRET_OFFSET = 0.0;
 
 		public static final double ROT_TO_RAD = 2.0 * Math.PI; // radians per turret rotation
 
-		public static final TalonFXConfiguration TURRET_MOTOR_CONFIG = new TalonFXConfiguration();
+		/** Converts radians to turret mechanism rotations using ROT_TO_RAD */
+		public static double toRotations(double radians) {
+			return radians / ROT_TO_RAD;
+		}
 
+		public static final TalonFXConfiguration TURRET_MOTOR_CONFIG = new TalonFXConfiguration();
 		public static final double TURRET_SLOW_MOVE_VOLTAGE = -0.5;
 
 		static {
-			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 40; // Amps
-			// 11T motor -> 154T turret: 154 / 11 ≈ 14.0
+			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 40;
 			TURRET_MOTOR_CONFIG.Feedback.SensorToMechanismRatio = 154.0 / 11.0;
 
-			TURRET_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Coast; // Break or Coast
-			TURRET_MOTOR_CONFIG.MotorOutput.Inverted =
-					InvertedValue.CounterClockwise_Positive; // Which way is positive?
+			TURRET_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+			TURRET_MOTOR_CONFIG.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-			TURRET_MOTOR_CONFIG.Slot0.kP = 26.0; // Slot 0 P value was 9.0
-			TURRET_MOTOR_CONFIG.Slot0.kI = 0.5; // Slot 0 I value
-			TURRET_MOTOR_CONFIG.Slot0.kD = 0.167; // Slot 0 D value
-
-			TURRET_MOTOR_CONFIG.Slot0.kS = 4.5; // was 1.2
-			TURRET_MOTOR_CONFIG.Slot0.kV = 0.0; // was 0.2
+			TURRET_MOTOR_CONFIG.Slot0.kP = 26.0;
+			TURRET_MOTOR_CONFIG.Slot0.kI = 0.5;
+			TURRET_MOTOR_CONFIG.Slot0.kD = 0.167;
+			TURRET_MOTOR_CONFIG.Slot0.kS = 4.5;
+			TURRET_MOTOR_CONFIG.Slot0.kV = 0.0;
 			TURRET_MOTOR_CONFIG.Slot0.kA = 0.0;
 
+			// Soft limits converted to rotations via toRotations()
 			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitThreshold = TURRET_RADIANS_MAX;
+			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+					toRotations(TURRET_RADIANS_MAX); // 0.5 rad → ~0.0796 rot
 
 			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitThreshold = TURRET_RADIANS_MIN;
+			TURRET_MOTOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+					toRotations(TURRET_RADIANS_MIN); // -5.783 rad → ~-0.9204 rot
 		}
 
 		// Turret offset from robot center (in robot frame) - MEASURE THESE!
