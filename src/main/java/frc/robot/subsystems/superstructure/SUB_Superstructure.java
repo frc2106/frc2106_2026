@@ -158,11 +158,11 @@ public class SUB_Superstructure extends SubsystemBase {
 				break;
 
 			case TURRET_CENTER:
-				shooterRef.setTurretPosition(center);
+				// shooterRef.setTurretPosition(center);
 				break;
 
 			case TURRET_LEFT:
-				shooterRef.setTurretPosition(left);
+				// shooterRef.setTurretPosition(left);
 				break;
 		}
 
@@ -182,6 +182,7 @@ public class SUB_Superstructure extends SubsystemBase {
 	 */
 	private void updateTurretAngle() {
 		Pose2d robotPose = driveRef.getPose();
+		double robotAngle = robotPose.getRotation().getRadians();
 
 		// Calculate turret position in field frame
 		Translation2d turretOffsetField = TURRET_OFFSET_ROBOT.rotateBy(robotPose.getRotation());
@@ -199,17 +200,15 @@ public class SUB_Superstructure extends SubsystemBase {
 		double deltaY = virtualGoal.getY() - turretPos.getY();
 		Rotation2d fieldRelativeAngle = new Rotation2d(deltaX, deltaY);
 
-		Rotation2d newFieldRelativeAngle = fieldRelativeAngle;
+		double newFieldRelativeAngle = fieldRelativeAngle.getRadians();
 
 		if (fieldRelativeAngle.getRadians()
 				> new Rotation2d(RobotConstants.Shooter.TURRET_RADIANS_MAX).getRadians()) {
-			newFieldRelativeAngle =
-					new Rotation2d(
-							fieldRelativeAngle.getRadians() - new Rotation2d(2 * Math.PI).getRadians());
+			newFieldRelativeAngle = fieldRelativeAngle.getRadians() - 2 * Math.PI;
 		}
 
 		// Convert to robot-relative angle for turret
-		Rotation2d turretAngle = newFieldRelativeAngle.minus(robotPose.getRotation());
+		double turretAngle = newFieldRelativeAngle - robotAngle;
 
 		// finds hall effect sensor to find the turrets position
 		// if (shooterRef.homeTurret(homed)) {
@@ -221,7 +220,7 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		// Log turret aiming data
 		Logger.recordOutput("Superstructure/Turret/Position", turretPos);
-		Logger.recordOutput("Superstructure/Turret/TargetAngleRobotRelative", turretAngle.getDegrees());
+		Logger.recordOutput("Superstructure/Turret/TargetAngleRobotRelative", turretAngle);
 		Logger.recordOutput(
 				"Superstructure/Turret/TargetAngleFieldRelative", fieldRelativeAngle.getDegrees());
 		Logger.recordOutput("Superstructure/Turret/CurrentAngle", shooterRef.getTurretPosition());

@@ -33,7 +33,7 @@ public class SUB_Shooter extends SubsystemBase {
 		return io.setShooterVelocities(velocity);
 	}
 
-	public StatusCode setTurretPosition(Rotation2d position) {
+	public StatusCode setTurretPosition(double position) {
 		return io.setTurretPosition(position);
 	}
 

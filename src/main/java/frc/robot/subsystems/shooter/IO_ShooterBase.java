@@ -9,7 +9,6 @@ package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface IO_ShooterBase {
@@ -39,7 +38,7 @@ public interface IO_ShooterBase {
 
 	public void setShooterVoltages(double voltages);
 
-	public StatusCode setTurretPosition(Rotation2d position);
+	public StatusCode setTurretPosition(double position);
 
 	public void setTurretVoltage(double voltage);
 

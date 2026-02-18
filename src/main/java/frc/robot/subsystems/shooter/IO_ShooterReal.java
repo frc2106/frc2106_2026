@@ -17,7 +17,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.constants.RobotConstants;
 
@@ -89,7 +88,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 				shooterMotorTwo.setControl(shooterMotorsRequest));
 	}
 
-	@Override
+	/*@Override
 	public StatusCode setTurretPosition(Rotation2d position) {
 		double targetRadians = position.getRadians();
 
@@ -101,6 +100,19 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		}
 
 		// Convert radians -> turret rotations via shared helper
+		double targetRotations = RobotConstants.Shooter.toRotations(targetRadians);
+		turretMotorRequest.withPosition(targetRotations);
+		return turretMotor.setControl(turretMotorRequest);
+	} */
+
+	@Override
+	public StatusCode setTurretPosition(double radians) {
+		// Clamp to physical turret limits
+		double targetRadians =
+				Math.max(
+						RobotConstants.Shooter.TURRET_RADIANS_MIN,
+						Math.min(RobotConstants.Shooter.TURRET_RADIANS_MAX, radians));
+
 		double targetRotations = RobotConstants.Shooter.toRotations(targetRadians);
 		turretMotorRequest.withPosition(targetRotations);
 		return turretMotor.setControl(turretMotorRequest);
