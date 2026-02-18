@@ -82,13 +82,13 @@ public class RobotContainer {
 		AUTO_COMMAND = AutoBuilder.buildAuto(AUTO_NAME);
 
 		drive.setDefaultCommand(
-				DriveCommands.driveNormal(
+				DriveCommands.driveNormalExpo(
 						drive,
 						() -> -operatorController.getRawAxis(1),
 						() -> -operatorController.getRawAxis(0),
 						() -> -operatorController.getRawAxis(4),
 						1.0, // A VALUE OF 1.0 is FULL ROBOT SPEED
-						0.4)); // keep rotation conservative
+						1.0)); // keep rotation conservative
 
 		/*drive.setDefaultCommand(
 		DriveCommands.driveNormal(

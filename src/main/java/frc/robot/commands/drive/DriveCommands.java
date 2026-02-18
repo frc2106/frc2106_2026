@@ -42,7 +42,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
-	private static final double DEADBAND = 0.01;
+	private static final double DEADBAND = 0.005;
 	private static final double ANGLE_MAX_VELOCITY = 10.0;
 	private static final double ANGLE_MAX_ACCELERATION = 15.0;
 	private static final double FF_START_DELAY = 2.0; // Secs
@@ -56,6 +56,9 @@ public class DriveCommands {
 
 	private static final double TRANSLATION_KP = 4.5;
 	private static final double TRANSLATION_KD = 0.1;
+
+	private static final double mExpo = 0.2;
+	private static final double rExpo = 0.4;
 
 	private static final ExpDecayFF rotationController = new ExpDecayFF(6.5, 1.5, 0.25);
 
@@ -91,6 +94,40 @@ public class DriveCommands {
 							getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
 					double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+					// Square for soft curve — preserves sign, gentle at low input, full power at full stick
+					omega = Math.copySign(omega * omega, omega);
+
+					ChassisSpeeds speeds =
+							new ChassisSpeeds(
+									linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * linearScalar,
+									linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * linearScalar,
+									omega * drive.getMaxAngularSpeedRadPerSec() * omegaScalar);
+
+					drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getRotation()));
+				},
+				drive);
+	}
+
+	public static Command driveNormalExpo(
+			Drive drive,
+			DoubleSupplier xSupplier,
+			DoubleSupplier ySupplier,
+			DoubleSupplier omegaSupplier,
+			double linearScalar,
+			double omegaScalar) {
+		return Commands.run(
+				() -> {
+					double x = xSupplier.getAsDouble();
+					double y = ySupplier.getAsDouble();
+					double z = omegaSupplier.getAsDouble();
+
+					double xExpo = (1.0 - mExpo) * x + mExpo * x * x * x;
+					double yExpo = (1.0 - mExpo) * y + mExpo * y * y * y;
+					double zExpo = (1.0 - rExpo) * z + rExpo * z * z * z;
+
+					Translation2d linearVelocity = getLinearVelocityFromJoysticks(xExpo, yExpo);
+
+					double omega = MathUtil.applyDeadband(zExpo, DEADBAND);
 					// Square for soft curve — preserves sign, gentle at low input, full power at full stick
 					omega = Math.copySign(omega * omega, omega);
 
