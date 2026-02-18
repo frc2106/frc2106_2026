@@ -89,7 +89,7 @@ public final class RobotConstants {
 			SHOOTER_MOTOR_ONE_CONFIG.MotorOutput.Inverted =
 					InvertedValue.CounterClockwise_Positive; // Which way is positive?
 
-			SHOOTER_MOTOR_ONE_CONFIG.Slot0.kP = 0.6; // Slot 0 P value
+			SHOOTER_MOTOR_ONE_CONFIG.Slot0.kP = 0.3; // Slot 0 P value
 			SHOOTER_MOTOR_ONE_CONFIG.Slot0.kI = 0.0; // Slot 0 I value
 			SHOOTER_MOTOR_ONE_CONFIG.Slot0.kD = 0.0; // Slot 0 D value
 
@@ -111,7 +111,7 @@ public final class RobotConstants {
 			SHOOTER_MOTOR_TWO_CONFIG.MotorOutput.Inverted =
 					InvertedValue.Clockwise_Positive; // Which way is positive?
 
-			SHOOTER_MOTOR_TWO_CONFIG.Slot0.kP = 0.6; // Slot 0 P value
+			SHOOTER_MOTOR_TWO_CONFIG.Slot0.kP = 0.3; // Slot 0 P value
 			SHOOTER_MOTOR_TWO_CONFIG.Slot0.kI = 0.0; // Slot 0 I value
 			SHOOTER_MOTOR_TWO_CONFIG.Slot0.kD = 0.0; // Slot 0 D value
 
@@ -124,7 +124,7 @@ public final class RobotConstants {
 		public static final int TURRET_MOTOR_CAN_ID = 22;
 
 		public static final double TURRET_RADIANS_MAX = 0.5; // 28.6479 deg max
-		public static final double TURRET_RADIANS_MIN = -6.1; // -349.504 deg max
+		public static final double TURRET_RADIANS_MIN = 0.5 - 2 * Math.PI; // -349.504 deg max
 
 		public static final double TURRET_OFFSET = 0.0; // 0.05
 
@@ -132,10 +132,10 @@ public final class RobotConstants {
 
 		public static final TalonFXConfiguration TURRET_MOTOR_CONFIG = new TalonFXConfiguration();
 
-		public static final double TURRET_SLOW_MOVE_VOLTAGE = 0.0;
+		public static final double TURRET_SLOW_MOVE_VOLTAGE = -0.5;
 
 		static {
-			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 30; // Amps
+			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 40; // Amps
 			// 11T motor -> 154T turret: 154 / 11 ≈ 14.0
 			TURRET_MOTOR_CONFIG.Feedback.SensorToMechanismRatio = 154.0 / 11.0;
 
@@ -143,11 +143,11 @@ public final class RobotConstants {
 			TURRET_MOTOR_CONFIG.MotorOutput.Inverted =
 					InvertedValue.CounterClockwise_Positive; // Which way is positive?
 
-			TURRET_MOTOR_CONFIG.Slot0.kP = 6.0; // Slot 0 P value was 9.0
-			TURRET_MOTOR_CONFIG.Slot0.kI = 0.013; // Slot 0 I value
-			TURRET_MOTOR_CONFIG.Slot0.kD = 0.07; // Slot 0 D value
+			TURRET_MOTOR_CONFIG.Slot0.kP = 26.0; // Slot 0 P value was 9.0
+			TURRET_MOTOR_CONFIG.Slot0.kI = 0.5; // Slot 0 I value
+			TURRET_MOTOR_CONFIG.Slot0.kD = 0.167; // Slot 0 D value
 
-			TURRET_MOTOR_CONFIG.Slot0.kS = 0.0; // was 1.2
+			TURRET_MOTOR_CONFIG.Slot0.kS = 4.5; // was 1.2
 			TURRET_MOTOR_CONFIG.Slot0.kV = 0.0; // was 0.2
 			TURRET_MOTOR_CONFIG.Slot0.kA = 0.0;
 

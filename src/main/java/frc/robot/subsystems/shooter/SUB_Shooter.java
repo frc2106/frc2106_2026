@@ -10,7 +10,6 @@ package frc.robot.subsystems.shooter;
 import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.RobotConstants;
 import org.littletonrobotics.junction.Logger;
@@ -27,7 +26,7 @@ public class SUB_Shooter extends SubsystemBase {
 	public void periodic() {
 		io.updateInputs(inputs);
 		Logger.processInputs("Shooter", inputs);
-		io.setShooterVelocities(2000);
+		// io.setShooterVelocities(2000);
 	}
 
 	public Pair<StatusCode, StatusCode> setShooterVelocities(double velocity) {

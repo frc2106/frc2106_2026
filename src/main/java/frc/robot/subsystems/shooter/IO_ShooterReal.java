@@ -63,7 +63,6 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		turretMotorRequest = new PositionVoltage(0.0);
 
 		// turretMotor.setPosition(0);
-
 	}
 
 	@Override
@@ -83,7 +82,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 				turretMotorRequest.Position * RobotConstants.Shooter.ROT_TO_RAD;
 		inputs.turretMotorCurrent = turretMotor.getStatorCurrent().getValueAsDouble();
 		inputs.turretPositionSensor = turretHomingSensor.get();
-		inputs.turretVelocity = Math.abs(turretMotor.getVelocity().getValueAsDouble()); //rps
+		inputs.turretVelocity = Math.abs(turretMotor.getVelocity().getValueAsDouble()); // rps
 	}
 
 	@Override
@@ -103,9 +102,9 @@ public class IO_ShooterReal implements IO_ShooterBase {
 		double targetRadians = position.getRadians();
 
 		// Normalize and clamp are fine, they should stay in radians
-		// if (Math.abs(targetRadians) > Math.PI) {
-		//	targetRadians = Math.atan2(Math.sin(targetRadians), Math.cos(targetRadians));
-		// }
+		if (Math.abs(targetRadians) > Math.PI) {
+			targetRadians = Math.atan2(Math.sin(targetRadians), Math.cos(targetRadians));
+		}
 
 		if (targetRadians > RobotConstants.Shooter.TURRET_RADIANS_MAX) {
 			targetRadians = RobotConstants.Shooter.TURRET_RADIANS_MAX;
@@ -142,18 +141,22 @@ public class IO_ShooterReal implements IO_ShooterBase {
 
 		if (!homed) {
 			var homingLimit = new CurrentLimitsConfigs();
-			homingLimit.StatorCurrentLimit = 10.0; // 10A stator limit
+			// homingLimit.StatorCurrentLimit = 10.0; // 10A stator limit
 			homingLimit.StatorCurrentLimitEnable = true;
 			turretMotor.getConfigurator().apply(homingLimit);
 
 			setTurretVoltage(slowVolts);
 
 			double current = turretMotor.getStatorCurrent().getValueAsDouble();
-			double velocity = Math.abs(turretMotor.getVelocity().getValueAsDouble()); // rps
+			// double velocity = Math.abs(turretMotor.getVelocity().getValueAsDouble()); // rps
 
-			boolean isStalled = (current > 8.0) && (velocity < 2.0); // Tune these thresholds!
+			boolean isStalled = (current > 8.0); // Tune these thresholds!
 
 			if (isStalled) {
+				turretMotor.setPosition(2 * Math.PI);
+			}
+
+			/* if (isStalled) {
 				slowVolts = slowVolts * -1;
 			}
 
@@ -171,7 +174,7 @@ public class IO_ShooterReal implements IO_ShooterBase {
 				normalLimit.StatorCurrentLimitEnable = true;
 				turretMotor.getConfigurator().apply(normalLimit);
 				homed = true;
-			}
+			} */
 		}
 		return homed;
 	}

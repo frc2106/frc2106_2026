@@ -77,19 +77,19 @@ public class RobotContainer {
 		// Create and cache the PathPlanner auto command
 		AUTO_COMMAND = AutoBuilder.buildAuto(AUTO_NAME);
 
-		/* drive.setDefaultCommand(
-		DriveCommands.driveNormal(
-				drive,
-				() -> -operatorController.getRawAxis(1) * 0.6,
-				() -> -operatorController.getRawAxis(0) * 0.6,
-				() -> -operatorController.getRawAxis(4) * 0.3)); */
-
 		drive.setDefaultCommand(
 				DriveCommands.driveNormal(
 						drive,
-						() -> driverController.getRawAxis(1),
-						() -> -driverController.getRawAxis(0),
-						() -> -driverController.getRawAxis(3)));
+						() -> -operatorController.getRawAxis(1) * 0.6,
+						() -> -operatorController.getRawAxis(0) * 0.6,
+						() -> -operatorController.getRawAxis(4) * 0.3));
+
+		/*drive.setDefaultCommand(
+		DriveCommands.driveNormal(
+				drive,
+				() -> driverController.getRawAxis(1),
+				() -> -driverController.getRawAxis(0),
+				() -> -driverController.getRawAxis(3))); */
 
 		operatorController
 				.leftTrigger()
@@ -112,16 +112,16 @@ public class RobotContainer {
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
 
 		operatorController
-				.a()
+				.b()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
 
 		turretTestcontroller
 				.y()
 				.onTrue(
-						new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_TEST_ONE));
+						new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_CENTER));
 		turretTestcontroller
-				.y()
-				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_TEST_TWO));
+				.a()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_LEFT));
 
 		// drive.setDefaultCommand(DriveCommands.driveTest(drive));
 	}

@@ -34,8 +34,8 @@ public class SUB_Superstructure extends SubsystemBase {
 		INTAKE_HALF,
 		INTAKE_IN,
 		READY,
-		TURRET_TEST_ONE,
-		TURRET_TEST_TWO
+		TURRET_CENTER,
+		TURRET_LEFT
 	}
 
 	private SUB_Indexer indexerRef;
@@ -58,7 +58,7 @@ public class SUB_Superstructure extends SubsystemBase {
 
 	// test values
 	private Rotation2d center = new Rotation2d(0.0);
-	private Rotation2d left = new Rotation2d(-Math.PI / 2);
+	private Rotation2d left = new Rotation2d(-Math.PI);
 
 	// Robot Constants
 	private final double INTAKE_MAX_EXTENSION_METERS = 11.3;
@@ -150,18 +150,19 @@ public class SUB_Superstructure extends SubsystemBase {
 				break;
 
 			case READY:
-				indexerRef.setSpinnerVoltage(-2.0);
+				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
+				shooterRef.setShooterVelocities(2000);
 				// activelyReady = true;
 				// activelyShooting = false;
 				break;
 
-			case TURRET_TEST_ONE:
-				shooterRef.setTurretVoltage(0.0);
+			case TURRET_CENTER:
+				shooterRef.setTurretPosition(center);
 				break;
 
-			case TURRET_TEST_TWO:
-				shooterRef.setTurretVoltage(0.0);
+			case TURRET_LEFT:
+				shooterRef.setTurretPosition(left);
 				break;
 		}
 
@@ -169,7 +170,7 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		// shooterRef.setShooterVelocities(4000);
 
-		// updateTurretAngle();
+		updateTurretAngle();
 		// updateShooterVelocity();
 	}
 
@@ -200,14 +201,12 @@ public class SUB_Superstructure extends SubsystemBase {
 		Rotation2d turretAngle = fieldRelativeAngle.minus(robotPose.getRotation());
 
 		// finds hall effect sensor to find the turrets position
-		if (shooterRef.homeTurret(homed)) {
-			homed = true;
-		}
+		// if (shooterRef.homeTurret(homed)) {
+		//	homed = true;
+		// }
 
 		// Set turret position if turret is homed
-		if (homed) {
-			shooterRef.setTurretPosition(turretAngle);
-		}
+		shooterRef.setTurretPosition(turretAngle);
 
 		// Log turret aiming data
 		Logger.recordOutput("Superstructure/Turret/Position", turretPos);
