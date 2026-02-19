@@ -24,11 +24,15 @@ public class IO_IndexerReal implements IO_IndexerBase {
 	private final TalonFX kickerMotor;
 	private final VoltageOut kickerVoltageRequest;
 
+	private final TalonFX climbMotor;
+	private final VoltageOut climbVoltageRequest;
+
 	private final IRBeamBreak sensor;
 
 	public IO_IndexerReal(
 			TalonFXConfiguration spinnerMotorConfiguration,
-			TalonFXConfiguration kickerMotorConfiguration) {
+			TalonFXConfiguration kickerMotorConfiguration,
+			TalonFXConfiguration climbMotorConfiguration) {
 
 		spinnerMotor =
 				new TalonFX(RobotConstants.Indexer.SPINNER_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
@@ -39,6 +43,10 @@ public class IO_IndexerReal implements IO_IndexerBase {
 				new TalonFX(RobotConstants.Indexer.KICKER_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		kickerMotor.getConfigurator().apply(kickerMotorConfiguration);
 		kickerVoltageRequest = new VoltageOut(0.0);
+
+		climbMotor = new TalonFX(33, RobotConstants.CANBUS_CANIVORE);
+		climbMotor.getConfigurator().apply(climbMotorConfiguration);
+		climbVoltageRequest = new VoltageOut(0.0);
 
 		sensor = new IRBeamBreak(0);
 	}
@@ -52,6 +60,10 @@ public class IO_IndexerReal implements IO_IndexerBase {
 		inputs.kickerVoltage = kickerMotor.getMotorVoltage().getValueAsDouble();
 		inputs.kickerTargetVoltage = kickerVoltageRequest.getOutputMeasure().in(Volts);
 		inputs.kickerCurrent = kickerMotor.getStatorCurrent().getValueAsDouble();
+
+		inputs.climbVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
+		inputs.climbTargetVoltage = climbVoltageRequest.getOutputMeasure().in(Volts);
+		inputs.climbCurrent = climbMotor.getStatorCurrent().getValueAsDouble();
 
 		inputs.sensor = sensor.getValueAsBoolean();
 	}
@@ -78,5 +90,11 @@ public class IO_IndexerReal implements IO_IndexerBase {
 	public StatusCode setKickerVelocity(double Velocity) {
 		kickerVoltageRequest.withOutput(Velocity);
 		return kickerMotor.setControl(kickerVoltageRequest);
+	}
+
+	@Override
+	public StatusCode setClimbVoltage(double voltage) {
+		climbVoltageRequest.withOutput(voltage);
+		return climbMotor.setControl(climbVoltageRequest);
 	}
 }

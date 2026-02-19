@@ -31,7 +31,10 @@ public class SUB_Indexer extends SubsystemBase {
 	}
 
 	public StatusCode setKickerVoltage(double voltage) {
-		io.setKickerVoltage(voltage);
-		return StatusCode.DeviceIsNull;
+		return io.setKickerVoltage(voltage);
+	}
+
+	public StatusCode setClimbVoltage(double voltage) {
+		return io.setClimbVoltage(voltage);
 	}
 }

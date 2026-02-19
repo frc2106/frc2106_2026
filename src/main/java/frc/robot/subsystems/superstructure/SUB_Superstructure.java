@@ -35,6 +35,9 @@ public class SUB_Superstructure extends SubsystemBase {
 		INTAKE_HALF,
 		INTAKE_IN,
 		READY,
+		CLIMB_UP,
+		CLIMB_DOWN,
+		CLIMB_STOP,
 		TURRET_CENTER,
 		TURRET_LEFT
 	}
@@ -154,15 +157,28 @@ public class SUB_Superstructure extends SubsystemBase {
 				break;
 
 			case INTAKE_IN:
+				intakeRef.setIntakeVoltage(3.0);
 				intakeRef.setSliderPosition(0.0);
 				break;
 
 			case READY:
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
-				shooterRef.setShooterVelocities(2000);
+				// shooterRef.setShooterVelocities(2000);
 				// activelyReady = true;
 				// activelyShooting = false;
+				break;
+
+			case CLIMB_UP:
+				indexerRef.setClimbVoltage(5.0);
+				break;
+
+			case CLIMB_DOWN:
+				indexerRef.setClimbVoltage(-5.0);
+				break;
+
+			case CLIMB_STOP:
+				indexerRef.setClimbVoltage(0.0);
 				break;
 
 			case TURRET_CENTER:
@@ -223,7 +239,15 @@ public class SUB_Superstructure extends SubsystemBase {
 			turretAngleRad += 2 * Math.PI;
 		}
 
-		shooterRef.setTurretPosition(turretAngleRad);
+		// finds hall effect sensor to find the turrets position
+		if (shooterRef.homeTurret(homed)) {
+			homed = true;
+		}
+
+		// Set turret position if turret is homed
+		if (homed) {
+			shooterRef.setTurretPosition(turretAngleRad);
+		}
 
 		Logger.recordOutput(
 				"Superstructure/Turret/TurretPosition",

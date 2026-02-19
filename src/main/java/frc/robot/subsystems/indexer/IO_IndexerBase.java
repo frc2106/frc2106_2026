@@ -23,6 +23,10 @@ public interface IO_IndexerBase {
 		public double kickerTargetVoltage = 0.0;
 		public double kickerCurrent = 0.0;
 
+		public double climbVoltage = 0.0;
+		public double climbTargetVoltage = 0.0;
+		public double climbCurrent = 0.0;
+
 		public boolean sensor = false;
 	}
 
@@ -35,4 +39,6 @@ public interface IO_IndexerBase {
 	public StatusCode setSpinnerVelocity(double Velocity);
 
 	public StatusCode setKickerVelocity(double Velocity);
+
+	public StatusCode setClimbVoltage(double voltage);
 }

@@ -139,7 +139,7 @@ public final class RobotConstants {
 		}
 
 		public static final TalonFXConfiguration TURRET_MOTOR_CONFIG = new TalonFXConfiguration();
-		public static final double TURRET_SLOW_MOVE_VOLTAGE = -0.5;
+		public static final double TURRET_SLOW_MOVE_VOLTAGE = 2.0;
 
 		static {
 			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 40;
@@ -228,39 +228,22 @@ public final class RobotConstants {
 			KICKER_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Coast; // Break or Coast
 			KICKER_MOTOR_CONFIG.MotorOutput.Inverted =
 					InvertedValue.CounterClockwise_Positive; // Which way is positive?
+		}
 
-			KICKER_MOTOR_CONFIG.Slot0.kP = 0.5; // Slot 0 P value
-			KICKER_MOTOR_CONFIG.Slot0.kI = 0.0; // Slot 0 I value
-			KICKER_MOTOR_CONFIG.Slot0.kD = 0.0; // Slot 0 D value
+		// climb motor
+		public static final int CLIMB_MOTOR_CAN_ID = 33;
 
-			KICKER_MOTOR_CONFIG.Slot0.kS = 0.0;
-			KICKER_MOTOR_CONFIG.Slot0.kV = 0.0;
-			KICKER_MOTOR_CONFIG.Slot0.kA = 0.0;
+		public static final TalonFXConfiguration CLIMB_MOTOR_CONFIG = new TalonFXConfiguration();
+
+		static {
+			CLIMB_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 30; // Amps
+			CLIMB_MOTOR_CONFIG.Feedback.SensorToMechanismRatio =
+					1.0; // Rotations to Whatever (gear ratio)
+			CLIMB_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake; // Break or Coast
+			CLIMB_MOTOR_CONFIG.MotorOutput.Inverted =
+					InvertedValue.CounterClockwise_Positive; // Which way is positive?
 		}
 
 		public static final int BEAM_BREAK_DIO = 0; // RIO DIO port for beam break sensor
-	}
-
-	// climb
-	// ---------------------------------------------------------------------------------------------------------
-	public static class climber {
-		public static final int CLIMBER_MOTOR_CAN_ID = 31;
-
-		public static final double INTAKE_MAX_EXTENSION_METERS = 1.0;
-
-		public static final TalonFXConfiguration SLIDER_MOTOR_CONFIG = new TalonFXConfiguration();
-
-		static {
-			SLIDER_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 20; // Amps
-			SLIDER_MOTOR_CONFIG.Feedback.SensorToMechanismRatio =
-					1.0; // Rotations to Whatever (gear ratio)
-			SLIDER_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake; // Break or Coast
-			SLIDER_MOTOR_CONFIG.MotorOutput.Inverted =
-					InvertedValue.CounterClockwise_Positive; // Which way is positive?
-
-			SLIDER_MOTOR_CONFIG.Slot0.kP = 0.0; // Slot 0 P value
-			SLIDER_MOTOR_CONFIG.Slot0.kI = 0.0; // Slot 0 I value
-			SLIDER_MOTOR_CONFIG.Slot0.kD = 0.0; // Slot 0 D value
-		}
 	}
 }

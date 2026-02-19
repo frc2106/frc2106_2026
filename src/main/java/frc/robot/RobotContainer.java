@@ -101,11 +101,11 @@ public class RobotContainer {
 
 		operatorController
 				.leftTrigger()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKING));
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE_IN));
 
 		operatorController
 				.leftTrigger()
-				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE_OFF));
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKING));
 
 		operatorController
 				.rightTrigger()
@@ -122,6 +122,22 @@ public class RobotContainer {
 		operatorController
 				.b()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
+
+		operatorController
+				.povUp()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_UP));
+
+		operatorController
+				.povUp()
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_STOP));
+
+		operatorController
+				.povDown()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_DOWN));
+
+		operatorController
+				.povDown()
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_STOP));
 
 		turretTestcontroller
 				.y()
@@ -157,7 +173,8 @@ public class RobotContainer {
 				new SUB_Indexer(
 						new IO_IndexerReal(
 								RobotConstants.Indexer.KICKER_MOTOR_CONFIG,
-								RobotConstants.Indexer.SPINNER_MOTOR_CONFIG));
+								RobotConstants.Indexer.SPINNER_MOTOR_CONFIG,
+								RobotConstants.Indexer.CLIMB_MOTOR_CONFIG));
 
 		intake =
 				new SUB_Intake(
