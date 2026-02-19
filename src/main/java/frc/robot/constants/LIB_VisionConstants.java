@@ -47,12 +47,12 @@ public class LIB_VisionConstants {
 	public static Transform3d robotToCamera0 =
 			new Transform3d(
 					new Translation3d(
-							Units.inchesToMeters(12.5), // X: forward from robot center (in)
-							Units.inchesToMeters(0), // Y: left from robot center (in)
-							Units.inchesToMeters(7.5)), // Z: up from robot center (in)
+							Units.inchesToMeters(-11.434), // X: forward from robot center (in)
+							Units.inchesToMeters(4.836), // Y: left from robot center (in)
+							Units.inchesToMeters(11.59)), // Z: up from robot center (in)
 					new Rotation3d(
-							Units.degreesToRadians(0), // Roll: rotation about X-axis (deg)
-							Units.degreesToRadians(-10), // Pitch: rotation about Y-axis (deg)
+							Units.degreesToRadians(180), // Roll: rotation about X-axis (deg)
+							Units.degreesToRadians(25), // Pitch: rotation about Y-axis (deg)
 							Units.degreesToRadians(0))); // Yaw: rotation about Z-axis (deg)
 
 	// ====================================================================
@@ -63,12 +63,12 @@ public class LIB_VisionConstants {
 	public static Transform3d robotToCamera1 =
 			new Transform3d(
 					new Translation3d(
-							Units.inchesToMeters(-11.25 - 2.0), // X: forward from robot center (in)
-							Units.inchesToMeters(9), // Y: left from robot center (in)
-							Units.inchesToMeters(19.5)), // Z: up from robot center (in)
+							Units.inchesToMeters(-10.748), // X: forward from robot center (in)
+							Units.inchesToMeters(13.1), // Y: left from robot center (in)
+							Units.inchesToMeters(11.05)), // Z: up from robot center (in)
 					new Rotation3d(
-							Units.degreesToRadians(180), // Roll: rotation about X-axis (deg)
-							Units.degreesToRadians(-155 - 15), // Pitch: rotation about Y-axis (deg)
+							Units.degreesToRadians(90), // Roll: rotation about X-axis (deg)
+							Units.degreesToRadians(20), // Pitch: rotation about Y-axis (deg)
 							0)); // Yaw: rotation about Z-axis (deg)
 
 	// ====================================================================
