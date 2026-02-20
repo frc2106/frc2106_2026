@@ -164,6 +164,11 @@ public class LIB_VisionConstants {
 	 */
 	public static Set<Integer> allowedTagIds =
 			Set.of(
+					1,
+					2,
+					3,
+					4,
+					5,
 					6,
 					7,
 					8,
@@ -175,6 +180,16 @@ public class LIB_VisionConstants {
 					19,
 					20,
 					21,
-					22 // Red alliance tags
+					22, // Red alliance tags
+					23,
+					24,
+					25,
+					26,
+					27,
+					28,
+					29,
+					30,
+					31,
+					32
 					);
 }

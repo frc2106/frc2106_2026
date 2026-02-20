@@ -23,8 +23,27 @@ import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.shooter.SUB_Shooter;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class SUB_Superstructure extends SubsystemBase {
+
+	public enum TurretTarget {
+		BLUE_HUB(new Translation2d(4.62, 4.03)),
+		RED_HUB(new Translation2d(11.91, 4.03)),
+		BLUE_AIMING_CORNER(new Translation2d(1.5, 6.5)),
+		RED_AIMING_CORNER(new Translation2d(15.0, 6.5));
+
+		private final Translation2d position;
+
+		TurretTarget(Translation2d position) {
+			this.position = position;
+		}
+
+		public Translation2d getPosition() {
+			return position;
+		}
+	}
 
 	public enum RobotState {
 		IDLE,
@@ -191,23 +210,11 @@ public class SUB_Superstructure extends SubsystemBase {
 				indexerRef.setClimbVoltage(0.0);
 				break;
 
-			case TURRET_CENTER:
-				// shooterRef.setTurretPosition(center);
-				break;
-
-			case TURRET_LEFT:
-				// shooterRef.setTurretPosition(left);
-				break;
 		}
-
-		// demo();
-
-		// shooterRef.setTurretPosition(new Rotation2d(-Math.PI));
-
-		// shooterRef.setShooterVelocities(4000);
 
 		updateTurretAngle();
 		// updateShooterVelocity();
+		updateTurretTarget();
 	}
 
 	/**
@@ -249,7 +256,6 @@ public class SUB_Superstructure extends SubsystemBase {
 			turretAngleRad += 2 * Math.PI;
 		}
 
-		// Set turret position if turret is homed
 		shooterRef.setTurretPosition(turretAngleRad);
 
 		Logger.recordOutput(
@@ -302,9 +308,9 @@ public class SUB_Superstructure extends SubsystemBase {
 		double targetRPM = shooterRPMTable.get(distance);
 
 		// Set shooter velocity
-		if (activelyReady) {
-			shooterRef.setShooterVelocities(targetRPM);
-		}
+		
+		shooterRef.setShooterVelocities(targetRPM);
+		
 
 		// Log shooter velocity data
 		Logger.recordOutput("Superstructure/Shooter/DistanceToVirtualGoal", distance);
@@ -324,6 +330,7 @@ public class SUB_Superstructure extends SubsystemBase {
 	private Translation2d calculateVirtualGoal(Translation2d turretPos, ChassisSpeeds fieldSpeeds) {
 
 		// Calculate distance to actual target
+		updateTurretTarget();
 		double distanceToTarget = turretPos.getDistance(turretTargetPose);
 
 		// Look up shooter RPM for this distance
@@ -373,6 +380,33 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		return virtualGoal;
 	}
+
+	public void updateTurretTarget() {
+
+		boolean isRed = DriverStation.getAlliance().isPresent()
+				&& DriverStation.getAlliance().get() == Alliance.Red;
+
+		Pose2d robotPose = driveRef.getPose();
+
+		if (isRed) {
+			
+			if (robotPose.getX() < TurretTarget.RED_HUB.getPosition().getX()) { // robot it past red hub
+				turretTargetPose = TurretTarget.RED_AIMING_CORNER.getPosition(); // aim to zone
+			} else {
+				turretTargetPose = TurretTarget.RED_HUB.getPosition(); // aim at goal
+			}
+
+		} else {
+
+			if (robotPose.getX() > TurretTarget.BLUE_HUB.getPosition().getX()) { // robot it past blue hub
+				turretTargetPose = TurretTarget.BLUE_AIMING_CORNER.getPosition(); // aim to zone
+			} else {
+				turretTargetPose = TurretTarget.BLUE_HUB.getPosition(); // aim at goal
+			}
+
+		}
+
+		}
 
 	public void setRobotState(RobotState newRobotState) {
 		currentRobotState = newRobotState;
