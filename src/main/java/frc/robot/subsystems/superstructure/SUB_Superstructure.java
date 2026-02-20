@@ -31,8 +31,10 @@ public class SUB_Superstructure extends SubsystemBase {
 	public enum TurretTarget {
 		BLUE_HUB(new Translation2d(4.62, 4.03)),
 		RED_HUB(new Translation2d(11.91, 4.03)),
-		BLUE_AIMING_CORNER(new Translation2d(1.5, 6.5)),
-		RED_AIMING_CORNER(new Translation2d(15.0, 6.5));
+		BLUE_AIMING_TOP_CORNER(new Translation2d(1.5, 6.5)),
+		RED_AIMING_TOP_CORNER(new Translation2d(15.0, 6.5)),
+		BLUE_AIMING_BOTTOM_CORNER(new Translation2d(1.5, 1.5)),
+		RED_AIMING_BOTTOM_CORNER(new Translation2d(15.0, 1.5));
 
 		private final Translation2d position;
 
@@ -390,18 +392,22 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		if (isRed) {
 			
-			if (robotPose.getX() < TurretTarget.RED_HUB.getPosition().getX()) { // robot it past red hub
-				turretTargetPose = TurretTarget.RED_AIMING_CORNER.getPosition(); // aim to zone
-			} else {
+			if (robotPose.getX() > TurretTarget.RED_HUB.getPosition().getX()) { // robot is not past blue hub
 				turretTargetPose = TurretTarget.RED_HUB.getPosition(); // aim at goal
+			} else if (robotPose.getY() > TurretTarget.RED_HUB.getPosition().getY()){
+				turretTargetPose = TurretTarget.RED_AIMING_TOP_CORNER.getPosition(); // aim to zone
+			} else {
+				turretTargetPose = TurretTarget.RED_AIMING_BOTTOM_CORNER.getPosition(); // aim to zone
 			}
 
 		} else {
 
-			if (robotPose.getX() > TurretTarget.BLUE_HUB.getPosition().getX()) { // robot it past blue hub
-				turretTargetPose = TurretTarget.BLUE_AIMING_CORNER.getPosition(); // aim to zone
-			} else {
+			if (robotPose.getX() < TurretTarget.BLUE_HUB.getPosition().getX()) { // robot is not past blue hub
 				turretTargetPose = TurretTarget.BLUE_HUB.getPosition(); // aim at goal
+			} else if (robotPose.getY() > TurretTarget.BLUE_HUB.getPosition().getY()){
+				turretTargetPose = TurretTarget.BLUE_AIMING_TOP_CORNER.getPosition(); // aim to zone
+			} else {
+				turretTargetPose = TurretTarget.BLUE_AIMING_BOTTOM_CORNER.getPosition(); // aim to zone
 			}
 
 		}
