@@ -133,8 +133,6 @@ public final class RobotConstants {
 
 		public static final double ROT_TO_RAD = 2.0 * Math.PI;
 
-		
-
 		/** Converts radians to turret mechanism rotations using ROT_TO_RAD */
 		public static double toRotations(double radians) {
 			return radians / ROT_TO_RAD;

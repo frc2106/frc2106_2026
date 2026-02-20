@@ -12,6 +12,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.RobotConstants;
@@ -23,8 +25,6 @@ import frc.robot.subsystems.intake.SUB_Intake;
 import frc.robot.subsystems.led.SUB_Led;
 import frc.robot.subsystems.shooter.SUB_Shooter;
 import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class SUB_Superstructure extends SubsystemBase {
 
@@ -211,7 +211,6 @@ public class SUB_Superstructure extends SubsystemBase {
 			case CLIMB_STOP:
 				indexerRef.setClimbVoltage(0.0);
 				break;
-
 		}
 
 		updateTurretAngle();
@@ -310,9 +309,8 @@ public class SUB_Superstructure extends SubsystemBase {
 		double targetRPM = shooterRPMTable.get(distance);
 
 		// Set shooter velocity
-		
+
 		shooterRef.setShooterVelocities(targetRPM);
-		
 
 		// Log shooter velocity data
 		Logger.recordOutput("Superstructure/Shooter/DistanceToVirtualGoal", distance);
@@ -332,7 +330,6 @@ public class SUB_Superstructure extends SubsystemBase {
 	private Translation2d calculateVirtualGoal(Translation2d turretPos, ChassisSpeeds fieldSpeeds) {
 
 		// Calculate distance to actual target
-		updateTurretTarget();
 		double distanceToTarget = turretPos.getDistance(turretTargetPose);
 
 		// Look up shooter RPM for this distance
@@ -385,16 +382,18 @@ public class SUB_Superstructure extends SubsystemBase {
 
 	public void updateTurretTarget() {
 
-		boolean isRed = DriverStation.getAlliance().isPresent()
-				&& DriverStation.getAlliance().get() == Alliance.Red;
+		boolean isRed =
+				DriverStation.getAlliance().isPresent()
+						&& DriverStation.getAlliance().get() == Alliance.Red;
 
 		Pose2d robotPose = driveRef.getPose();
 
 		if (isRed) {
-			
-			if (robotPose.getX() > TurretTarget.RED_HUB.getPosition().getX()) { // robot is not past blue hub
+
+			if (robotPose.getX()
+					> TurretTarget.RED_HUB.getPosition().getX()) { // robot is not past blue hub
 				turretTargetPose = TurretTarget.RED_HUB.getPosition(); // aim at goal
-			} else if (robotPose.getY() > TurretTarget.RED_HUB.getPosition().getY()){
+			} else if (robotPose.getY() > TurretTarget.RED_HUB.getPosition().getY()) {
 				turretTargetPose = TurretTarget.RED_AIMING_TOP_CORNER.getPosition(); // aim to zone
 			} else {
 				turretTargetPose = TurretTarget.RED_AIMING_BOTTOM_CORNER.getPosition(); // aim to zone
@@ -402,17 +401,16 @@ public class SUB_Superstructure extends SubsystemBase {
 
 		} else {
 
-			if (robotPose.getX() < TurretTarget.BLUE_HUB.getPosition().getX()) { // robot is not past blue hub
+			if (robotPose.getX()
+					< TurretTarget.BLUE_HUB.getPosition().getX()) { // robot is not past blue hub
 				turretTargetPose = TurretTarget.BLUE_HUB.getPosition(); // aim at goal
-			} else if (robotPose.getY() > TurretTarget.BLUE_HUB.getPosition().getY()){
+			} else if (robotPose.getY() > TurretTarget.BLUE_HUB.getPosition().getY()) {
 				turretTargetPose = TurretTarget.BLUE_AIMING_TOP_CORNER.getPosition(); // aim to zone
 			} else {
 				turretTargetPose = TurretTarget.BLUE_AIMING_BOTTOM_CORNER.getPosition(); // aim to zone
 			}
-
 		}
-
-		}
+	}
 
 	public void setRobotState(RobotState newRobotState) {
 		currentRobotState = newRobotState;

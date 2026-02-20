@@ -84,8 +84,8 @@ public class RobotContainer {
 		drive.setDefaultCommand(
 				DriveCommands.driveNormalExpo(
 						drive,
-						() -> -operatorController.getRawAxis(1),
-						() -> -operatorController.getRawAxis(0),
+						() -> operatorController.getRawAxis(1),
+						() -> operatorController.getRawAxis(0),
 						() -> -operatorController.getRawAxis(4),
 						1.0, // A VALUE OF 1.0 is FULL ROBOT SPEED
 						1.0, // keep rotation conservative

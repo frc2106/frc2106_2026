@@ -153,6 +153,20 @@ public class LIB_VisionConstants {
 	// SECTION 8: SECURITY - ALLOWED TAG IDS
 	// ====================================================================
 
+	/* Red alliance tags
+	HUB = 2, 3, 4, 5, 8, 9, 10, 11
+	TRECH = 1, 6, 7, 12
+	HP = 13, 14
+	CLIMB = 15, 16
+	*/
+
+	/*Blue alliance tags
+	HUB = 18, 19, 20, 21, 24, 25, 26, 27
+	TRECH = 17, 22, 23, 28
+	HP = 29, 30
+	CLIMB = 31, 32
+	*/
+
 	/**
 	 * Whitelist of allowed AprilTag IDs.
 	 *
@@ -164,6 +178,7 @@ public class LIB_VisionConstants {
 	 */
 	public static Set<Integer> allowedTagIds =
 			Set.of(
+					// Red alliance tags
 					1,
 					2,
 					3,
@@ -174,13 +189,19 @@ public class LIB_VisionConstants {
 					8,
 					9,
 					10,
-					11, // Blue alliance tags
+					11,
+					12,
+					13,
+					14,
+					15,
+					16,
+					// Blue alliance tags
 					17,
 					18,
 					19,
 					20,
 					21,
-					22, // Red alliance tags
+					22,
 					23,
 					24,
 					25,
@@ -190,6 +211,5 @@ public class LIB_VisionConstants {
 					29,
 					30,
 					31,
-					32
-					);
+					32);
 }
