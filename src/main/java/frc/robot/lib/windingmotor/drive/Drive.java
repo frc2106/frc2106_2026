@@ -385,12 +385,12 @@ public class Drive extends SubsystemBase {
 		Pose3d robotPose3d = new Pose3d(getPose());
 
 		// Transform all camera poses to global coordinates
-		int cameraCount = 4;
+		int cameraCount = 2;
 		Pose3d[] globalCameraPositions = new Pose3d[cameraCount];
 		globalCameraPositions[0] = robotPose3d.transformBy(LIB_VisionConstants.robotToCamera0);
 		globalCameraPositions[1] = robotPose3d.transformBy(LIB_VisionConstants.robotToCamera1);
-		globalCameraPositions[2] = robotPose3d.transformBy(LIB_VisionConstants.robotToCamera2);
-		globalCameraPositions[3] = robotPose3d.transformBy(LIB_VisionConstants.robotToCamera3);
+		// globalCameraPositions[2] = robotPose3d.transformBy(LIB_VisionConstants.robotToCamera2);
+		// globalCameraPositions[3] = robotPose3d.transformBy(LIB_VisionConstants.robotToCamera3);
 
 		// Log for visualization
 		Logger.recordOutput("CameraPositions", globalCameraPositions);

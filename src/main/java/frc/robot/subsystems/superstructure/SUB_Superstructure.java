@@ -35,6 +35,8 @@ public class SUB_Superstructure extends SubsystemBase {
 		INTAKE_HALF,
 		INTAKE_IN,
 		READY,
+		VELOCITY_ONE,
+		VELOCITY_TWO,
 		CLIMB_UP,
 		CLIMB_DOWN,
 		CLIMB_STOP,
@@ -118,6 +120,7 @@ public class SUB_Superstructure extends SubsystemBase {
 				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(0.0);
 				intakeRef.setSliderPosition(0.0);
+				shooterRef.setShooterVelocities(0.0);
 
 				break;
 
@@ -164,9 +167,16 @@ public class SUB_Superstructure extends SubsystemBase {
 			case READY:
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
-				// shooterRef.setShooterVelocities(2000);
-				// activelyReady = true;
+				activelyReady = true;
 				// activelyShooting = false;
+				break;
+
+			case VELOCITY_ONE:
+				shooterRef.setShooterVelocities(2000);
+				break;
+
+			case VELOCITY_TWO:
+				shooterRef.setShooterVelocities(3000);
 				break;
 
 			case CLIMB_UP:
@@ -197,7 +207,7 @@ public class SUB_Superstructure extends SubsystemBase {
 		// shooterRef.setShooterVelocities(4000);
 
 		updateTurretAngle();
-		updateShooterVelocity();
+		// updateShooterVelocity();
 	}
 
 	/**
@@ -239,15 +249,8 @@ public class SUB_Superstructure extends SubsystemBase {
 			turretAngleRad += 2 * Math.PI;
 		}
 
-		// finds hall effect sensor to find the turrets position
-		if (shooterRef.homeTurret(homed)) {
-			homed = true;
-		}
-
 		// Set turret position if turret is homed
-		if (homed) {
-			shooterRef.setTurretPosition(turretAngleRad);
-		}
+		shooterRef.setTurretPosition(turretAngleRad);
 
 		Logger.recordOutput(
 				"Superstructure/Turret/TurretPosition",
@@ -299,7 +302,9 @@ public class SUB_Superstructure extends SubsystemBase {
 		double targetRPM = shooterRPMTable.get(distance);
 
 		// Set shooter velocity
-		shooterRef.setShooterVelocities(targetRPM);
+		if (activelyReady) {
+			shooterRef.setShooterVelocities(targetRPM);
+		}
 
 		// Log shooter velocity data
 		Logger.recordOutput("Superstructure/Shooter/DistanceToVirtualGoal", distance);

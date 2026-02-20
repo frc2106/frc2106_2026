@@ -99,6 +99,7 @@ public class RobotContainer {
 				() -> -driverController.getRawAxis(0),
 				() -> -driverController.getRawAxis(3))); */
 
+		// Intake
 		operatorController
 				.leftTrigger()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE_IN));
@@ -107,6 +108,7 @@ public class RobotContainer {
 				.leftTrigger()
 				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKING));
 
+		// Shoot
 		operatorController
 				.rightTrigger()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.SHOOTING));
@@ -124,6 +126,15 @@ public class RobotContainer {
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
 
 		operatorController
+				.y()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.VELOCITY_ONE));
+
+		operatorController
+				.a()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.VELOCITY_TWO));
+
+		// Climb
+		operatorController
 				.povUp()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_UP));
 
@@ -139,6 +150,7 @@ public class RobotContainer {
 				.povDown()
 				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_STOP));
 
+		// Test
 		turretTestcontroller
 				.y()
 				.onTrue(
