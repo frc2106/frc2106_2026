@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,6 +36,7 @@ import frc.robot.subsystems.shooter.IO_ShooterReal;
 import frc.robot.subsystems.shooter.IO_ShooterSim;
 import frc.robot.subsystems.shooter.SUB_Shooter;
 import frc.robot.subsystems.superstructure.SUB_Superstructure;
+import frc.robot.subsystems.superstructure.SUB_Superstructure.RobotState;
 
 @SuppressWarnings("unused")
 public class RobotContainer {
@@ -68,7 +70,7 @@ public class RobotContainer {
 		// Initialize Robot Components
 		initializeControllers();
 		initializeSubsystems();
-		// configurePathplannerCommands();
+		configurePathplannerCommands();
 		// configureButtonBindings();
 
 		// Add alliance selector to SmartDashboard
@@ -88,9 +90,9 @@ public class RobotContainer {
 						() -> operatorController.getRawAxis(0),
 						() -> -operatorController.getRawAxis(4),
 						1.0, // A VALUE OF 1.0 is FULL ROBOT SPEED
-						1.0, // keep rotation conservative
-						0.2, // movement expo
-						0.4)); // rotation expo
+						0.8, // keep rotation conservative
+						0.1, // movement expo
+						0.2)); // rotation expo
 
 		/*drive.setDefaultCommand(
 		DriveCommands.driveNormal(
@@ -102,11 +104,11 @@ public class RobotContainer {
 		// Intake
 		operatorController
 				.leftTrigger()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE_IN));
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
 
 		operatorController
 				.leftTrigger()
-				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKING));
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE));
 
 		// Shoot
 		operatorController
@@ -115,7 +117,7 @@ public class RobotContainer {
 
 		operatorController
 				.rightTrigger()
-				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
 
 		operatorController
 				.x()
@@ -136,15 +138,7 @@ public class RobotContainer {
 		// Climb
 		operatorController
 				.povUp()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_UP));
-
-		operatorController
-				.povUp()
-				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_STOP));
-
-		operatorController
-				.povDown()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_DOWN));
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB));
 
 		operatorController
 				.povDown()
@@ -281,47 +275,17 @@ public class RobotContainer {
 						*/
 	}
 
-	/*
 	private void configurePathplannerCommands() {
-		NamedCommands.registerCommand(
-				"Intake_Coral", new CMD_Superstructure(superstructure, SuperstructureState.CORAL_STATION));
+		NamedCommands.registerCommand("IDLE", new CMD_Superstructure(superstructure, RobotState.IDLE));
 
 		NamedCommands.registerCommand(
-				"Intake_Race",
-				new CMD_IntakeRace(intake)
-						.andThen(new CMD_Superstructure(superstructure, SuperstructureState.IDLE)));
+				"SHOOT", new CMD_Superstructure(superstructure, RobotState.SHOOTING));
 
 		NamedCommands.registerCommand(
-				"L1", new CMD_Superstructure(superstructure, SuperstructureState.L1_SCORING));
-		NamedCommands.registerCommand(
-				"L2", new CMD_Superstructure(superstructure, SuperstructureState.L2_SCORING));
-		NamedCommands.registerCommand(
-				"L2C", new CMD_Superstructure(superstructure, SuperstructureState.L2_CLEAR));
-		NamedCommands.registerCommand(
-				"L3", new CMD_Superstructure(superstructure, SuperstructureState.L3_SCORING));
-		NamedCommands.registerCommand(
-				"L3C", new CMD_Superstructure(superstructure, SuperstructureState.L3_CLEAR));
-		NamedCommands.registerCommand(
-				"L4", new CMD_Superstructure(superstructure, SuperstructureState.L4_SCORING_AUTO));
-		NamedCommands.registerCommand(
-				"L4C", new CMD_Superstructure(superstructure, SuperstructureState.L4_CLEAR));
+				"INTAKE", new CMD_Superstructure(superstructure, RobotState.INTAKE));
 
-		NamedCommands.registerCommand("Eject", new CMD_Eject(superstructure));
-
-		NamedCommands.registerCommand(
-				"Idle", new CMD_Superstructure(superstructure, SuperstructureState.IDLE));
-
-		NamedCommands.registerCommand(
-				"ALGAE_L2", new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_L2));
-		NamedCommands.registerCommand(
-				"ALGAE_L3", new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_L3));
-		NamedCommands.registerCommand(
-				"ALGAE_BARGE", new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_BARGE));
-		NamedCommands.registerCommand(
-				"ALGAE_PROCESSOR",
-				new CMD_Superstructure(superstructure, SuperstructureState.ALGAE_PROCESSOR));
+		NamedCommands.registerCommand("CLIMB", new CMD_Superstructure(superstructure, RobotState.IDLE));
 	}
-				*/
 
 	/*
 	private void configureButtonBindings() {

@@ -57,6 +57,8 @@ public class IO_ShooterReal implements IO_ShooterBase {
 				new TalonFX(RobotConstants.Shooter.TURRET_MOTOR_CAN_ID, RobotConstants.CANBUS_CANIVORE);
 		turretMotor.getConfigurator().apply(turretMotorConfiguration);
 		turretMotorRequest = new PositionVoltage(0.0);
+
+		// turretMotor.setPosition(0.0);
 	}
 
 	@Override
@@ -141,47 +143,45 @@ public class IO_ShooterReal implements IO_ShooterBase {
 	@Override
 	public Boolean homeTurret(Boolean homed) {
 
-		if (!homed) {
-			var homingLimit = new CurrentLimitsConfigs();
-			homingLimit.StatorCurrentLimit = 10.0; // 10A stator limit
-			homingLimit.StatorCurrentLimitEnable = true;
-			turretMotor.getConfigurator().apply(homingLimit);
+		var homingLimit = new CurrentLimitsConfigs();
+		homingLimit.StatorCurrentLimit = 10.0; // 10A stator limit
+		homingLimit.StatorCurrentLimitEnable = true;
+		turretMotor.getConfigurator().apply(homingLimit);
 
-			setTurretVoltage(slowVolts);
+		setTurretVoltage(slowVolts);
 
-			double current = turretMotor.getStatorCurrent().getValueAsDouble();
-			double velocity = Math.abs(turretMotor.getVelocity().getValueAsDouble()); // rps
+		double current = turretMotor.getStatorCurrent().getValueAsDouble();
+		double velocity = Math.abs(turretMotor.getVelocity().getValueAsDouble()); // rps
 
-			boolean isStalled = (current > 8.0) && (velocity < 1.0); // Tune these thresholds!
+		boolean isStalled = (current > 8.0) && (velocity < 1.0); // Tune these thresholds!
 
-			if (isStalled) {
-				slowVolts = slowVolts * -1;
+		if (isStalled) {
+			slowVolts = slowVolts * -1;
+		}
+
+		if (turretHomingSensor.get()) {
+			setTurretVoltage(0.0);
+
+			double homeRadiansCenter = 0.0;
+			double homeRadians = 0.0 * Math.PI;
+			double magnetEdge = 0.04;
+
+			if (slowVolts > 0) {
+				homeRadians = homeRadiansCenter - magnetEdge;
+			} else {
+				homeRadians = homeRadiansCenter + magnetEdge;
 			}
 
-			if (turretHomingSensor.get()) {
-				setTurretVoltage(0.0);
+			// Convert home angle from radians -> turret rotations
+			double homeRotations = homeRadians / RobotConstants.Shooter.ROT_TO_RAD;
 
-				double homeRadiansCenter = 0.0;
-				double homeRadians = 0.0 * Math.PI;
-				double magnetEdge = 0.04;
+			turretMotor.setPosition(homeRotations); // Now in rotations!
 
-				if (slowVolts > 0) {
-					homeRadians = homeRadiansCenter - magnetEdge;
-				} else {
-					homeRadians = homeRadiansCenter + magnetEdge;
-				}
-
-				// Convert home angle from radians -> turret rotations
-				double homeRotations = homeRadians / RobotConstants.Shooter.ROT_TO_RAD;
-
-				turretMotor.setPosition(homeRotations); // Now in rotations!
-
-				var normalLimit = new CurrentLimitsConfigs();
-				normalLimit.StatorCurrentLimit = 30.0; // your normal value
-				normalLimit.StatorCurrentLimitEnable = true;
-				turretMotor.getConfigurator().apply(normalLimit);
-				homed = true;
-			}
+			var normalLimit = new CurrentLimitsConfigs();
+			normalLimit.StatorCurrentLimit = 30.0; // your normal value
+			normalLimit.StatorCurrentLimitEnable = true;
+			turretMotor.getConfigurator().apply(normalLimit);
+			homed = true;
 		}
 		return homed;
 	}

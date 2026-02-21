@@ -51,14 +51,14 @@ public class SUB_Superstructure extends SubsystemBase {
 		IDLE,
 		EJECTING,
 		SHOOTING,
-		INTAKING,
+		INTAKE,
 		INTAKE_OFF,
 		INTAKE_HALF,
 		INTAKE_IN,
 		READY,
 		VELOCITY_ONE,
 		VELOCITY_TWO,
-		CLIMB_UP,
+		CLIMB,
 		CLIMB_DOWN,
 		CLIMB_STOP,
 		TURRET_CENTER,
@@ -148,13 +148,11 @@ public class SUB_Superstructure extends SubsystemBase {
 			case EJECTING:
 				indexerRef.setSpinnerVoltage(-5.0);
 				indexerRef.setKickerVoltage(-8.0);
-				// intakeRef.setIntakeVoltage(0.0);
-				// intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 
 			case SHOOTING:
-				// activelyShooting = true;
-				// activelyReady = false;
+				activelyShooting = true;
+				activelyReady = false;
 				indexerRef.setSpinnerVoltage(12.0);
 				indexerRef.setKickerVoltage(10.0);
 
@@ -167,55 +165,24 @@ public class SUB_Superstructure extends SubsystemBase {
 				}
 				break;
 
-			case INTAKING:
-				intakeRef.setIntakeVoltage(8.0);
+			case INTAKE:
+				intakeRef.setIntakeVoltage(10.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
-				break;
-
-			case INTAKE_OFF:
-				intakeRef.setIntakeVoltage(0.0);
 				break;
 
 			case INTAKE_HALF:
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
 				break;
 
-			case INTAKE_IN:
-				intakeRef.setIntakeVoltage(3.0);
-				intakeRef.setSliderPosition(0.0);
-				break;
-
-			case READY:
-				indexerRef.setSpinnerVoltage(0.0);
-				indexerRef.setKickerVoltage(0.0);
-				activelyReady = true;
-				// activelyShooting = false;
-				break;
-
-			case VELOCITY_ONE:
-				shooterRef.setShooterVelocities(2000);
-				break;
-
-			case VELOCITY_TWO:
-				shooterRef.setShooterVelocities(3000);
-				break;
-
-			case CLIMB_UP:
-				indexerRef.setClimbVoltage(5.0);
-				break;
-
-			case CLIMB_DOWN:
-				indexerRef.setClimbVoltage(-5.0);
-				break;
-
-			case CLIMB_STOP:
+			case CLIMB:
 				indexerRef.setClimbVoltage(0.0);
 				break;
 		}
 
 		updateTurretAngle();
-		// updateShooterVelocity();
+		updateShooterVelocity();
 		updateTurretTarget();
+		// shooterRef.homeTurret(homed);
 	}
 
 	/**

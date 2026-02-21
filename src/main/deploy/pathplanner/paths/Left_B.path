@@ -3,40 +3,68 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.818802030456853,
-        "y": 5.466862944162438
+        "x": 6.373126903553299,
+        "y": 5.6602335025380714
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.917341853465701,
-        "y": 6.715100407289281
+        "x": 6.271837563451777,
+        "y": 6.507380710659898
       },
       "isLocked": false,
       "linkedName": "Left_A_END"
     },
     {
       "anchor": {
-        "x": 2.7014380530973447,
-        "y": 5.3414454277286145
+        "x": 4.586751269035533,
+        "y": 7.455817258883249
       },
       "prevControl": {
-        "x": 3.25117994100295,
-        "y": 5.347912979351033
+        "x": 6.419167512690354,
+        "y": 7.593939086294416
+      },
+      "nextControl": {
+        "x": 4.173074237913026,
+        "y": 7.424635573120246
+      },
+      "isLocked": false,
+      "linkedName": "Left_B_END"
+    },
+    {
+      "anchor": {
+        "x": 3.1318680203045686,
+        "y": 7.455817258883249
+      },
+      "prevControl": {
+        "x": 3.503046311951675,
+        "y": 7.519279209053282
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left_B_END"
+      "linkedName": "left_A_END_2"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5269867100623827,
-      "rotationDegrees": -45.0
+      "waypointRelativePos": 0.9703534777651016,
+      "rotationDegrees": 0.8040921094992836
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "IDLE",
+      "waypointRelativePos": 0.5649663137632194,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IDLE"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.85,
     "maxAcceleration": 5.6,
@@ -47,7 +75,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -30.650667957052878
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "LeftSide",

@@ -40,7 +40,7 @@ public final class RobotConstants {
 		public static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
 
 		static {
-			INTAKE_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 25; // Amps
+			INTAKE_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 40; // Amps
 			INTAKE_MOTOR_CONFIG.Feedback.SensorToMechanismRatio =
 					1.0; // Rotations to Whatever (gear ratio)
 			INTAKE_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Coast; // Break or Coast
@@ -92,7 +92,7 @@ public final class RobotConstants {
 			SHOOTER_MOTOR_ONE_CONFIG.MotorOutput.Inverted =
 					InvertedValue.CounterClockwise_Positive; // Which way is positive?
 
-			SHOOTER_MOTOR_ONE_CONFIG.Slot0.kP = 0.3; // Slot 0 P value
+			SHOOTER_MOTOR_ONE_CONFIG.Slot0.kP = 0.2; // Slot 0 P value
 			SHOOTER_MOTOR_ONE_CONFIG.Slot0.kI = 0.0; // Slot 0 I value
 			SHOOTER_MOTOR_ONE_CONFIG.Slot0.kD = 0.0; // Slot 0 D value
 
@@ -114,7 +114,7 @@ public final class RobotConstants {
 			SHOOTER_MOTOR_TWO_CONFIG.MotorOutput.Inverted =
 					InvertedValue.Clockwise_Positive; // Which way is positive?
 
-			SHOOTER_MOTOR_TWO_CONFIG.Slot0.kP = 0.3; // Slot 0 P value
+			SHOOTER_MOTOR_TWO_CONFIG.Slot0.kP = 0.2; // Slot 0 P value
 			SHOOTER_MOTOR_TWO_CONFIG.Slot0.kI = 0.0; // Slot 0 I value
 			SHOOTER_MOTOR_TWO_CONFIG.Slot0.kD = 0.0; // Slot 0 D value
 
@@ -143,12 +143,12 @@ public final class RobotConstants {
 
 		static {
 			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 40;
-			TURRET_MOTOR_CONFIG.Feedback.SensorToMechanismRatio = 154.0 / 11.0;
+			TURRET_MOTOR_CONFIG.Feedback.SensorToMechanismRatio = 156.0 / 11.0;
 
 			TURRET_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 			TURRET_MOTOR_CONFIG.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-			TURRET_MOTOR_CONFIG.Slot0.kP = 26.0;
+			TURRET_MOTOR_CONFIG.Slot0.kP = 29.0;
 			TURRET_MOTOR_CONFIG.Slot0.kI = 0.5;
 			TURRET_MOTOR_CONFIG.Slot0.kD = 0.167;
 			TURRET_MOTOR_CONFIG.Slot0.kS = 4.5;
@@ -165,26 +165,24 @@ public final class RobotConstants {
 					toRotations(TURRET_RADIANS_MIN);
 		}
 
-		// Turret offset from robot center (in robot frame) - MEASURE THESE!
-		public static final double TURRET_OFFSET_X_METERS = -0.474;
-		public static final double TURRET_OFFSET_Y_METERS = 0.525;
+		// Turret offset from robot center (in robot frame)
+		public static final double TURRET_OFFSET_X_METERS = -0.1444752;
+		public static final double TURRET_OFFSET_Y_METERS = 0.15875;
 
 		// Shooter RPM lookup table: {distance_meters, rpm}
 		// TODO: Characterize these values from real shooting data!
 		public static final double[][] SHOOTER_RPM_DATA = {
-			{1.5, 800.0}, // Close shot
-			{2.0, 1000.0},
-			{2.5, 1200.0},
-			{3.0, 1400.0},
-			{3.5, 1600.0},
-			{4.0, 1800.0},
-			{4.5, 2000.0},
-			{5.0, 2200.0},
-			{5.5, 2400.0},
-			{6.0, 2600.0} // Far shot
+			{2.0, 1700.0},
+			{2.5, 1850.0},
+			{3.0, 2000.0},
+			{3.5, 2150.0},
+			{4.0, 2300.0},
+			{4.5, 2450.0},
+			{5.0, 2600.0},
+			{5.5, 2750.0} // Far shot
 		};
 
-		public static final double SHOOTER_ANGLE_RADIANS = Math.toRadians(19.044); // MEASURE YOUR ANGLE
+		public static final double SHOOTER_ANGLE_RADIANS = Math.toRadians(19.044);
 		public static final double SHOOTER_WHEEL_DIAMETER_METERS =
 				0.0762; // 3 inches between 4in and 2in
 		public static final double SHOOTER_EFFICIENCY_FACTOR =
