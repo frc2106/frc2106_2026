@@ -31,10 +31,10 @@ public class SUB_Superstructure extends SubsystemBase {
 	public enum TurretTarget {
 		BLUE_HUB(new Translation2d(4.62, 4.03)),
 		RED_HUB(new Translation2d(11.91, 4.03)),
-		BLUE_AIMING_TOP_CORNER(new Translation2d(1.5, 6.5)),
-		RED_AIMING_TOP_CORNER(new Translation2d(15.0, 6.5)),
-		BLUE_AIMING_BOTTOM_CORNER(new Translation2d(1.5, 1.5)),
-		RED_AIMING_BOTTOM_CORNER(new Translation2d(15.0, 1.5));
+		BLUE_AIMING_TOP_CORNER(new Translation2d(3.5, 6.5)),
+		RED_AIMING_TOP_CORNER(new Translation2d(13.0, 6.5)),
+		BLUE_AIMING_BOTTOM_CORNER(new Translation2d(3.5, 1.5)),
+		RED_AIMING_BOTTOM_CORNER(new Translation2d(13.0, 1.5));
 
 		private final Translation2d position;
 
@@ -56,9 +56,10 @@ public class SUB_Superstructure extends SubsystemBase {
 		INTAKE_HALF,
 		INTAKE_IN,
 		READY,
+		UNJAM,
 		VELOCITY_ONE,
 		VELOCITY_TWO,
-		CLIMB,
+		CLIMB_UP,
 		CLIMB_DOWN,
 		CLIMB_STOP,
 		TURRET_CENTER,
@@ -165,18 +166,34 @@ public class SUB_Superstructure extends SubsystemBase {
 				}
 				break;
 
+			case UNJAM:
+				indexerRef.setSpinnerVoltage(-2.0);
+
 			case INTAKE:
 				intakeRef.setIntakeVoltage(10.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
 				break;
 
-			case INTAKE_HALF:
-				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS / 2);
+			case INTAKE_IN:
+				intakeRef.setSliderPosition(0.0);
+				intakeRef.setIntakeVoltage(2.0);
 				break;
 
-			case CLIMB:
+			case CLIMB_DOWN:
+				indexerRef.setClimbVoltage(-3.0);
+				break;
+
+			case CLIMB_STOP:
 				indexerRef.setClimbVoltage(0.0);
 				break;
+
+			case CLIMB_UP:
+				indexerRef.setClimbVoltage(3.0);
+				break;
+
+			case READY:
+				indexerRef.setSpinnerVoltage(0.0);
+				indexerRef.setKickerVoltage(0.0);
 		}
 
 		updateTurretAngle();
@@ -284,6 +301,13 @@ public class SUB_Superstructure extends SubsystemBase {
 		Logger.recordOutput("Superstructure/Shooter/TargetRPM", targetRPM);
 		Logger.recordOutput(
 				"Superstructure/Shooter/AverageRPM", shooterRef.getAverageShooterVelocity());
+
+		Pose2d[] shotLine =
+				new Pose2d[] {
+					new Pose2d(turretPos, new Rotation2d()), // start
+					new Pose2d(virtualGoal, new Rotation2d()) // end
+				};
+		Logger.recordOutput("Superstructure/Shooter/DistanceToVirtualGoalLine", shotLine);
 	}
 
 	/**

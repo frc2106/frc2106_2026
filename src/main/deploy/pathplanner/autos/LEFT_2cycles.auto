@@ -27,6 +27,36 @@
           "data": {
             "name": "SHOOT"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IDLE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left_C_Bump"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SHOOT"
+          }
         }
       ]
     }

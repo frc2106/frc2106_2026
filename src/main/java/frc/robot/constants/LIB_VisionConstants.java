@@ -75,17 +75,17 @@ public class LIB_VisionConstants {
 	// SECTION 4: CAMERA 2 - FRONT LEFT CAMERA
 	// ====================================================================
 
-	public static String camera2Name = "OV2311_13"; // PhotonVision camera name
+	public static String camera2Name = "OV2311_5"; // PhotonVision camera name
 	public static Transform3d robotToCamera2 =
 			new Transform3d(
 					new Translation3d(
-							Units.inchesToMeters(2.0), // X: forward from robot center (in)
-							Units.inchesToMeters(9.5), // Y: left from robot center (in)
-							Units.inchesToMeters(19)), // Z: up from robot center (in)
+							Units.inchesToMeters(-8.043), // X: forward from robot center (in)
+							Units.inchesToMeters(-11.8325), // Y: left from robot center (in)
+							Units.inchesToMeters(8.244)), // Z: up from robot center (in)
 					new Rotation3d(
-							Units.degreesToRadians(0), // Roll: rotation about X-axis (deg)
-							Units.degreesToRadians(-15.0), // Pitch: rotation about Y-axis (deg)
-							Units.degreesToRadians(45))); // Yaw: rotation about Z-axis (deg)
+							Units.degreesToRadians(3.0), // Roll: rotation about X-axis (deg)
+							Units.degreesToRadians(-30.0), // Pitch: rotation about Y-axis (deg)
+							Units.degreesToRadians(-75.5))); // Yaw: rotation about Z-axis (deg)
 
 	// ====================================================================
 	// SECTION 5: CAMERA 3 - FRONT RIGHT CAMERA

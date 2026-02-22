@@ -42,7 +42,7 @@ import frc.robot.subsystems.superstructure.SUB_Superstructure.RobotState;
 public class RobotContainer {
 
 	// The auto to run
-	public static final String AUTO_NAME = "LEFT_CLIMB";
+	public static final String AUTO_NAME = "RIGHT_HP";
 	public static Command AUTO_COMMAND;
 
 	// Controllers
@@ -86,9 +86,9 @@ public class RobotContainer {
 		drive.setDefaultCommand(
 				DriveCommands.driveNormalExpo(
 						drive,
-						() -> operatorController.getRawAxis(1),
-						() -> operatorController.getRawAxis(0),
-						() -> -operatorController.getRawAxis(4),
+						() -> driverController.getRawAxis(1),
+						() -> driverController.getRawAxis(0),
+						() -> -driverController.getRawAxis(4),
 						1.0, // A VALUE OF 1.0 is FULL ROBOT SPEED
 						0.8, // keep rotation conservative
 						0.1, // movement expo
@@ -102,43 +102,59 @@ public class RobotContainer {
 				() -> -driverController.getRawAxis(3))); */
 
 		// Intake
+		driverController
+				.leftTrigger()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE_IN));
+
+		driverController
+				.leftTrigger()
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE));
+
 		operatorController
 				.leftTrigger()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE_IN));
 
 		operatorController
 				.leftTrigger()
 				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.INTAKE));
 
 		// Shoot
-		operatorController
+		driverController
 				.rightTrigger()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.SHOOTING));
 
-		operatorController
+		driverController
 				.rightTrigger()
-				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
 
 		operatorController
 				.x()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.SHOOTING));
+
+		operatorController
+				.x()
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.READY));
 
 		operatorController
 				.b()
 				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.IDLE));
 
 		operatorController
-				.y()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.VELOCITY_ONE));
-
-		operatorController
-				.a()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.VELOCITY_TWO));
+				.leftBumper()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.UNJAM));
 
 		// Climb
 		operatorController
 				.povUp()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB));
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_UP));
+
+		operatorController
+				.povDown()
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_DOWN));
+
+		operatorController
+				.povUp()
+				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_STOP));
 
 		operatorController
 				.povDown()
@@ -285,6 +301,9 @@ public class RobotContainer {
 				"INTAKE", new CMD_Superstructure(superstructure, RobotState.INTAKE));
 
 		NamedCommands.registerCommand("CLIMB", new CMD_Superstructure(superstructure, RobotState.IDLE));
+
+		NamedCommands.registerCommand(
+				"INTAKE_IN", new CMD_Superstructure(superstructure, RobotState.INTAKE_IN));
 	}
 
 	/*

@@ -8,8 +8,9 @@
     "RightSide"
   ],
   "autoFolders": [
+    "CenterRush",
     "Left_Side",
-    "CenterRush"
+    "Right_Side"
   ],
   "defaultMaxVel": 3.85,
   "defaultMaxAccel": 5.6,

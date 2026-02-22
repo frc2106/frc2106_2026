@@ -143,7 +143,7 @@ public final class RobotConstants {
 
 		static {
 			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 40;
-			TURRET_MOTOR_CONFIG.Feedback.SensorToMechanismRatio = 156.0 / 11.0;
+			TURRET_MOTOR_CONFIG.Feedback.SensorToMechanismRatio = 157.0 / 11.0; // 154 / 11
 
 			TURRET_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 			TURRET_MOTOR_CONFIG.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -170,23 +170,23 @@ public final class RobotConstants {
 		public static final double TURRET_OFFSET_Y_METERS = 0.15875;
 
 		// Shooter RPM lookup table: {distance_meters, rpm}
-		// TODO: Characterize these values from real shooting data!
+
 		public static final double[][] SHOOTER_RPM_DATA = {
 			{2.0, 1700.0},
 			{2.5, 1850.0},
 			{3.0, 2000.0},
-			{3.5, 2150.0},
-			{4.0, 2300.0},
-			{4.5, 2450.0},
-			{5.0, 2600.0},
-			{5.5, 2750.0} // Far shot
+			{3.5, 2200.0},
+			{4.0, 2400.0},
+			{4.5, 2500.0},
+			{5.0, 3000.0},
+			{5.5, 4000.0} // Far shot
 		};
 
 		public static final double SHOOTER_ANGLE_RADIANS = Math.toRadians(19.044);
 		public static final double SHOOTER_WHEEL_DIAMETER_METERS =
 				0.0762; // 3 inches between 4in and 2in
 		public static final double SHOOTER_EFFICIENCY_FACTOR =
-				0.5; // CHARACTERIZE THIS (0.4-0.6 typical)
+				0.35; // CHARACTERIZE THIS (0.4-0.6 typical)
 	}
 
 	// Indexer----------------------------------------------------------------------------------------------------
