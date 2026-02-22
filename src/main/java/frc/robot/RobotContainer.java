@@ -161,13 +161,13 @@ public class RobotContainer {
 				.onFalse(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.CLIMB_STOP));
 
 		// Test
-		turretTestcontroller
+		/* turretTestcontroller
 				.y()
 				.onTrue(
 						new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_CENTER));
 		turretTestcontroller
 				.a()
-				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_LEFT));
+				.onTrue(new CMD_Superstructure(superstructure, SUB_Superstructure.RobotState.TURRET_LEFT)); */
 
 		// drive.setDefaultCommand(DriveCommands.driveTest(drive));
 

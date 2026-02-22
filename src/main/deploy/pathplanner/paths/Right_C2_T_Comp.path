@@ -1,0 +1,66 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.671472081218274,
+        "y": 3.293746192893401
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.671472081218274,
+        "y": 0.7430964467005081
+      },
+      "isLocked": false,
+      "linkedName": "Right_C2_Comp"
+    },
+    {
+      "anchor": {
+        "x": 4.2552588832487315,
+        "y": 0.6418071065989852
+      },
+      "prevControl": {
+        "x": 6.115299492385787,
+        "y": 0.5681421319796971
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Right_Trench"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "IDLE",
+      "waypointRelativePos": 0.1438883541867197,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IDLE"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.85,
+    "maxAcceleration": 5.6,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1500.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": -0.9022211615301331
+  },
+  "reversed": false,
+  "folder": "RightSide_Comp",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 65.05609473657559
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,85 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.23684263959391,
+        "y": 7.428192893401015
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.16502538071066,
+        "y": 7.326903553299493
+      },
+      "isLocked": false,
+      "linkedName": "Left_TS"
+    },
+    {
+      "anchor": {
+        "x": 7.579390862944161,
+        "y": 4.840710659898478
+      },
+      "prevControl": {
+        "x": 7.699096446700506,
+        "y": 7.372944162436548
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Left_C2_Comp"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6746484226529809,
+      "rotationDegrees": -70.34730108497651
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.7463907603464837,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 5.6,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1500.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "INTAKE",
+      "waypointRelativePos": 0.3209817131857498,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "INTAKE"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.85,
+    "maxAcceleration": 5.6,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1500.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -70.42687416958964
+  },
+  "reversed": false,
+  "folder": "LeftSide_Comp",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

@@ -49,21 +49,14 @@ public class SUB_Superstructure extends SubsystemBase {
 
 	public enum RobotState {
 		IDLE,
-		EJECTING,
 		SHOOTING,
 		INTAKE,
-		INTAKE_OFF,
-		INTAKE_HALF,
 		INTAKE_IN,
 		READY,
 		UNJAM,
-		VELOCITY_ONE,
-		VELOCITY_TWO,
 		CLIMB_UP,
 		CLIMB_DOWN,
-		CLIMB_STOP,
-		TURRET_CENTER,
-		TURRET_LEFT
+		CLIMB_STOP
 	}
 
 	private SUB_Indexer indexerRef;
@@ -136,8 +129,6 @@ public class SUB_Superstructure extends SubsystemBase {
 		// -12V is full reverse
 		switch (currentRobotState) {
 			case IDLE:
-				activelyShooting = false;
-				activelyReady = false;
 				indexerRef.setSpinnerVoltage(0.0);
 				indexerRef.setKickerVoltage(0.0);
 				intakeRef.setIntakeVoltage(0.0);
@@ -146,14 +137,8 @@ public class SUB_Superstructure extends SubsystemBase {
 
 				break;
 
-			case EJECTING:
-				indexerRef.setSpinnerVoltage(-5.0);
-				indexerRef.setKickerVoltage(-8.0);
-				break;
-
+			//Shooting
 			case SHOOTING:
-				activelyShooting = true;
-				activelyReady = false;
 				indexerRef.setSpinnerVoltage(12.0);
 				indexerRef.setKickerVoltage(10.0);
 
@@ -166,9 +151,14 @@ public class SUB_Superstructure extends SubsystemBase {
 				}
 				break;
 
-			case UNJAM:
-				indexerRef.setSpinnerVoltage(-2.0);
+			case READY:
+				indexerRef.setSpinnerVoltage(0.0);
+				indexerRef.setKickerVoltage(0.0);
 
+			case UNJAM:
+				indexerRef.setSpinnerVoltage(-4.0);
+
+			//Intake
 			case INTAKE:
 				intakeRef.setIntakeVoltage(10.0);
 				intakeRef.setSliderPosition(INTAKE_MAX_EXTENSION_METERS);
@@ -179,6 +169,7 @@ public class SUB_Superstructure extends SubsystemBase {
 				intakeRef.setIntakeVoltage(2.0);
 				break;
 
+			//Climb
 			case CLIMB_DOWN:
 				indexerRef.setClimbVoltage(-3.0);
 				break;
@@ -191,9 +182,6 @@ public class SUB_Superstructure extends SubsystemBase {
 				indexerRef.setClimbVoltage(3.0);
 				break;
 
-			case READY:
-				indexerRef.setSpinnerVoltage(0.0);
-				indexerRef.setKickerVoltage(0.0);
 		}
 
 		updateTurretAngle();

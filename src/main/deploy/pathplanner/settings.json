@@ -5,11 +5,15 @@
   "pathFolders": [
     "CenterRush",
     "LeftSide",
-    "RightSide"
+    "LeftSide_Comp",
+    "Middle",
+    "RightSide",
+    "RightSide_Comp"
   ],
   "autoFolders": [
     "CenterRush",
     "Left_Side",
+    "Middle",
     "Right_Side"
   ],
   "defaultMaxVel": 3.85,

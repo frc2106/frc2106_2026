@@ -7,25 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right_A"
+            "pathName": "Midle_L_DP"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Right_B_HP"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right_C_HP"
+            "pathName": "Middle_DP_ST"
           }
         },
         {
@@ -51,11 +39,17 @@
           "data": {
             "name": "INTAKE_IN"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.0
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Right_Side",
+  "folder": "Middle",
   "choreoAuto": false
 }
