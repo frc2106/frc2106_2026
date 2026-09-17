@@ -32,7 +32,7 @@ public final class RobotConstants {
 		public static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
 
 		static {
-			INTAKE_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 30; // 60
+			INTAKE_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 60; // 60
 			INTAKE_MOTOR_CONFIG.Feedback.SensorToMechanismRatio = 1.0;
 			INTAKE_MOTOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 			INTAKE_MOTOR_CONFIG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -111,7 +111,7 @@ public final class RobotConstants {
 		public static final double TURRET_SLOW_MOVE_VOLTAGE = 2.0;
 
 		static {
-			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 25;
+			TURRET_MOTOR_CONFIG.CurrentLimits.StatorCurrentLimit = 35;
 
 			// SensorToMechanismRatio = 157/11 means Phoenix 6 handles the gear ratio
 			// internally. All position and velocity commands are in MECHANISM units
@@ -155,6 +155,23 @@ public final class RobotConstants {
 		public static final double VELOCITY_MULTIPLE = 0.975; // 0.945
 
 		public static final double[][] SHOOTER_RPM_DATA = {
+			/*{2.0, 1700.0 * VELOCITY_MULTIPLE},
+			{2.5, 1880.0 * VELOCITY_MULTIPLE},
+			{3.0, 2080.0 * VELOCITY_MULTIPLE},
+			{3.5, 2150.0 * VELOCITY_MULTIPLE},
+			{3.7, 2180.0 * VELOCITY_MULTIPLE},
+			{4.0, 2370.0 * VELOCITY_MULTIPLE},
+			{4.5, 2530.0 * VELOCITY_MULTIPLE},
+			{5.0, 2630.0 * VELOCITY_MULTIPLE},
+			{5.5, 2630.0 * VELOCITY_MULTIPLE}, // 2660
+			{6.0, 2700.0 * VELOCITY_MULTIPLE}, // 2800
+			{6.5, 3000.0 * VELOCITY_MULTIPLE},
+			{7.0, 3200.0 * VELOCITY_MULTIPLE},
+			{7.5, 3400.0 * VELOCITY_MULTIPLE},
+			{8.0, 3600.0 * VELOCITY_MULTIPLE},
+			{8.5, 3800.0 * VELOCITY_MULTIPLE},
+			{9.0, 4000.0 * VELOCITY_MULTIPLE} */
+
 			{2.0, 1700.0 * VELOCITY_MULTIPLE},
 			{2.5, 1880.0 * VELOCITY_MULTIPLE},
 			{3.0, 2080.0 * VELOCITY_MULTIPLE},
